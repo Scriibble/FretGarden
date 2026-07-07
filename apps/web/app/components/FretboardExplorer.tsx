@@ -26,6 +26,7 @@ import {
 import { PracticeSessionSettings } from "./PracticeSessionSettings";
 import {
   ProgressDashboard,
+  type HabitStat,
   type PracticeWeakSpot,
   type RecentPracticeSession
 } from "./ProgressDashboard";
@@ -919,6 +920,25 @@ export function FretboardExplorer() {
   const recentPracticeSessions = useMemo(
     () =>
       buildRecentPracticeSessions(
+        sessionHistory,
+        chordSessionHistory,
+        scaleDegreeSessionHistory,
+        intervalSessionHistory,
+        octaveSessionHistory,
+        triadInversionSessionHistory
+      ),
+    [
+      sessionHistory,
+      chordSessionHistory,
+      scaleDegreeSessionHistory,
+      intervalSessionHistory,
+      octaveSessionHistory,
+      triadInversionSessionHistory
+    ]
+  );
+  const habitStats = useMemo(
+    () =>
+      buildHabitStats(
         sessionHistory,
         chordSessionHistory,
         scaleDegreeSessionHistory,
@@ -2047,6 +2067,7 @@ export function FretboardExplorer() {
         onStartRecommendation={() =>
           handleStartRecommendation(practiceRecommendation)
         }
+        habitStats={habitStats}
         recentSessions={recentPracticeSessions}
         weakSpots={dashboardWeakSpots}
       />
@@ -4074,6 +4095,111 @@ function formatHubAccuracy(
     | null
 ): string {
   return session ? `${session.accuracy}% last session` : "No sessions yet";
+}
+
+function buildHabitStats(
+  noteSessions: readonly NoteRecognitionSession[],
+  chordSessions: readonly ChordToneSession[],
+  scaleSessions: readonly ScaleDegreeSession[],
+  intervalSessions: readonly IntervalLandmarkSession[],
+  octaveSessions: readonly OctaveShapeSession[],
+  triadInversionSessions: readonly TriadInversionSession[]
+): HabitStat[] {
+  const sessions = [
+    ...noteSessions,
+    ...chordSessions,
+    ...scaleSessions,
+    ...intervalSessions,
+    ...octaveSessions,
+    ...triadInversionSessions
+  ];
+  const recentSessions = [...sessions]
+    .sort(
+      (left, right) =>
+        new Date(right.completedAt).getTime() -
+        new Date(left.completedAt).getTime()
+    )
+    .slice(0, 5);
+  const mastery =
+    recentSessions.length === 0
+      ? 0
+      : Math.round(
+          recentSessions.reduce((total, session) => total + session.accuracy, 0) /
+            recentSessions.length
+        );
+
+  const streak = getPracticeStreak(sessions);
+
+  return [
+    {
+      id: "streak",
+      label: "Streak",
+      value: `${streak} day${streak === 1 ? "" : "s"}`,
+      detail:
+        sessions.length > 0
+          ? "Keep the daily chain alive"
+          : "Finish one session to begin",
+      variant: "streak"
+    },
+    {
+      id: "xp",
+      label: "Practice XP",
+      value: String(getPracticeXp(sessions)),
+      detail: `${sessions.length} saved session${sessions.length === 1 ? "" : "s"}`,
+      variant: "xp"
+    },
+    {
+      id: "mastery",
+      label: "Mastery",
+      value: `${mastery}%`,
+      detail:
+        recentSessions.length > 0
+          ? "Average of recent sessions"
+          : "Build a baseline today",
+      variant: "mastery"
+    }
+  ];
+}
+
+function getPracticeXp(
+  sessions: readonly {
+    correct: number;
+    promptCount: number;
+  }[]
+): number {
+  return sessions.reduce(
+    (total, session) => total + session.promptCount * 10 + session.correct * 5,
+    0
+  );
+}
+
+function getPracticeStreak(
+  sessions: readonly {
+    completedAt: string;
+  }[]
+): number {
+  const sessionDays = new Set(
+    sessions.map((session) => formatDateKey(new Date(session.completedAt)))
+  );
+  const today = new Date();
+  let streak = 0;
+
+  for (
+    const cursor = new Date(today);
+    sessionDays.has(formatDateKey(cursor));
+    cursor.setDate(cursor.getDate() - 1)
+  ) {
+    streak += 1;
+  }
+
+  return streak;
+}
+
+function formatDateKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 function buildRecentPracticeSessions(

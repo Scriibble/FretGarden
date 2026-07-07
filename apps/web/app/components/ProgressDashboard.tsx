@@ -18,10 +18,19 @@ export interface PracticeWeakSpot {
   attempted: number;
 }
 
+export interface HabitStat {
+  id: string;
+  label: string;
+  value: string;
+  detail: string;
+  variant: "streak" | "xp" | "mastery";
+}
+
 interface ProgressDashboardProps {
   recommendationTitle: string;
   recommendationDescription: string;
   onStartRecommendation: () => void;
+  habitStats: readonly HabitStat[];
   recentSessions: readonly RecentPracticeSession[];
   weakSpots: readonly PracticeWeakSpot[];
 }
@@ -30,6 +39,7 @@ export function ProgressDashboard({
   recommendationTitle,
   recommendationDescription,
   onStartRecommendation,
+  habitStats,
   recentSessions,
   weakSpots
 }: ProgressDashboardProps) {
@@ -37,9 +47,21 @@ export function ProgressDashboard({
     <section className="progress-dashboard" aria-label="Practice progress">
       <article className="next-session-card">
         <div>
-          <p className="eyebrow">Recommended Next</p>
+          <p className="eyebrow">Daily Quest</p>
           <h2>{recommendationTitle}</h2>
           <p>{recommendationDescription}</p>
+        </div>
+        <div className="habit-stat-grid" aria-label="Practice habit stats">
+          {habitStats.map((stat) => (
+            <div
+              className={`habit-stat habit-stat-${stat.variant}`}
+              key={stat.id}
+            >
+              <span>{stat.label}</span>
+              <strong>{stat.value}</strong>
+              <small>{stat.detail}</small>
+            </div>
+          ))}
         </div>
         <button onClick={onStartRecommendation} type="button">
           Start this session
