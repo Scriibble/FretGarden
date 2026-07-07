@@ -889,6 +889,32 @@ button {
   border-color: #d9a65e;
 }
 
+.lesson-next-link {
+  border: 1px solid #9bbab2;
+  border-radius: 8px;
+  color: #173f43;
+  display: inline-grid;
+  gap: 0.15rem;
+  margin-top: 0.4rem;
+  padding: 0.6rem 0.7rem;
+  text-decoration: none;
+}
+
+.lesson-next-link span {
+  color: #52615c;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.lesson-next-link strong {
+  font-size: 1rem;
+}
+
+.lesson-next-link:hover {
+  border-color: #2f6b73;
+}
+
 .summary-metrics {
   display: grid;
   gap: 0.65rem;
@@ -1012,6 +1038,152 @@ button {
   display: grid;
   gap: 0.85rem;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.course-overview,
+.lesson-library-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.course-overview {
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.course-overview-main {
+  align-items: start;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 240px);
+}
+
+.course-overview-main h2,
+.section-heading h2 {
+  margin-top: 0.25rem;
+}
+
+.course-overview-main p {
+  color: #52615c;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+.course-progress-card {
+  border: 1px solid #c5d8d4;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem;
+}
+
+.course-progress-card strong {
+  color: #173f43;
+  font-size: 1.6rem;
+}
+
+.course-progress-card span {
+  color: #52615c;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.course-progress-meter {
+  background: #edf1ee;
+  border-radius: 999px;
+  height: 0.55rem;
+  overflow: hidden;
+}
+
+.course-progress-meter span {
+  background: #2f6b73;
+  display: block;
+  height: 100%;
+}
+
+.course-overview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.course-path-list {
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.course-path-step {
+  align-items: start;
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 0.8rem;
+}
+
+.course-path-step.path-complete {
+  background: #f8faf8;
+  border-color: #9bbab2;
+}
+
+.course-path-step.path-current {
+  background: #e5f2ef;
+  border-color: #2f6b73;
+}
+
+.course-path-step.path-up-next {
+  background: #fff8ed;
+  border-color: #d9a65e;
+}
+
+.course-step-marker {
+  align-items: center;
+  background: #173f43;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 900;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.path-complete .course-step-marker {
+  background: #2f6b73;
+}
+
+.path-up-next .course-step-marker,
+.path-later .course-step-marker {
+  background: #7f8b85;
+}
+
+.course-step-body {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.course-step-body > a {
+  color: #173f43;
+  font-size: 1.05rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.course-step-body > a:hover {
+  text-decoration: underline;
+}
+
+.course-step-body p,
+.section-heading {
+  color: #52615c;
+  line-height: 1.4;
 }
 
 .lesson-card,
@@ -1178,6 +1350,39 @@ button {
   padding: 1rem;
 }
 
+.lesson-sequence-nav {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lesson-sequence-nav > a {
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  color: #173f43;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem;
+  text-decoration: none;
+}
+
+.lesson-sequence-nav > a:last-child {
+  justify-items: end;
+  text-align: right;
+}
+
+.lesson-sequence-nav span {
+  color: #52615c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lesson-sequence-nav a:hover {
+  border-color: #2f6b73;
+}
+
 @media (max-width: 900px) {
   .app-header,
   .lesson-header,
@@ -1212,6 +1417,10 @@ button {
   }
 
   .practice-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .course-overview-main {
     grid-template-columns: 1fr;
   }
 
@@ -1277,5 +1486,14 @@ button {
 
   .performance-card-list {
     grid-template-columns: 1fr;
+  }
+
+  .lesson-sequence-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-sequence-nav > a:last-child {
+    justify-items: start;
+    text-align: left;
   }
 }

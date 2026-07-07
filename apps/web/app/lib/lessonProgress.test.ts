@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { lessons } from "./lessons";
 import {
+  buildCourseProgress,
   doesLessonPracticeMeetCriteria,
   findLessonProgress,
   getLessonProgressStatus,
@@ -244,5 +246,49 @@ describe("lessonProgress", () => {
         lastPromptCount: 12
       }
     ]);
+  });
+
+  it("builds an ordered course progress summary", () => {
+    const progress = markLessonStarted(
+      markLessonComplete(
+        [],
+        "fretboard-map",
+        "note",
+        "2026-07-07T12:05:00.000Z"
+      ),
+      "repeating-notes",
+      "note",
+      "2026-07-07T12:10:00.000Z"
+    );
+    const courseProgress = buildCourseProgress(lessons, progress);
+
+    expect(courseProgress.completedCount).toBe(1);
+    expect(courseProgress.totalCount).toBe(lessons.length);
+    expect(courseProgress.currentLesson?.slug).toBe("repeating-notes");
+    expect(courseProgress.upNextLesson?.slug).toBe("triads");
+    expect(courseProgress.items.slice(0, 4).map((item) => item.pathState)).toEqual([
+      "complete",
+      "current",
+      "up-next",
+      "later"
+    ]);
+    expect(courseProgress.isComplete).toBe(false);
+  });
+
+  it("marks the course complete when every lesson is complete", () => {
+    const progress = lessons.map((lesson) => ({
+      slug: lesson.slug,
+      drill: lesson.practice.drill,
+      status: "complete" as const,
+      startedAt: "2026-07-07T12:00:00.000Z",
+      completedAt: "2026-07-07T12:05:00.000Z"
+    }));
+    const courseProgress = buildCourseProgress(lessons, progress);
+
+    expect(courseProgress.completedCount).toBe(lessons.length);
+    expect(courseProgress.percentComplete).toBe(100);
+    expect(courseProgress.currentLesson).toBeNull();
+    expect(courseProgress.upNextLesson).toBeNull();
+    expect(courseProgress.isComplete).toBe(true);
   });
 });

@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LessonPracticeCard } from "../../components/LessonPracticeCard";
-import { getLesson, lessons } from "../../lib/lessons";
+import {
+  getLesson,
+  getNextLesson,
+  getPreviousLesson,
+  lessons
+} from "../../lib/lessons";
 
 interface LessonPageProps {
   params: Promise<{
@@ -36,6 +41,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
     notFound();
   }
 
+  const previousLesson = getPreviousLesson(lesson.slug);
+  const nextLesson = getNextLesson(lesson.slug);
+
   return (
     <main className="lesson-shell lesson-page">
       <nav className="lesson-nav" aria-label="Lesson navigation">
@@ -62,6 +70,29 @@ export default async function LessonPage({ params }: LessonPageProps) {
         ))}
 
         <LessonPracticeCard lesson={lesson} />
+
+        <nav className="lesson-sequence-nav" aria-label="Lesson sequence">
+          {previousLesson ? (
+            <Link href={`/lessons/${previousLesson.slug}`}>
+              <span>Previous lesson</span>
+              <strong>{previousLesson.title}</strong>
+            </Link>
+          ) : (
+            <span />
+          )}
+
+          {nextLesson ? (
+            <Link href={`/lessons/${nextLesson.slug}`}>
+              <span>Next lesson</span>
+              <strong>{nextLesson.title}</strong>
+            </Link>
+          ) : (
+            <Link href="/lessons">
+              <span>Course path</span>
+              <strong>Review completed lessons</strong>
+            </Link>
+          )}
+        </nav>
       </article>
     </main>
   );

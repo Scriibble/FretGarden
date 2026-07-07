@@ -31,6 +31,7 @@ import {
 } from "./ProgressDashboard";
 import {
   getLesson,
+  getNextLesson,
   type Lesson,
   type LessonPracticeDrill
 } from "../lib/lessons";
@@ -545,12 +546,20 @@ export function FretboardExplorer() {
     () => (activeLessonSlug ? getLesson(activeLessonSlug) ?? null : null),
     [activeLessonSlug]
   );
+  const nextCourseLesson = useMemo(
+    () => (activeLesson ? getNextLesson(activeLesson.slug) ?? null : null),
+    [activeLesson]
+  );
   const activeLessonOutcome = useMemo(
     () =>
       activeLesson && activeDrillSummary.isComplete
-        ? buildLessonReviewOutcome(activeLesson, activeDrillSummary)
+        ? buildLessonReviewOutcome(
+            activeLesson,
+            activeDrillSummary,
+            nextCourseLesson
+          )
         : null,
-    [activeLesson, activeDrillSummary]
+    [activeLesson, activeDrillSummary, nextCourseLesson]
   );
   const reviewContent = useMemo(
     () =>
@@ -2090,7 +2099,8 @@ function getCompletionTitle(practiceDrill: PracticeDrill): string {
 
 function buildLessonReviewOutcome(
   lesson: Lesson,
-  summary: NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary
+  summary: NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary,
+  nextLesson: Lesson | null
 ): LessonReviewOutcome {
   const criteria = lesson.practice.criteria;
   const didCompleteLesson = doesLessonPracticeMeetCriteria(
@@ -2106,8 +2116,21 @@ function buildLessonReviewOutcome(
     return {
       status: "complete",
       title: "Lesson complete",
-      description: `${lesson.title} is complete. You met the lesson target with ${summary.accuracy}% accuracy across ${summary.attempted} prompts.`,
-      criteriaLabel
+      description: nextLesson
+        ? `${lesson.title} is complete. Next up: ${nextLesson.title}.`
+        : `${lesson.title} is complete. You finished every lesson in this course path.`,
+      criteriaLabel,
+      nextAction: nextLesson
+        ? {
+            href: `/lessons/${nextLesson.slug}`,
+            label: "Open next lesson",
+            title: nextLesson.title
+          }
+        : {
+            href: "/lessons",
+            label: "Review course path",
+            title: "All lessons complete"
+          }
     };
   }
 

@@ -1,4 +1,8 @@
-import type { LessonPracticeCriteria, LessonPracticeDrill } from "./lessons";
+import type {
+  Lesson,
+  LessonPracticeCriteria,
+  LessonPracticeDrill
+} from "./lessons";
 
 export const LESSON_PROGRESS_STORAGE_KEY = "pocket-practice:lesson-progress";
 
@@ -19,6 +23,26 @@ export interface LessonPracticeAttemptResult {
   attemptedAt: string;
   accuracy: number;
   promptCount: number;
+}
+
+export type CoursePathState = "complete" | "current" | "up-next" | "later";
+
+export interface CourseProgressItem {
+  lesson: Lesson;
+  index: number;
+  record: LessonProgressRecord | null;
+  status: LessonProgressStatus | "not-started";
+  pathState: CoursePathState;
+}
+
+export interface CourseProgressSummary {
+  items: CourseProgressItem[];
+  completedCount: number;
+  totalCount: number;
+  percentComplete: number;
+  currentLesson: Lesson | null;
+  upNextLesson: Lesson | null;
+  isComplete: boolean;
 }
 
 export function parseLessonProgress(
@@ -138,6 +162,49 @@ export function getLessonProgressStatus(
   return findLessonProgress(progress, slug)?.status ?? "not-started";
 }
 
+export function buildCourseProgress(
+  lessons: readonly Lesson[],
+  progress: readonly LessonProgressRecord[]
+): CourseProgressSummary {
+  const statuses = lessons.map((lesson) =>
+    getLessonProgressStatus(progress, lesson.slug)
+  );
+  const completedCount = statuses.filter((status) => status === "complete").length;
+  const firstIncompleteIndex = statuses.findIndex(
+    (status) => status !== "complete"
+  );
+  const currentLesson =
+    firstIncompleteIndex === -1 ? null : lessons[firstIncompleteIndex] ?? null;
+  const upNextLesson =
+    firstIncompleteIndex === -1
+      ? null
+      : lessons[firstIncompleteIndex + 1] ?? null;
+  const items = lessons.map((lesson, index) => {
+    const status = statuses[index] ?? "not-started";
+
+    return {
+      lesson,
+      index,
+      record: findLessonProgress(progress, lesson.slug),
+      status,
+      pathState: getCoursePathState(status, index, firstIncompleteIndex)
+    };
+  });
+
+  return {
+    items,
+    completedCount,
+    totalCount: lessons.length,
+    percentComplete:
+      lessons.length === 0
+        ? 0
+        : Math.round((completedCount / lessons.length) * 100),
+    currentLesson,
+    upNextLesson,
+    isComplete: lessons.length > 0 && completedCount === lessons.length
+  };
+}
+
 function upsertLessonProgress(
   progress: readonly LessonProgressRecord[],
   nextRecord: LessonProgressRecord
@@ -180,4 +247,24 @@ function isLessonProgressRecord(value: unknown): value is LessonProgressRecord {
 
 function isLessonPracticeDrill(value: unknown): value is LessonPracticeDrill {
   return value === "note" || value === "chordTone" || value === "scaleDegree";
+}
+
+function getCoursePathState(
+  status: LessonProgressStatus | "not-started",
+  index: number,
+  firstIncompleteIndex: number
+): CoursePathState {
+  if (status === "complete") {
+    return "complete";
+  }
+
+  if (index === firstIncompleteIndex) {
+    return "current";
+  }
+
+  if (index === firstIncompleteIndex + 1) {
+    return "up-next";
+  }
+
+  return "later";
 }

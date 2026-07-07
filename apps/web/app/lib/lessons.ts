@@ -288,3 +288,19 @@ export const lessons = [
 export function getLesson(slug: string): Lesson | undefined {
   return lessons.find((lesson) => lesson.slug === slug);
 }
+
+export function getLessonIndex(slug: string): number {
+  return lessons.findIndex((lesson) => lesson.slug === slug);
+}
+
+export function getNextLesson(slug: string): Lesson | undefined {
+  const lessonIndex = getLessonIndex(slug);
+
+  return lessonIndex === -1 ? undefined : lessons[lessonIndex + 1];
+}
+
+export function getPreviousLesson(slug: string): Lesson | undefined {
+  const lessonIndex = getLessonIndex(slug);
+
+  return lessonIndex <= 0 ? undefined : lessons[lessonIndex - 1];
+}

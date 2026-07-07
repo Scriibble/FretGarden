@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export interface PracticeReviewMetric {
   label: string;
   value: string;
@@ -23,6 +25,11 @@ export interface LessonReviewOutcome {
   title: string;
   description: string;
   criteriaLabel: string;
+  nextAction?: {
+    href: string;
+    label: string;
+    title: string;
+  };
 }
 
 interface PracticeReviewPanelProps {
@@ -79,6 +86,15 @@ export function PracticeReviewPanel({
             <span className="control-label">Lesson target</span>
             <strong>{lessonOutcome.title}</strong>
             <p>{lessonOutcome.description}</p>
+            {lessonOutcome.nextAction ? (
+              <Link
+                className="lesson-next-link"
+                href={lessonOutcome.nextAction.href}
+              >
+                <span>{lessonOutcome.nextAction.label}</span>
+                <strong>{lessonOutcome.nextAction.title}</strong>
+              </Link>
+            ) : null}
           </div>
           <span>{lessonOutcome.criteriaLabel}</span>
         </div>
