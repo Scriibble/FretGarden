@@ -8,7 +8,8 @@ export type LessonPracticeDrill =
   | "chordTone"
   | "scaleDegree"
   | "interval"
-  | "octaveShape";
+  | "octaveShape"
+  | "triadInversion";
 
 export interface LessonPracticeLink {
   label: string;
@@ -254,9 +255,9 @@ export const lessons = [
       }
     ],
     practice: {
-      label: "Practice inversion chord tones",
-      href: "/?drill=chordTone&lesson=triad-inversions#practice",
-      drill: "chordTone",
+      label: "Practice triad inversions",
+      href: "/?drill=triadInversion&lesson=triad-inversions#practice",
+      drill: "triadInversion",
       criteria: {
         promptCount: 12,
         minAccuracy: 80

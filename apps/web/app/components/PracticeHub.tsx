@@ -23,8 +23,15 @@ interface PracticeHubProps {
   octaveWeakSpotLabel: string;
   octavePresetLabel: string;
   onStartOctave: () => void;
+  triadInversionLastSessionLabel: string;
+  triadInversionWeakSpotLabel: string;
+  triadInversionPresetLabel: string;
+  onStartTriadInversion: () => void;
   courseRecommendationTitle: string;
   courseRecommendationDescription: string;
+  courseProgressLabel: string;
+  courseProgressPercent: number;
+  courseStepLabel: string;
   courseLessonHref: string;
   coursePracticeHref: string;
   recommendationTitle: string;
@@ -53,8 +60,15 @@ export function PracticeHub({
   octaveWeakSpotLabel,
   octavePresetLabel,
   onStartOctave,
+  triadInversionLastSessionLabel,
+  triadInversionWeakSpotLabel,
+  triadInversionPresetLabel,
+  onStartTriadInversion,
   courseRecommendationTitle,
   courseRecommendationDescription,
+  courseProgressLabel,
+  courseProgressPercent,
+  courseStepLabel,
   courseLessonHref,
   coursePracticeHref,
   recommendationTitle,
@@ -83,6 +97,16 @@ export function PracticeHub({
         <div>
           <span className="control-label">Course recommendation</span>
           <h3>{courseRecommendationTitle}</h3>
+          <div className="course-progress-inline">
+            <span>{courseStepLabel}</span>
+            <div
+              aria-label={courseProgressLabel}
+              className="course-progress-track"
+            >
+              <i style={{ width: `${courseProgressPercent}%` }} />
+            </div>
+            <strong>{courseProgressLabel}</strong>
+          </div>
           <p>{courseRecommendationDescription}</p>
         </div>
         <div className="hub-heading-actions">
@@ -191,6 +215,25 @@ export function PracticeHub({
             type="button"
           >
             Start {octavePresetLabel}
+          </button>
+        </article>
+
+        <article className="hub-card">
+          <div>
+            <span className="control-label">Triad Inversions</span>
+            <h3>Name the bass function</h3>
+            <p>Practice which chord tone sits in the bass of each inversion.</p>
+          </div>
+          <div className="hub-metrics">
+            <span>{triadInversionLastSessionLabel}</span>
+            <span>{triadInversionWeakSpotLabel}</span>
+          </div>
+          <button
+            data-testid="hub-start-triad-inversion"
+            onClick={onStartTriadInversion}
+            type="button"
+          >
+            Start {triadInversionPresetLabel}
           </button>
         </article>
 

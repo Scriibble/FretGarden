@@ -76,13 +76,19 @@ describe("lessonProgress", () => {
     ]);
   });
 
-  it("accepts octave-shape lesson progress records", () => {
+  it("accepts octave-shape and triad-inversion lesson progress records", () => {
     expect(
       parseLessonProgress(
         JSON.stringify([
           {
             slug: "octave-shapes",
             drill: "octaveShape",
+            status: "in-progress",
+            startedAt: "2026-07-07T12:00:00.000Z"
+          },
+          {
+            slug: "triad-inversions",
+            drill: "triadInversion",
             status: "in-progress",
             startedAt: "2026-07-07T12:00:00.000Z"
           }
@@ -92,6 +98,12 @@ describe("lessonProgress", () => {
       {
         slug: "octave-shapes",
         drill: "octaveShape",
+        status: "in-progress",
+        startedAt: "2026-07-07T12:00:00.000Z"
+      },
+      {
+        slug: "triad-inversions",
+        drill: "triadInversion",
         status: "in-progress",
         startedAt: "2026-07-07T12:00:00.000Z"
       }
@@ -233,7 +245,7 @@ describe("lessonProgress", () => {
     const progress = markLessonStarted(
       [],
       "triad-inversions",
-      "chordTone",
+      "triadInversion",
       "2026-07-07T12:00:00.000Z"
     );
 
@@ -241,7 +253,7 @@ describe("lessonProgress", () => {
       markLessonPracticed(
         progress,
         "triad-inversions",
-        "chordTone",
+        "triadInversion",
         {
           attemptedAt: "2026-07-07T12:05:00.000Z",
           accuracy: 92,
@@ -255,7 +267,7 @@ describe("lessonProgress", () => {
     ).toEqual([
       {
         slug: "triad-inversions",
-        drill: "chordTone",
+        drill: "triadInversion",
         status: "complete",
         startedAt: "2026-07-07T12:00:00.000Z",
         completedAt: "2026-07-07T12:05:00.000Z",

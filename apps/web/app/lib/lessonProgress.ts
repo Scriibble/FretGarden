@@ -275,7 +275,8 @@ function isLessonPracticeDrill(value: unknown): value is LessonPracticeDrill {
     value === "chordTone" ||
     value === "scaleDegree" ||
     value === "interval" ||
-    value === "octaveShape"
+    value === "octaveShape" ||
+    value === "triadInversion"
   );
 }
 

@@ -171,6 +171,31 @@ import {
   type ScaleDegreeSessionSettings,
   type ScaleDegreeSummary
 } from "../lib/scaleDegreeRecognition";
+import {
+  DEFAULT_TRIAD_INVERSION_SESSION_SETTINGS,
+  TRIAD_INVERSION_HISTORY_LIMIT,
+  TRIAD_INVERSION_SESSION_PRESETS,
+  appendTriadInversionSession,
+  buildTriadInversionAttempt,
+  buildTriadInversionPerformanceSummary,
+  buildTriadInversionPromptSession,
+  buildTriadInversionSession,
+  getCurrentTriadInversionPrompt,
+  getMissedTriadInversionPrompts,
+  getTriadInversionAnswerOptions,
+  getTriadInversionBassNote,
+  getTriadInversionBassToneName,
+  getTriadInversionName,
+  summarizeTriadInversionRecognition,
+  type MissedTriadInversionPrompt,
+  type TriadInversionAttempt,
+  type TriadInversionPerformanceStat,
+  type TriadInversionPrompt,
+  type TriadInversionSession,
+  type TriadInversionSessionPreset,
+  type TriadInversionSessionSettings,
+  type TriadInversionSummary
+} from "../lib/triadInversionRecognition";
 
 type DisplayMode = "practice" | "notes" | "find" | "scale" | "chord";
 type PracticeDrill =
@@ -178,20 +203,23 @@ type PracticeDrill =
   | "chordTone"
   | "scaleDegree"
   | "interval"
-  | "octaveShape";
+  | "octaveShape"
+  | "triadInversion";
 type ActiveVariant = "note" | "root" | "scale" | "chord" | "answer" | "miss";
 type PerformanceStat =
   | ChordTonePerformanceStat
   | IntervalLandmarkPerformanceStat
   | NoteRecognitionPerformanceStat
   | OctaveShapePerformanceStat
-  | ScaleDegreePerformanceStat;
+  | ScaleDegreePerformanceStat
+  | TriadInversionPerformanceStat;
 type PracticePreset =
   | ChordToneSessionPreset
   | IntervalLandmarkSessionPreset
   | NoteRecognitionSessionPreset
   | OctaveShapeSessionPreset
-  | ScaleDegreeSessionPreset;
+  | ScaleDegreeSessionPreset
+  | TriadInversionSessionPreset;
 
 interface PracticeHubRecommendation {
   drill: PracticeDrill;
@@ -269,6 +297,8 @@ const INTERVAL_LANDMARK_HISTORY_STORAGE_KEY =
   "pocket-practice:interval-landmark-history";
 const OCTAVE_SHAPE_HISTORY_STORAGE_KEY =
   "pocket-practice:octave-shape-history";
+const TRIAD_INVERSION_HISTORY_STORAGE_KEY =
+  "pocket-practice:triad-inversion-history";
 const NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:note-recognition-custom-preset";
 const CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY =
@@ -279,6 +309,8 @@ const INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:interval-landmark-custom-preset";
 const OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:octave-shape-custom-preset";
+const TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY =
+  "pocket-practice:triad-inversion-custom-preset";
 const STORAGE_VERSION = 1;
 
 export function FretboardExplorer() {
@@ -334,6 +366,18 @@ export function FretboardExplorer() {
   const [octaveSessionNonce, setOctaveSessionNonce] = useState(0);
   const [customOctavePreset, setCustomOctavePreset] =
     useState<OctaveShapeSessionPreset | null>(null);
+  const [triadInversionPromptIndex, setTriadInversionPromptIndex] = useState(0);
+  const [triadInversionAttempts, setTriadInversionAttempts] = useState<
+    TriadInversionAttempt[]
+  >([]);
+  const [triadInversionSessionSettings, setTriadInversionSessionSettings] =
+    useState<TriadInversionSessionSettings>(
+      DEFAULT_TRIAD_INVERSION_SESSION_SETTINGS
+    );
+  const [triadInversionSessionNonce, setTriadInversionSessionNonce] =
+    useState(0);
+  const [customTriadInversionPreset, setCustomTriadInversionPreset] =
+    useState<TriadInversionSessionPreset | null>(null);
   const [completedSession, setCompletedSession] =
     useState<NoteRecognitionSession | null>(null);
   const [completedChordSession, setCompletedChordSession] =
@@ -344,6 +388,8 @@ export function FretboardExplorer() {
     useState<IntervalLandmarkSession | null>(null);
   const [completedOctaveSession, setCompletedOctaveSession] =
     useState<OctaveShapeSession | null>(null);
+  const [completedTriadInversionSession, setCompletedTriadInversionSession] =
+    useState<TriadInversionSession | null>(null);
   const [sessionHistory, setSessionHistory] = useState<
     NoteRecognitionSession[]
   >([]);
@@ -359,6 +405,8 @@ export function FretboardExplorer() {
   const [octaveSessionHistory, setOctaveSessionHistory] = useState<
     OctaveShapeSession[]
   >([]);
+  const [triadInversionSessionHistory, setTriadInversionSessionHistory] =
+    useState<TriadInversionSession[]>([]);
   const [lessonProgressRecords, setLessonProgressRecords] = useState<
     LessonProgressRecord[]
   >([]);
@@ -510,6 +558,39 @@ export function FretboardExplorer() {
       ),
     [octaveSessionSettings, octaveSessionNonce, octaveReviewPrompts]
   );
+  const triadInversionPerformanceSessions = useMemo(() => {
+    if (completedTriadInversionSession === null) {
+      return triadInversionSessionHistory;
+    }
+
+    return [
+      completedTriadInversionSession,
+      ...triadInversionSessionHistory.filter(
+        (session) => session.id !== completedTriadInversionSession.id
+      )
+    ];
+  }, [triadInversionSessionHistory, completedTriadInversionSession]);
+  const triadInversionPerformance = useMemo(
+    () =>
+      buildTriadInversionPerformanceSummary(triadInversionPerformanceSessions),
+    [triadInversionPerformanceSessions]
+  );
+  const triadInversionReviewPrompts = useMemo(
+    () => collectTriadInversionReviewPrompts(triadInversionPerformanceSessions),
+    [triadInversionPerformanceSessions]
+  );
+  const triadInversionPromptQueue = useMemo(
+    () =>
+      buildTriadInversionPromptSession(
+        triadInversionSessionSettings,
+        triadInversionReviewPrompts
+      ),
+    [
+      triadInversionSessionSettings,
+      triadInversionSessionNonce,
+      triadInversionReviewPrompts
+    ]
+  );
   const currentPrompt = getCurrentPrompt(promptIndex, notePromptQueue);
   const currentAttempt =
     attempts.find((attempt) => attempt.promptIndex === promptIndex) ?? null;
@@ -543,6 +624,14 @@ export function FretboardExplorer() {
     octaveAttempts.find(
       (attempt) => attempt.promptIndex === octavePromptIndex
     ) ?? null;
+  const currentTriadInversionPrompt = getCurrentTriadInversionPrompt(
+    triadInversionPromptIndex,
+    triadInversionPromptQueue
+  );
+  const currentTriadInversionAttempt =
+    triadInversionAttempts.find(
+      (attempt) => attempt.promptIndex === triadInversionPromptIndex
+    ) ?? null;
   const drillSummary = useMemo(
     () => summarizeNoteRecognition(attempts, notePromptQueue.length),
     [attempts, notePromptQueue.length]
@@ -575,6 +664,14 @@ export function FretboardExplorer() {
       ),
     [octaveAttempts, octavePromptQueue.length]
   );
+  const triadInversionDrillSummary = useMemo(
+    () =>
+      summarizeTriadInversionRecognition(
+        triadInversionAttempts,
+        triadInversionPromptQueue.length
+      ),
+    [triadInversionAttempts, triadInversionPromptQueue.length]
+  );
   const missedPrompts = useMemo(
     () => getMissedNoteRecognitionPrompts(attempts),
     [attempts]
@@ -595,6 +692,10 @@ export function FretboardExplorer() {
     () => getMissedOctaveShapePrompts(octaveAttempts),
     [octaveAttempts]
   );
+  const missedTriadInversionPrompts = useMemo(
+    () => getMissedTriadInversionPrompts(triadInversionAttempts),
+    [triadInversionAttempts]
+  );
   const activePositions = useMemo(
     () =>
       buildActivePositions(
@@ -612,7 +713,9 @@ export function FretboardExplorer() {
         currentIntervalPrompt,
         currentIntervalAttempt,
         currentOctavePrompt,
-        currentOctaveAttempt
+        currentOctaveAttempt,
+        currentTriadInversionPrompt,
+        currentTriadInversionAttempt
       ),
     [
       mode,
@@ -629,7 +732,9 @@ export function FretboardExplorer() {
       currentIntervalPrompt,
       currentIntervalAttempt,
       currentOctavePrompt,
-      currentOctaveAttempt
+      currentOctaveAttempt,
+      currentTriadInversionPrompt,
+      currentTriadInversionAttempt
     ]
   );
   const summary = useMemo(
@@ -655,11 +760,15 @@ export function FretboardExplorer() {
         currentOctavePrompt,
         currentOctaveAttempt,
         octaveDrillSummary,
+        currentTriadInversionPrompt,
+        currentTriadInversionAttempt,
+        triadInversionDrillSummary,
         notePromptQueue.length,
         chordPromptQueue.length,
         scaleDegreePromptQueue.length,
         intervalPromptQueue.length,
-        octavePromptQueue.length
+        octavePromptQueue.length,
+        triadInversionPromptQueue.length
       ),
     [
       mode,
@@ -682,11 +791,15 @@ export function FretboardExplorer() {
       currentOctavePrompt,
       currentOctaveAttempt,
       octaveDrillSummary,
+      currentTriadInversionPrompt,
+      currentTriadInversionAttempt,
+      triadInversionDrillSummary,
       notePromptQueue.length,
       chordPromptQueue.length,
       scaleDegreePromptQueue.length,
       intervalPromptQueue.length,
-      octavePromptQueue.length
+      octavePromptQueue.length,
+      triadInversionPromptQueue.length
     ]
   );
   const selectedActive = selectedPosition
@@ -698,7 +811,8 @@ export function FretboardExplorer() {
     chordDrillSummary,
     scaleDegreeDrillSummary,
     intervalDrillSummary,
-    octaveDrillSummary
+    octaveDrillSummary,
+    triadInversionDrillSummary
   );
   const activeDrillAttempt = getActiveDrillAttempt(
     practiceDrill,
@@ -706,7 +820,8 @@ export function FretboardExplorer() {
     currentChordAttempt,
     currentScaleDegreeAttempt,
     currentIntervalAttempt,
-    currentOctaveAttempt
+    currentOctaveAttempt,
+    currentTriadInversionAttempt
   );
   const activePromptCount = getActivePromptCount(
     practiceDrill,
@@ -714,7 +829,8 @@ export function FretboardExplorer() {
     chordPromptQueue.length,
     scaleDegreePromptQueue.length,
     intervalPromptQueue.length,
-    octavePromptQueue.length
+    octavePromptQueue.length,
+    triadInversionPromptQueue.length
   );
   const latestSession = getLatestSession(
     practiceDrill,
@@ -722,13 +838,15 @@ export function FretboardExplorer() {
     chordSessionHistory,
     scaleDegreeSessionHistory,
     intervalSessionHistory,
-    octaveSessionHistory
+    octaveSessionHistory,
+    triadInversionSessionHistory
   );
   const chordMissedReviewCount = chordReviewPrompts.length;
   const noteMissedReviewCount = noteReviewPrompts.length;
   const scaleDegreeMissedReviewCount = scaleDegreeReviewPrompts.length;
   const intervalMissedReviewCount = intervalReviewPrompts.length;
   const octaveMissedReviewCount = octaveReviewPrompts.length;
+  const triadInversionMissedReviewCount = triadInversionReviewPrompts.length;
   const notePresetOptions = customNotePreset
     ? [...NOTE_RECOGNITION_SESSION_PRESETS, customNotePreset]
     : NOTE_RECOGNITION_SESSION_PRESETS;
@@ -744,6 +862,9 @@ export function FretboardExplorer() {
   const octavePresetOptions = customOctavePreset
     ? [...OCTAVE_SHAPE_SESSION_PRESETS, customOctavePreset]
     : OCTAVE_SHAPE_SESSION_PRESETS;
+  const triadInversionPresetOptions = customTriadInversionPreset
+    ? [...TRIAD_INVERSION_SESSION_PRESETS, customTriadInversionPreset]
+    : TRIAD_INVERSION_SESSION_PRESETS;
   const recommendedNotePreset = getRecommendedNotePreset(
     notePerformance,
     notePresetOptions
@@ -764,6 +885,10 @@ export function FretboardExplorer() {
     octavePerformance,
     octavePresetOptions
   );
+  const recommendedTriadInversionPreset = getRecommendedTriadInversionPreset(
+    triadInversionPerformance,
+    triadInversionPresetOptions
+  );
   const courseProgress = useMemo(
     () => buildCourseProgress(lessons, lessonProgressRecords),
     [lessonProgressRecords]
@@ -774,11 +899,13 @@ export function FretboardExplorer() {
     scaleDegreePerformance,
     intervalPerformance,
     octavePerformance,
+    triadInversionPerformance,
     recommendedNotePreset,
     recommendedChordPreset,
     recommendedScaleDegreePreset,
     recommendedIntervalPreset,
     recommendedOctavePreset,
+    recommendedTriadInversionPreset,
     courseProgress
   );
   const courseRecommendationLesson =
@@ -796,14 +923,16 @@ export function FretboardExplorer() {
         chordSessionHistory,
         scaleDegreeSessionHistory,
         intervalSessionHistory,
-        octaveSessionHistory
+        octaveSessionHistory,
+        triadInversionSessionHistory
       ),
     [
       sessionHistory,
       chordSessionHistory,
       scaleDegreeSessionHistory,
       intervalSessionHistory,
-      octaveSessionHistory
+      octaveSessionHistory,
+      triadInversionSessionHistory
     ]
   );
   const dashboardWeakSpots = useMemo(
@@ -813,14 +942,16 @@ export function FretboardExplorer() {
         chordPerformance.weakSpots,
         scaleDegreePerformance.weakSpots,
         intervalPerformance.weakSpots,
-        octavePerformance.weakSpots
+        octavePerformance.weakSpots,
+        triadInversionPerformance.weakSpots
       ),
     [
       notePerformance.weakSpots,
       chordPerformance.weakSpots,
       scaleDegreePerformance.weakSpots,
       intervalPerformance.weakSpots,
-      octavePerformance.weakSpots
+      octavePerformance.weakSpots,
+      triadInversionPerformance.weakSpots
     ]
   );
   const activeLesson = useMemo(
@@ -852,11 +983,13 @@ export function FretboardExplorer() {
         missedScaleDegreePrompts,
         missedIntervalPrompts,
         missedOctavePrompts,
+        missedTriadInversionPrompts,
         notePerformance,
         chordPerformance,
         scaleDegreePerformance,
         intervalPerformance,
-        octavePerformance
+        octavePerformance,
+        triadInversionPerformance
       ),
     [
       activeDrillSummary,
@@ -866,11 +999,13 @@ export function FretboardExplorer() {
       missedOctavePrompts,
       missedPrompts,
       missedScaleDegreePrompts,
+      missedTriadInversionPrompts,
       notePerformance,
       octavePerformance,
       practiceDrill,
       scaleDegreePerformance,
-      intervalPerformance
+      intervalPerformance,
+      triadInversionPerformance
     ]
   );
 
@@ -905,6 +1040,12 @@ export function FretboardExplorer() {
         OCTAVE_SHAPE_HISTORY_LIMIT
       )
     );
+    setTriadInversionSessionHistory(
+      readStoredSessionHistory<TriadInversionSession>(
+        TRIAD_INVERSION_HISTORY_STORAGE_KEY,
+        TRIAD_INVERSION_HISTORY_LIMIT
+      )
+    );
     setLessonProgressRecords(readStoredLessonProgress());
     setCustomNotePreset(
       readStoredPreset<NoteRecognitionSessionPreset>(
@@ -929,6 +1070,11 @@ export function FretboardExplorer() {
     setCustomOctavePreset(
       readStoredPreset<OctaveShapeSessionPreset>(
         OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY
+      )
+    );
+    setCustomTriadInversionPreset(
+      readStoredPreset<TriadInversionSessionPreset>(
+        TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY
       )
     );
   }, []);
@@ -959,6 +1105,8 @@ export function FretboardExplorer() {
       resetIntervalLandmarkDrill();
     } else if (requestedDrill === "octaveShape") {
       resetOctaveShapeDrill();
+    } else if (requestedDrill === "triadInversion") {
+      resetTriadInversionDrill();
     } else {
       resetNoteRecognitionDrill();
     }
@@ -1130,6 +1278,42 @@ export function FretboardExplorer() {
     octavePromptQueue.length
   ]);
 
+  useEffect(() => {
+    if (
+      !triadInversionDrillSummary.isComplete ||
+      completedTriadInversionSession !== null
+    ) {
+      return;
+    }
+
+    const nextSession = buildTriadInversionSession(
+      triadInversionAttempts,
+      undefined,
+      triadInversionPromptQueue.length
+    );
+
+    setCompletedTriadInversionSession(nextSession);
+    setTriadInversionSessionHistory((previousHistory) => {
+      const nextHistory = appendTriadInversionSession(
+        previousHistory,
+        nextSession
+      );
+      writeStoredSessionHistory(
+        TRIAD_INVERSION_HISTORY_STORAGE_KEY,
+        nextHistory
+      );
+
+      return nextHistory;
+    });
+    recordActiveLessonSession("triadInversion", nextSession);
+  }, [
+    activeLessonSlug,
+    completedTriadInversionSession,
+    triadInversionAttempts,
+    triadInversionDrillSummary.isComplete,
+    triadInversionPromptQueue.length
+  ]);
+
   function handleModeChange(nextMode: DisplayMode): void {
     setMode(nextMode);
     setSelectedPosition(null);
@@ -1143,6 +1327,7 @@ export function FretboardExplorer() {
       | ScaleDegreeSession
       | IntervalLandmarkSession
       | OctaveShapeSession
+      | TriadInversionSession
   ): void {
     if (!activeLessonSlug) {
       return;
@@ -1202,7 +1387,7 @@ export function FretboardExplorer() {
       return;
     }
 
-    if (practiceDrill === "chordTone") {
+    if (practiceDrill === "chordTone" || practiceDrill === "triadInversion") {
       return;
     }
 
@@ -1305,6 +1490,29 @@ export function FretboardExplorer() {
 
     setChordAttempts((previousAttempts) =>
       previousAttempts.some((attempt) => attempt.promptIndex === chordPromptIndex)
+        ? previousAttempts
+        : [...previousAttempts, nextAttempt]
+    );
+  }
+
+  function handleTriadInversionAnswer(selectedNote: NoteName): void {
+    if (
+      triadInversionDrillSummary.isComplete ||
+      currentTriadInversionAttempt !== null
+    ) {
+      return;
+    }
+
+    const nextAttempt = buildTriadInversionAttempt(
+      triadInversionPromptIndex,
+      currentTriadInversionPrompt,
+      selectedNote
+    );
+
+    setTriadInversionAttempts((previousAttempts) =>
+      previousAttempts.some(
+        (attempt) => attempt.promptIndex === triadInversionPromptIndex
+      )
         ? previousAttempts
         : [...previousAttempts, nextAttempt]
     );
@@ -1450,6 +1658,43 @@ export function FretboardExplorer() {
     writeStoredPreset(OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
   }
 
+  function handleTriadInversionSessionSettingsChange(
+    nextSettings: Partial<TriadInversionSessionSettings>
+  ): void {
+    setTriadInversionSessionSettings((previousSettings) => ({
+      ...previousSettings,
+      ...nextSettings
+    }));
+    resetTriadInversionDrill();
+  }
+
+  function handleTriadInversionPresetSelect(
+    preset: TriadInversionSessionPreset
+  ): void {
+    setTriadInversionSessionSettings(preset.settings);
+    resetTriadInversionDrill();
+  }
+
+  function handleStartTriadInversionPreset(
+    preset: TriadInversionSessionPreset
+  ): void {
+    setMode("practice");
+    setPracticeDrill("triadInversion");
+    handleTriadInversionPresetSelect(preset);
+    scrollPracticeSessionIntoView();
+  }
+
+  function handleSaveTriadInversionPreset(): void {
+    const nextPreset = {
+      id: "custom",
+      label: "Custom",
+      settings: triadInversionSessionSettings
+    } satisfies TriadInversionSessionPreset;
+
+    setCustomTriadInversionPreset(nextPreset);
+    writeStoredPreset(TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
+  }
+
   function handleNoteSessionSettingsChange(
     nextSettings: Partial<NoteRecognitionSessionSettings>
   ): void {
@@ -1496,6 +1741,13 @@ export function FretboardExplorer() {
 
     if (recommendation.drill === "octaveShape") {
       handleStartOctavePreset(recommendation.preset as OctaveShapeSessionPreset);
+      return;
+    }
+
+    if (recommendation.drill === "triadInversion") {
+      handleStartTriadInversionPreset(
+        recommendation.preset as TriadInversionSessionPreset
+      );
       return;
     }
 
@@ -1553,6 +1805,14 @@ export function FretboardExplorer() {
     setOctaveSessionNonce((previousNonce) => previousNonce + 1);
   }
 
+  function resetTriadInversionDrill(): void {
+    setTriadInversionPromptIndex(0);
+    setTriadInversionAttempts([]);
+    setCompletedTriadInversionSession(null);
+    setSelectedPosition(null);
+    setTriadInversionSessionNonce((previousNonce) => previousNonce + 1);
+  }
+
   function scrollPracticeSessionIntoView(): void {
     window.setTimeout(() => {
       practiceLayoutRef.current?.scrollIntoView({
@@ -1589,6 +1849,13 @@ export function FretboardExplorer() {
       return;
     }
 
+    if (practiceDrill === "triadInversion") {
+      setTriadInversionPromptIndex(
+        (previousPromptIndex) => previousPromptIndex + 1
+      );
+      return;
+    }
+
     setPromptIndex((previousPromptIndex) => previousPromptIndex + 1);
   }
 
@@ -1601,6 +1868,8 @@ export function FretboardExplorer() {
       resetIntervalLandmarkDrill();
     } else if (practiceDrill === "octaveShape") {
       resetOctaveShapeDrill();
+    } else if (practiceDrill === "triadInversion") {
+      resetTriadInversionDrill();
     } else {
       resetNoteRecognitionDrill();
     }
@@ -1648,6 +1917,16 @@ export function FretboardExplorer() {
         reviewMode: "missed"
       }));
       resetOctaveShapeDrill();
+      return;
+    }
+
+    if (practiceDrill === "triadInversion") {
+      setTriadInversionSessionSettings((previousSettings) => ({
+        ...previousSettings,
+        promptOrder: "fixed",
+        reviewMode: "missed"
+      }));
+      resetTriadInversionDrill();
       return;
     }
 
@@ -1718,6 +1997,16 @@ export function FretboardExplorer() {
         }
         octavePresetLabel={recommendedOctavePreset.label}
         onStartOctave={() => handleStartOctavePreset(recommendedOctavePreset)}
+        triadInversionLastSessionLabel={formatHubAccuracy(
+          triadInversionSessionHistory[0] ?? null
+        )}
+        triadInversionWeakSpotLabel={
+          triadInversionPerformance.weakSpots[0]?.label ?? "No weak spots"
+        }
+        triadInversionPresetLabel={recommendedTriadInversionPreset.label}
+        onStartTriadInversion={() =>
+          handleStartTriadInversionPreset(recommendedTriadInversionPreset)
+        }
         courseRecommendationTitle={
           courseProgress.isComplete
             ? "Course path complete"
@@ -1729,6 +2018,15 @@ export function FretboardExplorer() {
             : courseRecommendationLesson
               ? `Continue step ${courseRecommendationStepNumber} of ${courseProgress.totalCount}: ${courseRecommendationLesson.summary}`
               : "Start with the fretboard map, then follow each lesson into its matching drill."
+        }
+        courseProgressLabel={`${courseProgress.completedCount}/${courseProgress.totalCount} lessons complete`}
+        courseProgressPercent={courseProgress.percentComplete}
+        courseStepLabel={
+          courseProgress.isComplete
+            ? "Course complete"
+            : courseRecommendationLesson
+              ? `Current step ${courseRecommendationStepNumber}`
+              : "Ready to begin"
         }
         courseLessonHref={
           courseRecommendationLesson
@@ -1780,13 +2078,14 @@ export function FretboardExplorer() {
           {mode === "practice" ? (
             <div className="control-group">
               <span className="control-label">Drill</span>
-              <div className="segmented-control option-grid five">
+              <div className="segmented-control option-grid six">
                 {([
                   { id: "note", label: "Note drill" },
                   { id: "chordTone", label: "Chord drill" },
                   { id: "scaleDegree", label: "Scale drill" },
                   { id: "interval", label: "Interval drill" },
-                  { id: "octaveShape", label: "Octave drill" }
+                  { id: "octaveShape", label: "Octave drill" },
+                  { id: "triadInversion", label: "Inversion drill" }
                 ] as const).map((option) => (
                   <button
                     className={option.id === practiceDrill ? "is-selected" : ""}
@@ -1847,6 +2146,14 @@ export function FretboardExplorer() {
                 onPresetSelect: handleOctavePresetSelect,
                 onSavePreset: handleSaveOctavePreset,
                 onSettingsChange: handleOctaveSessionSettingsChange
+              }}
+              triadInversion={{
+                presetOptions: triadInversionPresetOptions,
+                settings: triadInversionSessionSettings,
+                missedReviewCount: triadInversionMissedReviewCount,
+                onPresetSelect: handleTriadInversionPresetSelect,
+                onSavePreset: handleSaveTriadInversionPreset,
+                onSettingsChange: handleTriadInversionSessionSettingsChange
               }}
             />
           ) : null}
@@ -1927,17 +2234,32 @@ export function FretboardExplorer() {
             </div>
           </div>
 
-          {mode === "practice" && practiceDrill === "chordTone" ? (
+          {mode === "practice" &&
+          (practiceDrill === "chordTone" ||
+            practiceDrill === "triadInversion") ? (
             <div className="control-group chord-answer-panel">
               <span className="control-label">Answer</span>
               <div className="note-grid chord-answer-grid">
-                {getChordToneAnswerOptions(currentChordPrompt).map((note) => {
-                  const isSelected = currentChordAttempt?.selectedNote === note;
+                {getCurrentNoteAnswerOptions(
+                  practiceDrill,
+                  currentChordPrompt,
+                  currentTriadInversionPrompt
+                ).map((note) => {
+                  const isSelected =
+                    practiceDrill === "triadInversion"
+                      ? currentTriadInversionAttempt?.selectedNote === note
+                      : currentChordAttempt?.selectedNote === note;
                   const isCorrectAnswer =
-                    currentChordAttempt !== null &&
-                    currentChordAttempt.targetNote === note;
+                    practiceDrill === "triadInversion"
+                      ? currentTriadInversionAttempt !== null &&
+                        currentTriadInversionAttempt.bassNote === note
+                      : currentChordAttempt !== null &&
+                        currentChordAttempt.targetNote === note;
                   const isMissedSelection =
-                    isSelected && currentChordAttempt?.isCorrect === false;
+                    isSelected &&
+                    (practiceDrill === "triadInversion"
+                      ? currentTriadInversionAttempt?.isCorrect === false
+                      : currentChordAttempt?.isCorrect === false);
 
                   return (
                     <button
@@ -1946,13 +2268,22 @@ export function FretboardExplorer() {
                         isCorrectAnswer,
                         isMissedSelection
                       )}
-                      data-testid={`chord-answer-${formatNoteTestId(note)}`}
+                      data-testid={`${getNoteAnswerTestIdPrefix(
+                        practiceDrill
+                      )}-answer-${formatNoteTestId(note)}`}
                       disabled={
-                        currentChordAttempt !== null ||
-                        chordDrillSummary.isComplete
+                        practiceDrill === "triadInversion"
+                          ? currentTriadInversionAttempt !== null ||
+                            triadInversionDrillSummary.isComplete
+                          : currentChordAttempt !== null ||
+                            chordDrillSummary.isComplete
                       }
                       key={note}
-                      onClick={() => handleChordToneAnswer(note)}
+                      onClick={() =>
+                        practiceDrill === "triadInversion"
+                          ? handleTriadInversionAnswer(note)
+                          : handleChordToneAnswer(note)
+                      }
                       type="button"
                     >
                       {note}
@@ -2183,7 +2514,9 @@ function buildActivePositions(
   intervalPrompt: IntervalLandmarkPrompt,
   currentIntervalAttempt: IntervalLandmarkAttempt | null,
   octavePrompt: OctaveShapePrompt,
-  currentOctaveAttempt: OctaveShapeAttempt | null
+  currentOctaveAttempt: OctaveShapeAttempt | null,
+  triadInversionPrompt: TriadInversionPrompt,
+  currentTriadInversionAttempt: TriadInversionAttempt | null
 ): Map<string, ActivePosition> {
   const activePositions = new Map<string, ActivePosition>();
 
@@ -2348,6 +2681,41 @@ function buildActivePositions(
       return activePositions;
     }
 
+    if (practiceDrill === "triadInversion") {
+      if (currentTriadInversionAttempt === null) {
+        return activePositions;
+      }
+
+      findNotesOnFretboard(currentTriadInversionAttempt.bassNote, {
+        frets: fretboard.frets
+      }).forEach((position) => {
+        activePositions.set(positionKey(position), {
+          label: currentTriadInversionAttempt.bassNote,
+          variant: "answer",
+          descriptor: `Correct bass ${getTriadInversionBassToneName(
+            triadInversionPrompt.inversion
+          )} of ${formatChordName(
+            triadInversionPrompt.rootNote,
+            triadInversionPrompt.quality
+          )}`
+        });
+      });
+
+      if (!currentTriadInversionAttempt.isCorrect) {
+        findNotesOnFretboard(currentTriadInversionAttempt.selectedNote, {
+          frets: fretboard.frets
+        }).forEach((position) => {
+          activePositions.set(positionKey(position), {
+            label: currentTriadInversionAttempt.selectedNote,
+            variant: "miss",
+            descriptor: `Your answer: ${currentTriadInversionAttempt.selectedNote}`
+          });
+        });
+      }
+
+      return activePositions;
+    }
+
     if (currentAttempt === null) {
       return activePositions;
     }
@@ -2458,11 +2826,15 @@ function buildModeSummary(
   octavePrompt: OctaveShapePrompt,
   currentOctaveAttempt: OctaveShapeAttempt | null,
   octaveDrillSummary: OctaveShapeSummary,
+  triadInversionPrompt: TriadInversionPrompt,
+  currentTriadInversionAttempt: TriadInversionAttempt | null,
+  triadInversionDrillSummary: TriadInversionSummary,
   notePromptCount: number,
   chordPromptCount: number,
   scaleDegreePromptCount: number,
   intervalPromptCount: number,
-  octavePromptCount: number
+  octavePromptCount: number,
+  triadInversionPromptCount: number
 ): ModeSummary {
   if (mode === "practice") {
     if (practiceDrill === "chordTone") {
@@ -2613,6 +2985,50 @@ function buildModeSummary(
           `${octavePrompt.sourceNote} anchor`,
           `${targetStringName} string`
         ]
+      };
+    }
+
+    if (practiceDrill === "triadInversion") {
+      const chordName = formatChordName(
+        triadInversionPrompt.rootNote,
+        triadInversionPrompt.quality
+      );
+      const inversionName = getTriadInversionName(
+        triadInversionPrompt.inversion
+      );
+      const bassToneName = getTriadInversionBassToneName(
+        triadInversionPrompt.inversion
+      );
+      const bassNote = getTriadInversionBassNote(triadInversionPrompt);
+      const chordSpelling = formatTriadInversionSpelling(
+        triadInversionPrompt
+      );
+
+      if (triadInversionDrillSummary.isComplete) {
+        return {
+          title: "Triad inversion drill complete",
+          description: `You found ${triadInversionDrillSummary.correct} of ${triadInversionDrillSummary.attempted} inversion prompts.`,
+          badge: `${triadInversionDrillSummary.accuracy}% accuracy`,
+          tones: [
+            `${triadInversionDrillSummary.correct} correct`,
+            `${triadInversionDrillSummary.missed} missed`
+          ]
+        };
+      }
+
+      return {
+        title: `What note is in the bass of ${inversionName} ${chordName}?`,
+        description:
+          currentTriadInversionAttempt === null
+            ? `Choose the chord note that sits in the bass. In ${inversionName}, the bass is the ${bassToneName}.`
+            : currentTriadInversionAttempt.isCorrect
+              ? `Correct. ${chordSpelling}, so ${bassNote} is the bass note in ${inversionName}.`
+              : `You chose ${currentTriadInversionAttempt.selectedNote}. ${chordSpelling}, so ${bassNote} is the bass note in ${inversionName}.`,
+        badge: `${triadInversionDrillSummary.attempted + 1}/${triadInversionPromptCount}`,
+        tones:
+          currentTriadInversionAttempt === null
+            ? [chordName, inversionName, bassToneName]
+            : [chordName, inversionName, bassNote]
       };
     }
 
@@ -2902,6 +3318,10 @@ function getPracticeDrillLabel(practiceDrill: PracticeDrill): string {
     return "Octave shapes";
   }
 
+  if (practiceDrill === "triadInversion") {
+    return "Triad inversions";
+  }
+
   return "Note recognition";
 }
 
@@ -2911,7 +3331,8 @@ function parsePracticeDrillParam(value: string | null): PracticeDrill | null {
     value === "chordTone" ||
     value === "scaleDegree" ||
     value === "interval" ||
-    value === "octaveShape"
+    value === "octaveShape" ||
+    value === "triadInversion"
   ) {
     return value;
   }
@@ -2956,7 +3377,8 @@ function markStoredLessonPracticed(
     | ChordToneSession
     | ScaleDegreeSession
     | IntervalLandmarkSession
-    | OctaveShapeSession,
+    | OctaveShapeSession
+    | TriadInversionSession,
   criteria: Lesson["practice"]["criteria"]
 ): void {
   writeStoredLessonProgress(
@@ -2991,6 +3413,10 @@ function getCompletionTitle(practiceDrill: PracticeDrill): string {
     return "Octave shape drill complete";
   }
 
+  if (practiceDrill === "triadInversion") {
+    return "Triad inversion drill complete";
+  }
+
   return "Note recognition complete";
 }
 
@@ -3001,7 +3427,8 @@ function buildLessonReviewOutcome(
     | ChordToneSummary
     | ScaleDegreeSummary
     | IntervalLandmarkSummary
-    | OctaveShapeSummary,
+    | OctaveShapeSummary
+    | TriadInversionSummary,
   nextLesson: Lesson | null
 ): LessonReviewOutcome {
   const criteria = lesson.practice.criteria;
@@ -3051,17 +3478,20 @@ function buildPracticeReviewContent(
     | ChordToneSummary
     | ScaleDegreeSummary
     | IntervalLandmarkSummary
-    | OctaveShapeSummary,
+    | OctaveShapeSummary
+    | TriadInversionSummary,
   noteMisses: readonly MissedNoteRecognitionPrompt[],
   chordMisses: readonly MissedChordTonePrompt[],
   scaleDegreeMisses: readonly MissedScaleDegreePrompt[],
   intervalMisses: readonly MissedIntervalLandmarkPrompt[],
   octaveMisses: readonly MissedOctaveShapePrompt[],
+  triadInversionMisses: readonly MissedTriadInversionPrompt[],
   notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
   chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
   scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>,
   intervalPerformance: ReturnType<typeof buildIntervalLandmarkPerformanceSummary>,
-  octavePerformance: ReturnType<typeof buildOctaveShapePerformanceSummary>
+  octavePerformance: ReturnType<typeof buildOctaveShapePerformanceSummary>,
+  triadInversionPerformance: ReturnType<typeof buildTriadInversionPerformanceSummary>
 ): PracticeReviewContent {
   const metrics = [
     {
@@ -3193,6 +3623,41 @@ function buildPracticeReviewContent(
     };
   }
 
+  if (practiceDrill === "triadInversion") {
+    return {
+      metrics,
+      missedPrompts: triadInversionMisses.map(
+        toTriadInversionMissedReviewItem
+      ),
+      weakSpots: triadInversionPerformance.weakSpots.map(
+        toPerformanceReviewItem
+      ),
+      breakdowns: [
+        {
+          title: "Inversion breakdown",
+          emptyMessage: "No inversion attempts yet.",
+          chips: triadInversionPerformance.inversionStats.map(
+            formatPerformanceChip
+          )
+        },
+        {
+          title: "Quality breakdown",
+          emptyMessage: "No inversion qualities attempted yet.",
+          chips: triadInversionPerformance.qualityStats.map(
+            formatPerformanceChip
+          )
+        },
+        {
+          title: "Root trouble spots",
+          emptyMessage: "No inversion root misses yet.",
+          chips: triadInversionPerformance.rootStats
+            .filter((stat) => stat.missed > 0)
+            .map(formatPerformanceChip)
+        }
+      ]
+    };
+  }
+
   return {
     metrics,
     missedPrompts: noteMisses.map(toNoteMissedReviewItem),
@@ -3280,6 +3745,18 @@ function toOctaveMissedReviewItem(
   };
 }
 
+function toTriadInversionMissedReviewItem(
+  missedPrompt: MissedTriadInversionPrompt
+): PracticeReviewItem {
+  return {
+    id: `${missedPrompt.rootNote}-${missedPrompt.quality}-${missedPrompt.inversion}-${missedPrompt.selectedNote}`,
+    title: formatTriadInversionPromptTarget(missedPrompt),
+    detail: `You chose ${missedPrompt.selectedNote}; correct bass note was ${
+      missedPrompt.bassNote
+    }. ${formatTriadInversionSpelling(missedPrompt)}.`
+  };
+}
+
 function toPerformanceReviewItem(stat: PerformanceStat): PracticeReviewItem {
   return {
     id: `${stat.category}-${stat.id}`,
@@ -3299,13 +3776,15 @@ function getPracticePromptStatus(
     | ChordToneSummary
     | ScaleDegreeSummary
     | IntervalLandmarkSummary
-    | OctaveShapeSummary,
+    | OctaveShapeSummary
+    | TriadInversionSummary,
   attempt:
     | NoteRecognitionAttempt
     | ChordToneAttempt
     | ScaleDegreeAttempt
     | IntervalLandmarkAttempt
     | OctaveShapeAttempt
+    | TriadInversionAttempt
     | null
 ): string {
   if (summary.isComplete) {
@@ -3320,7 +3799,9 @@ function getPracticePromptStatus(
     return "Review the highlighted answer";
   }
 
-  return practiceDrill === "chordTone" ? "Choose a note" : "Choose a fret";
+  return practiceDrill === "chordTone" || practiceDrill === "triadInversion"
+    ? "Choose a note"
+    : "Choose a fret";
 }
 
 function getActiveDrillSummary(
@@ -3329,13 +3810,15 @@ function getActiveDrillSummary(
   chordSummary: ChordToneSummary,
   scaleDegreeSummary: ScaleDegreeSummary,
   intervalSummary: IntervalLandmarkSummary,
-  octaveSummary: OctaveShapeSummary
+  octaveSummary: OctaveShapeSummary,
+  triadInversionSummary: TriadInversionSummary
 ):
   | NoteRecognitionSummary
   | ChordToneSummary
   | ScaleDegreeSummary
   | IntervalLandmarkSummary
-  | OctaveShapeSummary {
+  | OctaveShapeSummary
+  | TriadInversionSummary {
   if (practiceDrill === "chordTone") {
     return chordSummary;
   }
@@ -3352,6 +3835,10 @@ function getActiveDrillSummary(
     return octaveSummary;
   }
 
+  if (practiceDrill === "triadInversion") {
+    return triadInversionSummary;
+  }
+
   return noteSummary;
 }
 
@@ -3361,13 +3848,15 @@ function getActiveDrillAttempt(
   chordAttempt: ChordToneAttempt | null,
   scaleDegreeAttempt: ScaleDegreeAttempt | null,
   intervalAttempt: IntervalLandmarkAttempt | null,
-  octaveAttempt: OctaveShapeAttempt | null
+  octaveAttempt: OctaveShapeAttempt | null,
+  triadInversionAttempt: TriadInversionAttempt | null
 ):
   | NoteRecognitionAttempt
   | ChordToneAttempt
   | ScaleDegreeAttempt
   | IntervalLandmarkAttempt
   | OctaveShapeAttempt
+  | TriadInversionAttempt
   | null {
   if (practiceDrill === "chordTone") {
     return chordAttempt;
@@ -3385,6 +3874,10 @@ function getActiveDrillAttempt(
     return octaveAttempt;
   }
 
+  if (practiceDrill === "triadInversion") {
+    return triadInversionAttempt;
+  }
+
   return noteAttempt;
 }
 
@@ -3394,7 +3887,8 @@ function getActivePromptCount(
   chordPromptCount: number,
   scaleDegreePromptCount: number,
   intervalPromptCount: number,
-  octavePromptCount: number
+  octavePromptCount: number,
+  triadInversionPromptCount: number
 ): number {
   if (practiceDrill === "chordTone") {
     return chordPromptCount;
@@ -3412,6 +3906,10 @@ function getActivePromptCount(
     return octavePromptCount;
   }
 
+  if (practiceDrill === "triadInversion") {
+    return triadInversionPromptCount;
+  }
+
   return notePromptCount;
 }
 
@@ -3421,13 +3919,15 @@ function getLatestSession(
   chordHistory: readonly ChordToneSession[],
   scaleDegreeHistory: readonly ScaleDegreeSession[],
   intervalHistory: readonly IntervalLandmarkSession[],
-  octaveHistory: readonly OctaveShapeSession[]
+  octaveHistory: readonly OctaveShapeSession[],
+  triadInversionHistory: readonly TriadInversionSession[]
 ):
   | NoteRecognitionSession
   | ChordToneSession
   | ScaleDegreeSession
   | IntervalLandmarkSession
   | OctaveShapeSession
+  | TriadInversionSession
   | null {
   if (practiceDrill === "chordTone") {
     return chordHistory[0] ?? null;
@@ -3443,6 +3943,10 @@ function getLatestSession(
 
   if (practiceDrill === "octaveShape") {
     return octaveHistory[0] ?? null;
+  }
+
+  if (practiceDrill === "triadInversion") {
+    return triadInversionHistory[0] ?? null;
   }
 
   return noteHistory[0] ?? null;
@@ -3475,6 +3979,15 @@ function formatOctavePromptTarget(prompt: OctaveShapePrompt): string {
   }`;
 }
 
+function formatTriadInversionPromptTarget(
+  prompt: TriadInversionPrompt
+): string {
+  return `${getTriadInversionName(prompt.inversion)} ${formatChordName(
+    prompt.rootNote,
+    prompt.quality
+  )}`;
+}
+
 function formatChordPromptTarget(prompt: ChordTonePrompt): string {
   return `${getChordToneName(prompt.targetTone)} of ${formatChordName(
     prompt.rootNote,
@@ -3494,6 +4007,26 @@ function formatChordSpelling(prompt: ChordTonePrompt): string {
   return `${formatChordName(prompt.rootNote, prompt.quality)} = ${getChordToneAnswerOptions(
     prompt
   ).join(" ")}`;
+}
+
+function formatTriadInversionSpelling(prompt: TriadInversionPrompt): string {
+  return `${formatChordName(prompt.rootNote, prompt.quality)} = ${getTriadInversionAnswerOptions(
+    prompt
+  ).join(" ")}`;
+}
+
+function getCurrentNoteAnswerOptions(
+  practiceDrill: PracticeDrill,
+  chordPrompt: ChordTonePrompt,
+  triadInversionPrompt: TriadInversionPrompt
+): NoteName[] {
+  return practiceDrill === "triadInversion"
+    ? getTriadInversionAnswerOptions(triadInversionPrompt)
+    : getChordToneAnswerOptions(chordPrompt);
+}
+
+function getNoteAnswerTestIdPrefix(practiceDrill: PracticeDrill): string {
+  return practiceDrill === "triadInversion" ? "triad-inversion" : "chord";
 }
 
 function getChordToneName(chordTone: ChordTone): string {
@@ -3537,6 +4070,7 @@ function formatHubAccuracy(
     | NoteRecognitionSession
     | OctaveShapeSession
     | ScaleDegreeSession
+    | TriadInversionSession
     | null
 ): string {
   return session ? `${session.accuracy}% last session` : "No sessions yet";
@@ -3547,7 +4081,8 @@ function buildRecentPracticeSessions(
   chordSessions: readonly ChordToneSession[],
   scaleSessions: readonly ScaleDegreeSession[],
   intervalSessions: readonly IntervalLandmarkSession[],
-  octaveSessions: readonly OctaveShapeSession[]
+  octaveSessions: readonly OctaveShapeSession[],
+  triadInversionSessions: readonly TriadInversionSession[]
 ): RecentPracticeSession[] {
   return [
     ...noteSessions.map((session) => ({
@@ -3569,6 +4104,10 @@ function buildRecentPracticeSessions(
     ...octaveSessions.map((session) => ({
       session,
       drillLabel: "Octave shapes"
+    })),
+    ...triadInversionSessions.map((session) => ({
+      session,
+      drillLabel: "Triad inversions"
     }))
   ]
     .sort(
@@ -3588,7 +4127,8 @@ function toRecentPracticeSession(
     | ChordToneSession
     | ScaleDegreeSession
     | IntervalLandmarkSession
-    | OctaveShapeSession,
+    | OctaveShapeSession
+    | TriadInversionSession,
   drillLabel: string
 ): RecentPracticeSession {
   return {
@@ -3606,7 +4146,8 @@ function buildDashboardWeakSpots(
   chordWeakSpots: readonly ChordTonePerformanceStat[],
   scaleWeakSpots: readonly ScaleDegreePerformanceStat[],
   intervalWeakSpots: readonly IntervalLandmarkPerformanceStat[],
-  octaveWeakSpots: readonly OctaveShapePerformanceStat[]
+  octaveWeakSpots: readonly OctaveShapePerformanceStat[],
+  triadInversionWeakSpots: readonly TriadInversionPerformanceStat[]
 ): PracticeWeakSpot[] {
   return [
     ...noteWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Note recognition")),
@@ -3617,6 +4158,9 @@ function buildDashboardWeakSpots(
     ),
     ...octaveWeakSpots.map((stat) =>
       toPracticeWeakSpot(stat, "Octave shapes")
+    ),
+    ...triadInversionWeakSpots.map((stat) =>
+      toPracticeWeakSpot(stat, "Triad inversions")
     )
   ]
     .sort(
@@ -3738,17 +4282,46 @@ function getRecommendedOctavePreset(
   return findPreset(presets, "quick-warmup");
 }
 
+function getRecommendedTriadInversionPreset(
+  performance: ReturnType<typeof buildTriadInversionPerformanceSummary>,
+  presets: readonly TriadInversionSessionPreset[]
+): TriadInversionSessionPreset {
+  if (performance.weakSpots.length > 0) {
+    const weakestSpot = performance.weakSpots[0];
+
+    if (
+      weakestSpot?.category === "inversion" &&
+      weakestSpot.id === "firstInversion"
+    ) {
+      return findPreset(presets, "first-inversions");
+    }
+
+    if (
+      weakestSpot?.category === "inversion" &&
+      weakestSpot.id === "secondInversion"
+    ) {
+      return findPreset(presets, "second-inversions");
+    }
+
+    return findPreset(presets, "weak-spots");
+  }
+
+  return findPreset(presets, "quick-warmup");
+}
+
 function buildPracticeHubRecommendation(
   notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
   chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
   scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>,
   intervalPerformance: ReturnType<typeof buildIntervalLandmarkPerformanceSummary>,
   octavePerformance: ReturnType<typeof buildOctaveShapePerformanceSummary>,
+  triadInversionPerformance: ReturnType<typeof buildTriadInversionPerformanceSummary>,
   notePreset: NoteRecognitionSessionPreset,
   chordPreset: ChordToneSessionPreset,
   scaleDegreePreset: ScaleDegreeSessionPreset,
   intervalPreset: IntervalLandmarkSessionPreset,
   octavePreset: OctaveShapeSessionPreset,
+  triadInversionPreset: TriadInversionSessionPreset,
   courseProgress: ReturnType<typeof buildCourseProgress>
 ): PracticeHubRecommendation {
   const weakestSpots: Array<{
@@ -3762,6 +4335,8 @@ function buildPracticeHubRecommendation(
   const weakestScaleDegreeSpot = scaleDegreePerformance.weakSpots[0] ?? null;
   const weakestIntervalSpot = intervalPerformance.weakSpots[0] ?? null;
   const weakestOctaveSpot = octavePerformance.weakSpots[0] ?? null;
+  const weakestTriadInversionSpot =
+    triadInversionPerformance.weakSpots[0] ?? null;
 
   if (weakestNoteSpot) {
     weakestSpots.push({
@@ -3808,6 +4383,15 @@ function buildPracticeHubRecommendation(
     });
   }
 
+  if (weakestTriadInversionSpot) {
+    weakestSpots.push({
+      drill: "triadInversion",
+      stat: weakestTriadInversionSpot,
+      preset: triadInversionPreset,
+      sessionLabel: "triad inversion"
+    });
+  }
+
   weakestSpots.sort(
     (left, right) =>
       left.stat.accuracy - right.stat.accuracy ||
@@ -3822,7 +4406,8 @@ function buildPracticeHubRecommendation(
     chordPreset,
     scaleDegreePreset,
     intervalPreset,
-    octavePreset
+    octavePreset,
+    triadInversionPreset
   );
 
   if (weakestSpot && isStrongWeakSpot(weakestSpot.stat)) {
@@ -3866,7 +4451,8 @@ function getCoursePracticeRecommendation(
   chordPreset: ChordToneSessionPreset,
   scaleDegreePreset: ScaleDegreeSessionPreset,
   intervalPreset: IntervalLandmarkSessionPreset,
-  octavePreset: OctaveShapeSessionPreset
+  octavePreset: OctaveShapeSessionPreset,
+  triadInversionPreset: TriadInversionSessionPreset
 ): PracticeHubRecommendation | null {
   const currentLesson = courseProgress.currentLesson;
 
@@ -3879,7 +4465,8 @@ function getCoursePracticeRecommendation(
     chordTone: chordPreset,
     scaleDegree: scaleDegreePreset,
     interval: intervalPreset,
-    octaveShape: octavePreset
+    octaveShape: octavePreset,
+    triadInversion: triadInversionPreset
   };
 
   const preset = presetByDrill[currentLesson.practice.drill];
@@ -3976,6 +4563,23 @@ function collectOctaveReviewPrompts(
     session.missedPrompts.forEach((prompt) => {
       promptsByTarget.set(
         `${prompt.shape}-${prompt.sourceString}-${prompt.sourceFret}-${prompt.targetString}-${prompt.targetFret}`,
+        prompt
+      );
+    });
+  });
+
+  return [...promptsByTarget.values()];
+}
+
+function collectTriadInversionReviewPrompts(
+  sessions: readonly TriadInversionSession[]
+): MissedTriadInversionPrompt[] {
+  const promptsByTarget = new Map<string, MissedTriadInversionPrompt>();
+
+  sessions.forEach((session) => {
+    session.missedPrompts.forEach((prompt) => {
+      promptsByTarget.set(
+        `${prompt.rootNote}-${prompt.quality}-${prompt.inversion}`,
         prompt
       );
     });

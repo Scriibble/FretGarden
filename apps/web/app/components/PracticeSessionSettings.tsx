@@ -47,13 +47,23 @@ import type {
   ScaleDegreeSessionSettings,
   ScaleDegreeStringFocus
 } from "../lib/scaleDegreeRecognition";
+import type {
+  TriadInversionFocus,
+  TriadInversionPromptOrder,
+  TriadInversionQualityFocus,
+  TriadInversionReviewMode,
+  TriadInversionSessionLength,
+  TriadInversionSessionPreset,
+  TriadInversionSessionSettings
+} from "../lib/triadInversionRecognition";
 
 type PracticeDrill =
   | "note"
   | "chordTone"
   | "scaleDegree"
   | "interval"
-  | "octaveShape";
+  | "octaveShape"
+  | "triadInversion";
 
 interface PracticeSessionSettingsProps {
   practiceDrill: PracticeDrill;
@@ -103,6 +113,16 @@ interface PracticeSessionSettingsProps {
     onSavePreset: () => void;
     onSettingsChange: (
       nextSettings: Partial<OctaveShapeSessionSettings>
+    ) => void;
+  };
+  triadInversion: {
+    presetOptions: readonly TriadInversionSessionPreset[];
+    settings: TriadInversionSessionSettings;
+    missedReviewCount: number;
+    onPresetSelect: (preset: TriadInversionSessionPreset) => void;
+    onSavePreset: () => void;
+    onSettingsChange: (
+      nextSettings: Partial<TriadInversionSessionSettings>
     ) => void;
   };
 }
@@ -155,7 +175,8 @@ const promptOrderOptions = [
     | ChordTonePromptOrder
     | ScaleDegreePromptOrder
     | IntervalLandmarkPromptOrder
-    | OctaveShapePromptOrder;
+    | OctaveShapePromptOrder
+    | TriadInversionPromptOrder;
   label: string;
 }>;
 const reviewModeOptions = [
@@ -167,7 +188,8 @@ const reviewModeOptions = [
     | ChordToneReviewMode
     | ScaleDegreeReviewMode
     | IntervalLandmarkReviewMode
-    | OctaveShapeReviewMode;
+    | OctaveShapeReviewMode
+    | TriadInversionReviewMode;
   label: string;
 }>;
 const chordSessionLengthOptions = [6, 12, 20] as const satisfies readonly ChordToneSessionLength[];
@@ -176,7 +198,10 @@ const qualityFocusOptions = [
   { id: "major", label: "Major" },
   { id: "minor", label: "Minor" }
 ] as const satisfies ReadonlyArray<{
-  id: ChordToneQualityFocus | ScaleDegreeQualityFocus;
+  id:
+    | ChordToneQualityFocus
+    | ScaleDegreeQualityFocus
+    | TriadInversionQualityFocus;
   label: string;
 }>;
 const chordToneFocusOptions = [
@@ -227,6 +252,16 @@ const octaveShapeFocusOptions = [
   id: OctaveShapeFocus;
   label: string;
 }>;
+const triadInversionSessionLengthOptions = [6, 12, 20] as const satisfies readonly TriadInversionSessionLength[];
+const triadInversionFocusOptions = [
+  { id: "mixed", label: "Mixed" },
+  { id: "rootPosition", label: "Root" },
+  { id: "firstInversion", label: "1st" },
+  { id: "secondInversion", label: "2nd" }
+] as const satisfies ReadonlyArray<{
+  id: TriadInversionFocus;
+  label: string;
+}>;
 
 export function PracticeSessionSettings({
   practiceDrill,
@@ -234,7 +269,8 @@ export function PracticeSessionSettings({
   chord,
   scale,
   interval,
-  octave
+  octave,
+  triadInversion
 }: PracticeSessionSettingsProps) {
   if (practiceDrill === "note") {
     return (
@@ -558,6 +594,96 @@ export function PracticeSessionSettings({
     );
   }
 
+  if (practiceDrill === "triadInversion") {
+    return (
+      <div className="session-setup-panel">
+        <span className="control-label">Session setup</span>
+
+        <PresetField
+          presets={triadInversion.presetOptions}
+          testIdPrefix="triad-inversion"
+          onPresetSelect={triadInversion.onPresetSelect}
+          onSavePreset={triadInversion.onSavePreset}
+        />
+
+        <div className="setup-field">
+          <span>Length</span>
+          <div className="segmented-control option-grid three">
+            {triadInversionSessionLengthOptions.map((sessionLength) => (
+              <button
+                className={
+                  triadInversion.settings.sessionLength === sessionLength
+                    ? "is-selected"
+                    : ""
+                }
+                data-testid={`triad-inversion-length-${sessionLength}`}
+                key={sessionLength}
+                onClick={() =>
+                  triadInversion.onSettingsChange({ sessionLength })
+                }
+                type="button"
+              >
+                {sessionLength}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <QualityFocusField
+          selectedQuality={triadInversion.settings.qualityFocus}
+          testIdPrefix="triad-inversion"
+          onChange={(qualityFocus) =>
+            triadInversion.onSettingsChange({ qualityFocus })
+          }
+        />
+
+        <div className="setup-field">
+          <span>Inversion</span>
+          <div className="segmented-control option-grid four">
+            {triadInversionFocusOptions.map((option) => (
+              <button
+                className={
+                  triadInversion.settings.inversionFocus === option.id
+                    ? "is-selected"
+                    : ""
+                }
+                data-testid={`triad-inversion-focus-${option.id}`}
+                key={option.id}
+                onClick={() =>
+                  triadInversion.onSettingsChange({
+                    inversionFocus: option.id
+                  })
+                }
+                type="button"
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <PromptOrderField
+          selectedOrder={triadInversion.settings.promptOrder}
+          testIdPrefix="triad-inversion"
+          onChange={(promptOrder) =>
+            triadInversion.onSettingsChange({ promptOrder })
+          }
+        />
+
+        <ReviewModeField
+          missedReviewCount={triadInversion.missedReviewCount}
+          selectedReviewMode={triadInversion.settings.reviewMode}
+          testIdPrefix="triad-inversion"
+          emptyMessage="No missed inversion prompts yet, using the full set."
+          reviewLabel="missed inversion prompt"
+          onChange={(reviewMode) =>
+            triadInversion.onSettingsChange({ reviewMode })
+          }
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="session-setup-panel">
       <span className="control-label">Session setup</span>
@@ -685,9 +811,17 @@ function QualityFocusField({
   testIdPrefix,
   onChange
 }: {
-  selectedQuality: ChordToneQualityFocus | ScaleDegreeQualityFocus;
-  testIdPrefix: "chord" | "scale";
-  onChange: (qualityFocus: ChordToneQualityFocus | ScaleDegreeQualityFocus) => void;
+  selectedQuality:
+    | ChordToneQualityFocus
+    | ScaleDegreeQualityFocus
+    | TriadInversionQualityFocus;
+  testIdPrefix: "chord" | "scale" | "triad-inversion";
+  onChange: (
+    qualityFocus:
+      | ChordToneQualityFocus
+      | ScaleDegreeQualityFocus
+      | TriadInversionQualityFocus
+  ) => void;
 }) {
   return (
     <div className="setup-field">
@@ -758,8 +892,15 @@ function PromptOrderField({
     | ChordTonePromptOrder
     | ScaleDegreePromptOrder
     | IntervalLandmarkPromptOrder
-    | OctaveShapePromptOrder;
-  testIdPrefix: "note" | "chord" | "scale" | "interval" | "octave";
+    | OctaveShapePromptOrder
+    | TriadInversionPromptOrder;
+  testIdPrefix:
+    | "note"
+    | "chord"
+    | "scale"
+    | "interval"
+    | "octave"
+    | "triad-inversion";
   onChange: (
     promptOrder:
       | NoteRecognitionPromptOrder
@@ -767,6 +908,7 @@ function PromptOrderField({
       | ScaleDegreePromptOrder
       | IntervalLandmarkPromptOrder
       | OctaveShapePromptOrder
+      | TriadInversionPromptOrder
   ) => void;
 }) {
   return (
@@ -803,8 +945,15 @@ function ReviewModeField({
     | ChordToneReviewMode
     | ScaleDegreeReviewMode
     | IntervalLandmarkReviewMode
-    | OctaveShapeReviewMode;
-  testIdPrefix: "note" | "chord" | "scale" | "interval" | "octave";
+    | OctaveShapeReviewMode
+    | TriadInversionReviewMode;
+  testIdPrefix:
+    | "note"
+    | "chord"
+    | "scale"
+    | "interval"
+    | "octave"
+    | "triad-inversion";
   emptyMessage: string;
   reviewLabel: string;
   onChange: (
@@ -814,6 +963,7 @@ function ReviewModeField({
       | ScaleDegreeReviewMode
       | IntervalLandmarkReviewMode
       | OctaveShapeReviewMode
+      | TriadInversionReviewMode
   ) => void;
 }) {
   return (

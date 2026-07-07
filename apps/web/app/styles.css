@@ -169,6 +169,36 @@ button {
   margin-top: 0.25rem;
 }
 
+.course-progress-inline {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.course-progress-inline > span,
+.course-progress-inline strong {
+  color: #173f43;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.course-progress-track {
+  background: #edf1ee;
+  border-radius: 999px;
+  flex: 1 1 140px;
+  height: 0.5rem;
+  min-width: 120px;
+  overflow: hidden;
+}
+
+.course-progress-track i {
+  background: #2f6b73;
+  display: block;
+  height: 100%;
+}
+
 .course-recommendation-card p {
   color: #52615c;
   line-height: 1.45;
@@ -368,7 +398,8 @@ button {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.segmented-control.option-grid.five {
+.segmented-control.option-grid.five,
+.segmented-control.option-grid.six {
   grid-template-columns: repeat(auto-fit, minmax(6.6rem, 1fr));
 }
 
@@ -1494,6 +1525,7 @@ button {
   .segmented-control.option-grid.three,
   .segmented-control.option-grid.four,
   .segmented-control.option-grid.five,
+  .segmented-control.option-grid.six,
   .segmented-control.option-grid.degree-options,
   .segmented-control.option-grid.shape-options {
     grid-template-columns: repeat(2, minmax(0, 1fr));
