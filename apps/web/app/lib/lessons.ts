@@ -3,7 +3,11 @@ export interface LessonSection {
   body: string[];
 }
 
-export type LessonPracticeDrill = "note" | "chordTone" | "scaleDegree";
+export type LessonPracticeDrill =
+  | "note"
+  | "chordTone"
+  | "scaleDegree"
+  | "interval";
 
 export interface LessonPracticeLink {
   label: string;
@@ -179,8 +183,8 @@ export const lessons = [
     ],
     practice: {
       label: "Practice interval landmarks",
-      href: "/?drill=scaleDegree&lesson=intervals#practice",
-      drill: "scaleDegree",
+      href: "/?drill=interval&lesson=intervals#practice",
+      drill: "interval",
       criteria: {
         promptCount: 12,
         minAccuracy: 80

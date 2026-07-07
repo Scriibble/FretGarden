@@ -15,6 +15,14 @@ interface PracticeHubProps {
   scaleWeakSpotLabel: string;
   scalePresetLabel: string;
   onStartScale: () => void;
+  intervalLastSessionLabel: string;
+  intervalWeakSpotLabel: string;
+  intervalPresetLabel: string;
+  onStartInterval: () => void;
+  courseRecommendationTitle: string;
+  courseRecommendationDescription: string;
+  courseLessonHref: string;
+  coursePracticeHref: string;
   recommendationTitle: string;
   recommendationDescription: string;
   onStartRecommendation: () => void;
@@ -33,6 +41,14 @@ export function PracticeHub({
   scaleWeakSpotLabel,
   scalePresetLabel,
   onStartScale,
+  intervalLastSessionLabel,
+  intervalWeakSpotLabel,
+  intervalPresetLabel,
+  onStartInterval,
+  courseRecommendationTitle,
+  courseRecommendationDescription,
+  courseLessonHref,
+  coursePracticeHref,
   recommendationTitle,
   recommendationDescription,
   onStartRecommendation
@@ -54,6 +70,22 @@ export function PracticeHub({
           </Link>
         </div>
       </div>
+
+      <article className="course-recommendation-card">
+        <div>
+          <span className="control-label">Course recommendation</span>
+          <h3>{courseRecommendationTitle}</h3>
+          <p>{courseRecommendationDescription}</p>
+        </div>
+        <div className="hub-heading-actions">
+          <Link className="lesson-cta" href={courseLessonHref}>
+            Open lesson
+          </Link>
+          <Link className="lesson-secondary-link" href={coursePracticeHref}>
+            Practice lesson
+          </Link>
+        </div>
+      </article>
 
       <div className="hub-grid">
         <article className="hub-card">
@@ -113,6 +145,25 @@ export function PracticeHub({
             type="button"
           >
             Start {scalePresetLabel}
+          </button>
+        </article>
+
+        <article className="hub-card">
+          <div>
+            <span className="control-label">Intervals</span>
+            <h3>Find landmark intervals</h3>
+            <p>Train major/minor 3rds, 5ths, and other intervals by string.</p>
+          </div>
+          <div className="hub-metrics">
+            <span>{intervalLastSessionLabel}</span>
+            <span>{intervalWeakSpotLabel}</span>
+          </div>
+          <button
+            data-testid="hub-start-interval"
+            onClick={onStartInterval}
+            type="button"
+          >
+            Start {intervalPresetLabel}
           </button>
         </article>
 

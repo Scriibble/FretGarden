@@ -32,16 +32,19 @@ import {
 import {
   getLesson,
   getNextLesson,
+  lessons,
   type Lesson,
   type LessonPracticeDrill
 } from "../lib/lessons";
 import {
   LESSON_PROGRESS_STORAGE_KEY,
+  buildCourseProgress,
   doesLessonPracticeMeetCriteria,
   markLessonPracticed,
   markLessonStarted,
   parseLessonProgress,
-  serializeLessonProgress
+  serializeLessonProgress,
+  type LessonProgressRecord
 } from "../lib/lessonProgress";
 import {
   CHORD_TONE_HISTORY_LIMIT,
@@ -67,6 +70,31 @@ import {
   type ChordToneSessionSettings,
   type ChordToneSummary
 } from "../lib/chordToneRecognition";
+import {
+  DEFAULT_INTERVAL_LANDMARK_SESSION_SETTINGS,
+  INTERVAL_LANDMARK_HISTORY_LIMIT,
+  INTERVAL_LANDMARK_SESSION_PRESETS,
+  appendIntervalLandmarkSession,
+  buildIntervalLandmarkAttempt,
+  buildIntervalLandmarkPerformanceSummary,
+  buildIntervalLandmarkPromptSession,
+  buildIntervalLandmarkSession,
+  getCurrentIntervalLandmarkPrompt,
+  getIntervalLandmarkName,
+  getMissedIntervalLandmarkPrompts,
+  getTargetIntervalLandmarkNote,
+  isIntervalLandmarkAnswerPosition,
+  isIntervalLandmarkCorrectPosition,
+  summarizeIntervalLandmarkRecognition,
+  type IntervalLandmarkAttempt,
+  type IntervalLandmarkPerformanceStat,
+  type IntervalLandmarkPrompt,
+  type IntervalLandmarkSession,
+  type IntervalLandmarkSessionPreset,
+  type IntervalLandmarkSessionSettings,
+  type IntervalLandmarkSummary,
+  type MissedIntervalLandmarkPrompt
+} from "../lib/intervalLandmarkRecognition";
 import {
   DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS,
   NOTE_RECOGNITION_HISTORY_LIMIT,
@@ -118,14 +146,16 @@ import {
 } from "../lib/scaleDegreeRecognition";
 
 type DisplayMode = "practice" | "notes" | "find" | "scale" | "chord";
-type PracticeDrill = "note" | "chordTone" | "scaleDegree";
+type PracticeDrill = "note" | "chordTone" | "scaleDegree" | "interval";
 type ActiveVariant = "note" | "root" | "scale" | "chord" | "answer" | "miss";
 type PerformanceStat =
   | ChordTonePerformanceStat
+  | IntervalLandmarkPerformanceStat
   | NoteRecognitionPerformanceStat
   | ScaleDegreePerformanceStat;
 type PracticePreset =
   | ChordToneSessionPreset
+  | IntervalLandmarkSessionPreset
   | NoteRecognitionSessionPreset
   | ScaleDegreeSessionPreset;
 
@@ -201,12 +231,17 @@ const NOTE_RECOGNITION_HISTORY_STORAGE_KEY =
 const CHORD_TONE_HISTORY_STORAGE_KEY = "pocket-practice:chord-tone-history";
 const SCALE_DEGREE_HISTORY_STORAGE_KEY =
   "pocket-practice:scale-degree-history";
+const INTERVAL_LANDMARK_HISTORY_STORAGE_KEY =
+  "pocket-practice:interval-landmark-history";
 const NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:note-recognition-custom-preset";
 const CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:chord-tone-custom-preset";
 const SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:scale-degree-custom-preset";
+const INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY =
+  "pocket-practice:interval-landmark-custom-preset";
+const STORAGE_VERSION = 1;
 
 export function FretboardExplorer() {
   const [mode, setMode] = useState<DisplayMode>("practice");
@@ -239,12 +274,25 @@ export function FretboardExplorer() {
   const [scaleDegreeSessionNonce, setScaleDegreeSessionNonce] = useState(0);
   const [customScaleDegreePreset, setCustomScaleDegreePreset] =
     useState<ScaleDegreeSessionPreset | null>(null);
+  const [intervalPromptIndex, setIntervalPromptIndex] = useState(0);
+  const [intervalAttempts, setIntervalAttempts] = useState<
+    IntervalLandmarkAttempt[]
+  >([]);
+  const [intervalSessionSettings, setIntervalSessionSettings] =
+    useState<IntervalLandmarkSessionSettings>(
+      DEFAULT_INTERVAL_LANDMARK_SESSION_SETTINGS
+    );
+  const [intervalSessionNonce, setIntervalSessionNonce] = useState(0);
+  const [customIntervalPreset, setCustomIntervalPreset] =
+    useState<IntervalLandmarkSessionPreset | null>(null);
   const [completedSession, setCompletedSession] =
     useState<NoteRecognitionSession | null>(null);
   const [completedChordSession, setCompletedChordSession] =
     useState<ChordToneSession | null>(null);
   const [completedScaleDegreeSession, setCompletedScaleDegreeSession] =
     useState<ScaleDegreeSession | null>(null);
+  const [completedIntervalSession, setCompletedIntervalSession] =
+    useState<IntervalLandmarkSession | null>(null);
   const [sessionHistory, setSessionHistory] = useState<
     NoteRecognitionSession[]
   >([]);
@@ -253,6 +301,12 @@ export function FretboardExplorer() {
   >([]);
   const [scaleDegreeSessionHistory, setScaleDegreeSessionHistory] = useState<
     ScaleDegreeSession[]
+  >([]);
+  const [intervalSessionHistory, setIntervalSessionHistory] = useState<
+    IntervalLandmarkSession[]
+  >([]);
+  const [lessonProgressRecords, setLessonProgressRecords] = useState<
+    LessonProgressRecord[]
   >([]);
   const [selectedPosition, setSelectedPosition] = useState<FretPosition | null>(
     null
@@ -346,6 +400,34 @@ export function FretboardExplorer() {
       scaleDegreeReviewPrompts
     ]
   );
+  const intervalPerformanceSessions = useMemo(() => {
+    if (completedIntervalSession === null) {
+      return intervalSessionHistory;
+    }
+
+    return [
+      completedIntervalSession,
+      ...intervalSessionHistory.filter(
+        (session) => session.id !== completedIntervalSession.id
+      )
+    ];
+  }, [intervalSessionHistory, completedIntervalSession]);
+  const intervalPerformance = useMemo(
+    () => buildIntervalLandmarkPerformanceSummary(intervalPerformanceSessions),
+    [intervalPerformanceSessions]
+  );
+  const intervalReviewPrompts = useMemo(
+    () => collectIntervalReviewPrompts(intervalPerformanceSessions),
+    [intervalPerformanceSessions]
+  );
+  const intervalPromptQueue = useMemo(
+    () =>
+      buildIntervalLandmarkPromptSession(
+        intervalSessionSettings,
+        intervalReviewPrompts
+      ),
+    [intervalSessionSettings, intervalSessionNonce, intervalReviewPrompts]
+  );
   const currentPrompt = getCurrentPrompt(promptIndex, notePromptQueue);
   const currentAttempt =
     attempts.find((attempt) => attempt.promptIndex === promptIndex) ?? null;
@@ -363,6 +445,14 @@ export function FretboardExplorer() {
   const currentScaleDegreeAttempt =
     scaleAttempts.find((attempt) => attempt.promptIndex === scalePromptIndex) ??
     null;
+  const currentIntervalPrompt = getCurrentIntervalLandmarkPrompt(
+    intervalPromptIndex,
+    intervalPromptQueue
+  );
+  const currentIntervalAttempt =
+    intervalAttempts.find(
+      (attempt) => attempt.promptIndex === intervalPromptIndex
+    ) ?? null;
   const drillSummary = useMemo(
     () => summarizeNoteRecognition(attempts, notePromptQueue.length),
     [attempts, notePromptQueue.length]
@@ -379,6 +469,14 @@ export function FretboardExplorer() {
       ),
     [scaleAttempts, scaleDegreePromptQueue.length]
   );
+  const intervalDrillSummary = useMemo(
+    () =>
+      summarizeIntervalLandmarkRecognition(
+        intervalAttempts,
+        intervalPromptQueue.length
+      ),
+    [intervalAttempts, intervalPromptQueue.length]
+  );
   const missedPrompts = useMemo(
     () => getMissedNoteRecognitionPrompts(attempts),
     [attempts]
@@ -390,6 +488,10 @@ export function FretboardExplorer() {
   const missedScaleDegreePrompts = useMemo(
     () => getMissedScaleDegreePrompts(scaleAttempts),
     [scaleAttempts]
+  );
+  const missedIntervalPrompts = useMemo(
+    () => getMissedIntervalLandmarkPrompts(intervalAttempts),
+    [intervalAttempts]
   );
   const activePositions = useMemo(
     () =>
@@ -404,7 +506,9 @@ export function FretboardExplorer() {
         currentChordPrompt,
         currentChordAttempt,
         currentScaleDegreePrompt,
-        currentScaleDegreeAttempt
+        currentScaleDegreeAttempt,
+        currentIntervalPrompt,
+        currentIntervalAttempt
       ),
     [
       mode,
@@ -417,7 +521,9 @@ export function FretboardExplorer() {
       currentChordPrompt,
       currentChordAttempt,
       currentScaleDegreePrompt,
-      currentScaleDegreeAttempt
+      currentScaleDegreeAttempt,
+      currentIntervalPrompt,
+      currentIntervalAttempt
     ]
   );
   const summary = useMemo(
@@ -437,9 +543,13 @@ export function FretboardExplorer() {
         currentScaleDegreePrompt,
         currentScaleDegreeAttempt,
         scaleDegreeDrillSummary,
+        currentIntervalPrompt,
+        currentIntervalAttempt,
+        intervalDrillSummary,
         notePromptQueue.length,
         chordPromptQueue.length,
-        scaleDegreePromptQueue.length
+        scaleDegreePromptQueue.length,
+        intervalPromptQueue.length
       ),
     [
       mode,
@@ -456,9 +566,13 @@ export function FretboardExplorer() {
       currentScaleDegreePrompt,
       currentScaleDegreeAttempt,
       scaleDegreeDrillSummary,
+      currentIntervalPrompt,
+      currentIntervalAttempt,
+      intervalDrillSummary,
       notePromptQueue.length,
       chordPromptQueue.length,
-      scaleDegreePromptQueue.length
+      scaleDegreePromptQueue.length,
+      intervalPromptQueue.length
     ]
   );
   const selectedActive = selectedPosition
@@ -468,29 +582,34 @@ export function FretboardExplorer() {
     practiceDrill,
     drillSummary,
     chordDrillSummary,
-    scaleDegreeDrillSummary
+    scaleDegreeDrillSummary,
+    intervalDrillSummary
   );
   const activeDrillAttempt = getActiveDrillAttempt(
     practiceDrill,
     currentAttempt,
     currentChordAttempt,
-    currentScaleDegreeAttempt
+    currentScaleDegreeAttempt,
+    currentIntervalAttempt
   );
   const activePromptCount = getActivePromptCount(
     practiceDrill,
     notePromptQueue.length,
     chordPromptQueue.length,
-    scaleDegreePromptQueue.length
+    scaleDegreePromptQueue.length,
+    intervalPromptQueue.length
   );
   const latestSession = getLatestSession(
     practiceDrill,
     sessionHistory,
     chordSessionHistory,
-    scaleDegreeSessionHistory
+    scaleDegreeSessionHistory,
+    intervalSessionHistory
   );
   const chordMissedReviewCount = chordReviewPrompts.length;
   const noteMissedReviewCount = noteReviewPrompts.length;
   const scaleDegreeMissedReviewCount = scaleDegreeReviewPrompts.length;
+  const intervalMissedReviewCount = intervalReviewPrompts.length;
   const notePresetOptions = customNotePreset
     ? [...NOTE_RECOGNITION_SESSION_PRESETS, customNotePreset]
     : NOTE_RECOGNITION_SESSION_PRESETS;
@@ -500,6 +619,9 @@ export function FretboardExplorer() {
   const scaleDegreePresetOptions = customScaleDegreePreset
     ? [...SCALE_DEGREE_SESSION_PRESETS, customScaleDegreePreset]
     : SCALE_DEGREE_SESSION_PRESETS;
+  const intervalPresetOptions = customIntervalPreset
+    ? [...INTERVAL_LANDMARK_SESSION_PRESETS, customIntervalPreset]
+    : INTERVAL_LANDMARK_SESSION_PRESETS;
   const recommendedNotePreset = getRecommendedNotePreset(
     notePerformance,
     notePresetOptions
@@ -512,34 +634,60 @@ export function FretboardExplorer() {
     scaleDegreePerformance,
     scaleDegreePresetOptions
   );
+  const recommendedIntervalPreset = getRecommendedIntervalPreset(
+    intervalPerformance,
+    intervalPresetOptions
+  );
   const practiceRecommendation = buildPracticeHubRecommendation(
     notePerformance,
     chordPerformance,
     scaleDegreePerformance,
+    intervalPerformance,
     recommendedNotePreset,
     recommendedChordPreset,
-    recommendedScaleDegreePreset
+    recommendedScaleDegreePreset,
+    recommendedIntervalPreset
   );
+  const courseProgress = useMemo(
+    () => buildCourseProgress(lessons, lessonProgressRecords),
+    [lessonProgressRecords]
+  );
+  const courseRecommendationLesson =
+    courseProgress.currentLesson ?? lessons[0] ?? null;
+  const courseRecommendationStepNumber =
+    courseRecommendationLesson === null
+      ? 0
+      : (courseProgress.items.find(
+          (item) => item.lesson.slug === courseRecommendationLesson.slug
+        )?.index ?? 0) + 1;
   const recentPracticeSessions = useMemo(
     () =>
       buildRecentPracticeSessions(
         sessionHistory,
         chordSessionHistory,
-        scaleDegreeSessionHistory
+        scaleDegreeSessionHistory,
+        intervalSessionHistory
       ),
-    [sessionHistory, chordSessionHistory, scaleDegreeSessionHistory]
+    [
+      sessionHistory,
+      chordSessionHistory,
+      scaleDegreeSessionHistory,
+      intervalSessionHistory
+    ]
   );
   const dashboardWeakSpots = useMemo(
     () =>
       buildDashboardWeakSpots(
         notePerformance.weakSpots,
         chordPerformance.weakSpots,
-        scaleDegreePerformance.weakSpots
+        scaleDegreePerformance.weakSpots,
+        intervalPerformance.weakSpots
       ),
     [
       notePerformance.weakSpots,
       chordPerformance.weakSpots,
-      scaleDegreePerformance.weakSpots
+      scaleDegreePerformance.weakSpots,
+      intervalPerformance.weakSpots
     ]
   );
   const activeLesson = useMemo(
@@ -569,19 +717,23 @@ export function FretboardExplorer() {
         missedPrompts,
         missedChordPrompts,
         missedScaleDegreePrompts,
+        missedIntervalPrompts,
         notePerformance,
         chordPerformance,
-        scaleDegreePerformance
+        scaleDegreePerformance,
+        intervalPerformance
       ),
     [
       activeDrillSummary,
       chordPerformance,
       missedChordPrompts,
+      missedIntervalPrompts,
       missedPrompts,
       missedScaleDegreePrompts,
       notePerformance,
       practiceDrill,
-      scaleDegreePerformance
+      scaleDegreePerformance,
+      intervalPerformance
     ]
   );
 
@@ -604,6 +756,13 @@ export function FretboardExplorer() {
         SCALE_DEGREE_HISTORY_LIMIT
       )
     );
+    setIntervalSessionHistory(
+      readStoredSessionHistory<IntervalLandmarkSession>(
+        INTERVAL_LANDMARK_HISTORY_STORAGE_KEY,
+        INTERVAL_LANDMARK_HISTORY_LIMIT
+      )
+    );
+    setLessonProgressRecords(readStoredLessonProgress());
     setCustomNotePreset(
       readStoredPreset<NoteRecognitionSessionPreset>(
         NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY
@@ -617,6 +776,11 @@ export function FretboardExplorer() {
     setCustomScaleDegreePreset(
       readStoredPreset<ScaleDegreeSessionPreset>(
         SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY
+      )
+    );
+    setCustomIntervalPreset(
+      readStoredPreset<IntervalLandmarkSessionPreset>(
+        INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY
       )
     );
   }, []);
@@ -643,12 +807,15 @@ export function FretboardExplorer() {
       resetChordToneDrill();
     } else if (requestedDrill === "scaleDegree") {
       resetScaleDegreeDrill();
+    } else if (requestedDrill === "interval") {
+      resetIntervalLandmarkDrill();
     } else {
       resetNoteRecognitionDrill();
     }
 
     if (requestedLesson) {
       markStoredLessonStarted(requestedLesson.slug, requestedLesson.drill);
+      setLessonProgressRecords(readStoredLessonProgress());
     }
 
     scrollPracticeSessionIntoView();
@@ -747,6 +914,42 @@ export function FretboardExplorer() {
     scaleDegreePromptQueue.length
   ]);
 
+  useEffect(() => {
+    if (
+      !intervalDrillSummary.isComplete ||
+      completedIntervalSession !== null
+    ) {
+      return;
+    }
+
+    const nextSession = buildIntervalLandmarkSession(
+      intervalAttempts,
+      undefined,
+      intervalPromptQueue.length
+    );
+
+    setCompletedIntervalSession(nextSession);
+    setIntervalSessionHistory((previousHistory) => {
+      const nextHistory = appendIntervalLandmarkSession(
+        previousHistory,
+        nextSession
+      );
+      writeStoredSessionHistory(
+        INTERVAL_LANDMARK_HISTORY_STORAGE_KEY,
+        nextHistory
+      );
+
+      return nextHistory;
+    });
+    recordActiveLessonSession("interval", nextSession);
+  }, [
+    activeLessonSlug,
+    completedIntervalSession,
+    intervalAttempts,
+    intervalDrillSummary.isComplete,
+    intervalPromptQueue.length
+  ]);
+
   function handleModeChange(nextMode: DisplayMode): void {
     setMode(nextMode);
     setSelectedPosition(null);
@@ -754,7 +957,11 @@ export function FretboardExplorer() {
 
   function recordActiveLessonSession(
     completedDrill: PracticeDrill,
-    session: NoteRecognitionSession | ChordToneSession | ScaleDegreeSession
+    session:
+      | NoteRecognitionSession
+      | ChordToneSession
+      | ScaleDegreeSession
+      | IntervalLandmarkSession
   ): void {
     if (!activeLessonSlug) {
       return;
@@ -772,6 +979,7 @@ export function FretboardExplorer() {
       session,
       activeLesson.practice.criteria
     );
+    setLessonProgressRecords(readStoredLessonProgress());
   }
 
   function handlePositionClick(position: FretPosition): void {
@@ -787,6 +995,14 @@ export function FretboardExplorer() {
       mode === "practice" &&
       practiceDrill === "scaleDegree" &&
       !isScaleDegreeAnswerPosition(position)
+    ) {
+      return;
+    }
+
+    if (
+      mode === "practice" &&
+      practiceDrill === "interval" &&
+      !isIntervalLandmarkAnswerPosition(position)
     ) {
       return;
     }
@@ -818,6 +1034,30 @@ export function FretboardExplorer() {
       setScaleAttempts((previousAttempts) =>
         previousAttempts.some(
           (attempt) => attempt.promptIndex === scalePromptIndex
+        )
+          ? previousAttempts
+          : [...previousAttempts, nextAttempt]
+      );
+      return;
+    }
+
+    if (practiceDrill === "interval") {
+      if (
+        intervalDrillSummary.isComplete ||
+        currentIntervalAttempt !== null
+      ) {
+        return;
+      }
+
+      const nextAttempt = buildIntervalLandmarkAttempt(
+        intervalPromptIndex,
+        currentIntervalPrompt,
+        position
+      );
+
+      setIntervalAttempts((previousAttempts) =>
+        previousAttempts.some(
+          (attempt) => attempt.promptIndex === intervalPromptIndex
         )
           ? previousAttempts
           : [...previousAttempts, nextAttempt]
@@ -930,6 +1170,43 @@ export function FretboardExplorer() {
     writeStoredPreset(SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
   }
 
+  function handleIntervalSessionSettingsChange(
+    nextSettings: Partial<IntervalLandmarkSessionSettings>
+  ): void {
+    setIntervalSessionSettings((previousSettings) => ({
+      ...previousSettings,
+      ...nextSettings
+    }));
+    resetIntervalLandmarkDrill();
+  }
+
+  function handleIntervalPresetSelect(
+    preset: IntervalLandmarkSessionPreset
+  ): void {
+    setIntervalSessionSettings(preset.settings);
+    resetIntervalLandmarkDrill();
+  }
+
+  function handleStartIntervalPreset(
+    preset: IntervalLandmarkSessionPreset
+  ): void {
+    setMode("practice");
+    setPracticeDrill("interval");
+    handleIntervalPresetSelect(preset);
+    scrollPracticeSessionIntoView();
+  }
+
+  function handleSaveIntervalPreset(): void {
+    const nextPreset = {
+      id: "custom",
+      label: "Custom",
+      settings: intervalSessionSettings
+    } satisfies IntervalLandmarkSessionPreset;
+
+    setCustomIntervalPreset(nextPreset);
+    writeStoredPreset(INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
+  }
+
   function handleNoteSessionSettingsChange(
     nextSettings: Partial<NoteRecognitionSessionSettings>
   ): void {
@@ -963,6 +1240,13 @@ export function FretboardExplorer() {
     if (recommendation.drill === "scaleDegree") {
       handleStartScaleDegreePreset(
         recommendation.preset as ScaleDegreeSessionPreset
+      );
+      return;
+    }
+
+    if (recommendation.drill === "interval") {
+      handleStartIntervalPreset(
+        recommendation.preset as IntervalLandmarkSessionPreset
       );
       return;
     }
@@ -1005,6 +1289,14 @@ export function FretboardExplorer() {
     setScaleDegreeSessionNonce((previousNonce) => previousNonce + 1);
   }
 
+  function resetIntervalLandmarkDrill(): void {
+    setIntervalPromptIndex(0);
+    setIntervalAttempts([]);
+    setCompletedIntervalSession(null);
+    setSelectedPosition(null);
+    setIntervalSessionNonce((previousNonce) => previousNonce + 1);
+  }
+
   function scrollPracticeSessionIntoView(): void {
     window.setTimeout(() => {
       practiceLayoutRef.current?.scrollIntoView({
@@ -1031,6 +1323,11 @@ export function FretboardExplorer() {
       return;
     }
 
+    if (practiceDrill === "interval") {
+      setIntervalPromptIndex((previousPromptIndex) => previousPromptIndex + 1);
+      return;
+    }
+
     setPromptIndex((previousPromptIndex) => previousPromptIndex + 1);
   }
 
@@ -1039,6 +1336,8 @@ export function FretboardExplorer() {
       resetChordToneDrill();
     } else if (practiceDrill === "scaleDegree") {
       resetScaleDegreeDrill();
+    } else if (practiceDrill === "interval") {
+      resetIntervalLandmarkDrill();
     } else {
       resetNoteRecognitionDrill();
     }
@@ -1066,6 +1365,16 @@ export function FretboardExplorer() {
         reviewMode: "missed"
       }));
       resetScaleDegreeDrill();
+      return;
+    }
+
+    if (practiceDrill === "interval") {
+      setIntervalSessionSettings((previousSettings) => ({
+        ...previousSettings,
+        promptOrder: "fixed",
+        reviewMode: "missed"
+      }));
+      resetIntervalLandmarkDrill();
       return;
     }
 
@@ -1118,6 +1427,34 @@ export function FretboardExplorer() {
         onStartScale={() =>
           handleStartScaleDegreePreset(recommendedScaleDegreePreset)
         }
+        intervalLastSessionLabel={formatHubAccuracy(
+          intervalSessionHistory[0] ?? null
+        )}
+        intervalWeakSpotLabel={
+          intervalPerformance.weakSpots[0]?.label ?? "No weak spots"
+        }
+        intervalPresetLabel={recommendedIntervalPreset.label}
+        onStartInterval={() =>
+          handleStartIntervalPreset(recommendedIntervalPreset)
+        }
+        courseRecommendationTitle={
+          courseProgress.isComplete
+            ? "Course path complete"
+            : courseRecommendationLesson?.title ?? "Start the lesson path"
+        }
+        courseRecommendationDescription={
+          courseProgress.isComplete
+            ? "You finished every lesson in the current path. Use smart recommendations to review weak spots."
+            : courseRecommendationLesson
+              ? `Continue step ${courseRecommendationStepNumber} of ${courseProgress.totalCount}: ${courseRecommendationLesson.summary}`
+              : "Start with the fretboard map, then follow each lesson into its matching drill."
+        }
+        courseLessonHref={
+          courseRecommendationLesson
+            ? `/lessons/${courseRecommendationLesson.slug}`
+            : "/lessons"
+        }
+        coursePracticeHref={courseRecommendationLesson?.practice.href ?? "#practice"}
         recommendationTitle={practiceRecommendation.title}
         recommendationDescription={practiceRecommendation.description}
         onStartRecommendation={() =>
@@ -1162,11 +1499,12 @@ export function FretboardExplorer() {
           {mode === "practice" ? (
             <div className="control-group">
               <span className="control-label">Drill</span>
-              <div className="segmented-control option-grid three">
+              <div className="segmented-control option-grid four">
                 {([
                   { id: "note", label: "Note drill" },
                   { id: "chordTone", label: "Chord drill" },
-                  { id: "scaleDegree", label: "Scale drill" }
+                  { id: "scaleDegree", label: "Scale drill" },
+                  { id: "interval", label: "Interval drill" }
                 ] as const).map((option) => (
                   <button
                     className={option.id === practiceDrill ? "is-selected" : ""}
@@ -1211,6 +1549,14 @@ export function FretboardExplorer() {
                 onPresetSelect: handleScaleDegreePresetSelect,
                 onSavePreset: handleSaveScaleDegreePreset,
                 onSettingsChange: handleScaleDegreeSessionSettingsChange
+              }}
+              interval={{
+                presetOptions: intervalPresetOptions,
+                settings: intervalSessionSettings,
+                missedReviewCount: intervalMissedReviewCount,
+                onPresetSelect: handleIntervalPresetSelect,
+                onSavePreset: handleSaveIntervalPreset,
+                onSettingsChange: handleIntervalSessionSettingsChange
               }}
             />
           ) : null}
@@ -1408,7 +1754,8 @@ export function FretboardExplorer() {
                       practiceDrill,
                       stringTuning.string,
                       currentPrompt,
-                      currentScaleDegreePrompt
+                      currentScaleDegreePrompt,
+                      currentIntervalPrompt
                     )}
                   >
                     <strong>{stringTuning.openNote}</strong>
@@ -1423,14 +1770,19 @@ export function FretboardExplorer() {
                       ((practiceDrill === "note" &&
                         !isNoteRecognitionAnswerPosition(position)) ||
                         (practiceDrill === "scaleDegree" &&
-                          !isScaleDegreeAnswerPosition(position)));
+                          !isScaleDegreeAnswerPosition(position)) ||
+                        (practiceDrill === "interval" &&
+                          !isIntervalLandmarkAnswerPosition(position)));
                     const isTargetString =
                       mode === "practice" &&
                       ((practiceDrill === "note" &&
                         position.string === currentPrompt.targetString) ||
                         (practiceDrill === "scaleDegree" &&
                           position.string ===
-                            currentScaleDegreePrompt.targetString));
+                            currentScaleDegreePrompt.targetString) ||
+                        (practiceDrill === "interval" &&
+                          position.string ===
+                            currentIntervalPrompt.targetString));
                     const isSelected =
                       selectedPosition !== null &&
                       positionKey(selectedPosition) === positionKey(position);
@@ -1529,7 +1881,9 @@ function buildActivePositions(
   chordPrompt: ChordTonePrompt,
   currentChordAttempt: ChordToneAttempt | null,
   scaleDegreePrompt: ScaleDegreePrompt,
-  currentScaleDegreeAttempt: ScaleDegreeAttempt | null
+  currentScaleDegreeAttempt: ScaleDegreeAttempt | null,
+  intervalPrompt: IntervalLandmarkPrompt,
+  currentIntervalAttempt: IntervalLandmarkAttempt | null
 ): Map<string, ActivePosition> {
   const activePositions = new Map<string, ActivePosition>();
 
@@ -1605,6 +1959,47 @@ function buildActivePositions(
                 currentScaleDegreeAttempt.selectedNote
               } on the ${getStringDisplayName(
                 currentScaleDegreeAttempt.selectedString
+              )} string`
+        }
+      );
+
+      return activePositions;
+    }
+
+    if (practiceDrill === "interval") {
+      if (currentIntervalAttempt === null) {
+        return activePositions;
+      }
+
+      findNotesOnFretboard(currentIntervalAttempt.targetNote, {
+        frets: fretboard.frets
+      }).forEach((position) => {
+        if (!isIntervalLandmarkCorrectPosition(intervalPrompt, position)) {
+          return;
+        }
+
+        activePositions.set(positionKey(position), {
+          label: currentIntervalAttempt.targetNote,
+          variant: "answer",
+          descriptor: `Correct ${getIntervalLandmarkName(
+            intervalPrompt.targetInterval
+          )} above ${intervalPrompt.rootNote}`
+        });
+      });
+
+      activePositions.set(
+        `${currentIntervalAttempt.selectedString}-${currentIntervalAttempt.selectedFret}`,
+        {
+          label: currentIntervalAttempt.selectedNote,
+          variant: currentIntervalAttempt.isCorrect ? "root" : "miss",
+          descriptor: currentIntervalAttempt.isCorrect
+            ? `Correct ${getIntervalLandmarkName(
+                intervalPrompt.targetInterval
+              )} answer`
+            : `Your answer: ${
+                currentIntervalAttempt.selectedNote
+              } on the ${getStringDisplayName(
+                currentIntervalAttempt.selectedString
               )} string`
         }
       );
@@ -1716,9 +2111,13 @@ function buildModeSummary(
   scaleDegreePrompt: ScaleDegreePrompt,
   currentScaleDegreeAttempt: ScaleDegreeAttempt | null,
   scaleDegreeDrillSummary: ScaleDegreeSummary,
+  intervalPrompt: IntervalLandmarkPrompt,
+  currentIntervalAttempt: IntervalLandmarkAttempt | null,
+  intervalDrillSummary: IntervalLandmarkSummary,
   notePromptCount: number,
   chordPromptCount: number,
-  scaleDegreePromptCount: number
+  scaleDegreePromptCount: number,
+  intervalPromptCount: number
 ): ModeSummary {
   if (mode === "practice") {
     if (practiceDrill === "chordTone") {
@@ -1792,6 +2191,46 @@ function buildModeSummary(
                 )} string. The correct ${targetDegreeName} is ${targetNote} on the ${targetStringName} string.`,
         badge: `${scaleDegreeDrillSummary.attempted + 1}/${scaleDegreePromptCount}`,
         tones: [scaleName, targetDegreeName, `${targetStringName} string`]
+      };
+    }
+
+    if (practiceDrill === "interval") {
+      const intervalName = getIntervalLandmarkName(
+        intervalPrompt.targetInterval
+      );
+      const targetStringName = getStringDisplayName(
+        intervalPrompt.targetString
+      );
+      const targetNote = getTargetIntervalLandmarkNote(intervalPrompt);
+
+      if (intervalDrillSummary.isComplete) {
+        return {
+          title: "Interval landmark drill complete",
+          description: `You found ${intervalDrillSummary.correct} of ${intervalDrillSummary.attempted} interval prompts.`,
+          badge: `${intervalDrillSummary.accuracy}% accuracy`,
+          tones: [
+            `${intervalDrillSummary.correct} correct`,
+            `${intervalDrillSummary.missed} missed`
+          ]
+        };
+      }
+
+      return {
+        title: `Find the ${intervalName} above ${intervalPrompt.rootNote} on the ${targetStringName} string`,
+        description:
+          currentIntervalAttempt === null
+            ? `Click the fretted position for the ${intervalName} above ${intervalPrompt.rootNote} on the ${targetStringName} string. Notes stay hidden until you answer.`
+            : currentIntervalAttempt.isCorrect
+              ? `Correct. ${targetNote} is the ${intervalName} above ${intervalPrompt.rootNote}.`
+              : `You chose ${currentIntervalAttempt.selectedNote} on the ${getStringDisplayName(
+                  currentIntervalAttempt.selectedString
+                )} string. The correct answer is ${targetNote} on the ${targetStringName} string.`,
+        badge: `${intervalDrillSummary.attempted + 1}/${intervalPromptCount}`,
+        tones: [
+          intervalPrompt.rootNote,
+          intervalName,
+          `${targetStringName} string`
+        ]
       };
     }
 
@@ -1907,11 +2346,19 @@ function buildStringLabelClassName(
   practiceDrill: PracticeDrill,
   string: GuitarStringNumber,
   drillPrompt: NoteRecognitionPrompt,
-  scaleDegreePrompt: ScaleDegreePrompt
+  scaleDegreePrompt: ScaleDegreePrompt,
+  intervalPrompt: IntervalLandmarkPrompt
 ): string {
   return [
     "string-label",
-    isPracticeTargetString(mode, practiceDrill, string, drillPrompt, scaleDegreePrompt)
+    isPracticeTargetString(
+      mode,
+      practiceDrill,
+      string,
+      drillPrompt,
+      scaleDegreePrompt,
+      intervalPrompt
+    )
       ? "is-target-string"
       : ""
   ]
@@ -1936,6 +2383,13 @@ function buildPositionLabel(
     if (
       practiceDrill === "scaleDegree" &&
       !isScaleDegreeAnswerPosition(position)
+    ) {
+      return `String ${position.string}, open string, unavailable in this drill`;
+    }
+
+    if (
+      practiceDrill === "interval" &&
+      !isIntervalLandmarkAnswerPosition(position)
     ) {
       return `String ${position.string}, open string, unavailable in this drill`;
     }
@@ -1978,6 +2432,14 @@ function buildCellLabel(
     return "open";
   }
 
+  if (
+    mode === "practice" &&
+    practiceDrill === "interval" &&
+    !isIntervalLandmarkAnswerPosition(position)
+  ) {
+    return "open";
+  }
+
   return mode === "practice" ? "" : position.note;
 }
 
@@ -1986,7 +2448,8 @@ function isPracticeTargetString(
   practiceDrill: PracticeDrill,
   string: GuitarStringNumber,
   drillPrompt: NoteRecognitionPrompt,
-  scaleDegreePrompt: ScaleDegreePrompt
+  scaleDegreePrompt: ScaleDegreePrompt,
+  intervalPrompt: IntervalLandmarkPrompt
 ): boolean {
   if (mode !== "practice") {
     return false;
@@ -1998,6 +2461,10 @@ function isPracticeTargetString(
 
   if (practiceDrill === "scaleDegree") {
     return string === scaleDegreePrompt.targetString;
+  }
+
+  if (practiceDrill === "interval") {
+    return string === intervalPrompt.targetString;
   }
 
   return false;
@@ -2020,6 +2487,10 @@ function getPracticeDrillLabel(practiceDrill: PracticeDrill): string {
     return "Scale degrees";
   }
 
+  if (practiceDrill === "interval") {
+    return "Interval landmarks";
+  }
+
   return "Note recognition";
 }
 
@@ -2027,7 +2498,8 @@ function parsePracticeDrillParam(value: string | null): PracticeDrill | null {
   if (
     value === "note" ||
     value === "chordTone" ||
-    value === "scaleDegree"
+    value === "scaleDegree" ||
+    value === "interval"
   ) {
     return value;
   }
@@ -2067,7 +2539,11 @@ function markStoredLessonStarted(
 function markStoredLessonPracticed(
   slug: string,
   drill: LessonPracticeDrill,
-  session: NoteRecognitionSession | ChordToneSession | ScaleDegreeSession,
+  session:
+    | NoteRecognitionSession
+    | ChordToneSession
+    | ScaleDegreeSession
+    | IntervalLandmarkSession,
   criteria: Lesson["practice"]["criteria"]
 ): void {
   writeStoredLessonProgress(
@@ -2094,12 +2570,20 @@ function getCompletionTitle(practiceDrill: PracticeDrill): string {
     return "Scale degree drill complete";
   }
 
+  if (practiceDrill === "interval") {
+    return "Interval landmark drill complete";
+  }
+
   return "Note recognition complete";
 }
 
 function buildLessonReviewOutcome(
   lesson: Lesson,
-  summary: NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary,
+  summary:
+    | NoteRecognitionSummary
+    | ChordToneSummary
+    | ScaleDegreeSummary
+    | IntervalLandmarkSummary,
   nextLesson: Lesson | null
 ): LessonReviewOutcome {
   const criteria = lesson.practice.criteria;
@@ -2144,13 +2628,19 @@ function buildLessonReviewOutcome(
 
 function buildPracticeReviewContent(
   practiceDrill: PracticeDrill,
-  summary: NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary,
+  summary:
+    | NoteRecognitionSummary
+    | ChordToneSummary
+    | ScaleDegreeSummary
+    | IntervalLandmarkSummary,
   noteMisses: readonly MissedNoteRecognitionPrompt[],
   chordMisses: readonly MissedChordTonePrompt[],
   scaleDegreeMisses: readonly MissedScaleDegreePrompt[],
+  intervalMisses: readonly MissedIntervalLandmarkPrompt[],
   notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
   chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
-  scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>
+  scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>,
+  intervalPerformance: ReturnType<typeof buildIntervalLandmarkPerformanceSummary>
 ): PracticeReviewContent {
   const metrics = [
     {
@@ -2221,6 +2711,33 @@ function buildPracticeReviewContent(
     };
   }
 
+  if (practiceDrill === "interval") {
+    return {
+      metrics,
+      missedPrompts: intervalMisses.map(toIntervalMissedReviewItem),
+      weakSpots: intervalPerformance.weakSpots.map(toPerformanceReviewItem),
+      breakdowns: [
+        {
+          title: "Interval breakdown",
+          emptyMessage: "No interval attempts yet.",
+          chips: intervalPerformance.intervalStats.map(formatPerformanceChip)
+        },
+        {
+          title: "Root breakdown",
+          emptyMessage: "No interval roots attempted yet.",
+          chips: intervalPerformance.rootStats.map(formatPerformanceChip)
+        },
+        {
+          title: "String trouble spots",
+          emptyMessage: "No string-specific misses yet.",
+          chips: intervalPerformance.stringStats
+            .filter((stat) => stat.missed > 0)
+            .map(formatPerformanceChip)
+        }
+      ]
+    };
+  }
+
   return {
     metrics,
     missedPrompts: noteMisses.map(toNoteMissedReviewItem),
@@ -2278,6 +2795,20 @@ function toScaleDegreeMissedReviewItem(
   };
 }
 
+function toIntervalMissedReviewItem(
+  missedPrompt: MissedIntervalLandmarkPrompt
+): PracticeReviewItem {
+  return {
+    id: `${missedPrompt.rootNote}-${missedPrompt.targetInterval}-${missedPrompt.targetString}-${missedPrompt.selectedString}-${missedPrompt.selectedFret}`,
+    title: formatIntervalPromptTarget(missedPrompt),
+    detail: `You chose ${missedPrompt.selectedNote} on the ${getStringDisplayName(
+      missedPrompt.selectedString
+    )} string, fret ${missedPrompt.selectedFret}; correct note was ${
+      missedPrompt.targetNote
+    }.`
+  };
+}
+
 function toPerformanceReviewItem(stat: PerformanceStat): PracticeReviewItem {
   return {
     id: `${stat.category}-${stat.id}`,
@@ -2292,8 +2823,17 @@ function formatLessonCriteria(promptCount: number, minAccuracy: number): string 
 
 function getPracticePromptStatus(
   practiceDrill: PracticeDrill,
-  summary: NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary,
-  attempt: NoteRecognitionAttempt | ChordToneAttempt | ScaleDegreeAttempt | null
+  summary:
+    | NoteRecognitionSummary
+    | ChordToneSummary
+    | ScaleDegreeSummary
+    | IntervalLandmarkSummary,
+  attempt:
+    | NoteRecognitionAttempt
+    | ChordToneAttempt
+    | ScaleDegreeAttempt
+    | IntervalLandmarkAttempt
+    | null
 ): string {
   if (summary.isComplete) {
     return `${summary.accuracy}% accuracy`;
@@ -2314,14 +2854,23 @@ function getActiveDrillSummary(
   practiceDrill: PracticeDrill,
   noteSummary: NoteRecognitionSummary,
   chordSummary: ChordToneSummary,
-  scaleDegreeSummary: ScaleDegreeSummary
-): NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary {
+  scaleDegreeSummary: ScaleDegreeSummary,
+  intervalSummary: IntervalLandmarkSummary
+):
+  | NoteRecognitionSummary
+  | ChordToneSummary
+  | ScaleDegreeSummary
+  | IntervalLandmarkSummary {
   if (practiceDrill === "chordTone") {
     return chordSummary;
   }
 
   if (practiceDrill === "scaleDegree") {
     return scaleDegreeSummary;
+  }
+
+  if (practiceDrill === "interval") {
+    return intervalSummary;
   }
 
   return noteSummary;
@@ -2331,14 +2880,24 @@ function getActiveDrillAttempt(
   practiceDrill: PracticeDrill,
   noteAttempt: NoteRecognitionAttempt | null,
   chordAttempt: ChordToneAttempt | null,
-  scaleDegreeAttempt: ScaleDegreeAttempt | null
-): NoteRecognitionAttempt | ChordToneAttempt | ScaleDegreeAttempt | null {
+  scaleDegreeAttempt: ScaleDegreeAttempt | null,
+  intervalAttempt: IntervalLandmarkAttempt | null
+):
+  | NoteRecognitionAttempt
+  | ChordToneAttempt
+  | ScaleDegreeAttempt
+  | IntervalLandmarkAttempt
+  | null {
   if (practiceDrill === "chordTone") {
     return chordAttempt;
   }
 
   if (practiceDrill === "scaleDegree") {
     return scaleDegreeAttempt;
+  }
+
+  if (practiceDrill === "interval") {
+    return intervalAttempt;
   }
 
   return noteAttempt;
@@ -2348,7 +2907,8 @@ function getActivePromptCount(
   practiceDrill: PracticeDrill,
   notePromptCount: number,
   chordPromptCount: number,
-  scaleDegreePromptCount: number
+  scaleDegreePromptCount: number,
+  intervalPromptCount: number
 ): number {
   if (practiceDrill === "chordTone") {
     return chordPromptCount;
@@ -2358,6 +2918,10 @@ function getActivePromptCount(
     return scaleDegreePromptCount;
   }
 
+  if (practiceDrill === "interval") {
+    return intervalPromptCount;
+  }
+
   return notePromptCount;
 }
 
@@ -2365,14 +2929,24 @@ function getLatestSession(
   practiceDrill: PracticeDrill,
   noteHistory: readonly NoteRecognitionSession[],
   chordHistory: readonly ChordToneSession[],
-  scaleDegreeHistory: readonly ScaleDegreeSession[]
-): NoteRecognitionSession | ChordToneSession | ScaleDegreeSession | null {
+  scaleDegreeHistory: readonly ScaleDegreeSession[],
+  intervalHistory: readonly IntervalLandmarkSession[]
+):
+  | NoteRecognitionSession
+  | ChordToneSession
+  | ScaleDegreeSession
+  | IntervalLandmarkSession
+  | null {
   if (practiceDrill === "chordTone") {
     return chordHistory[0] ?? null;
   }
 
   if (practiceDrill === "scaleDegree") {
     return scaleDegreeHistory[0] ?? null;
+  }
+
+  if (practiceDrill === "interval") {
+    return intervalHistory[0] ?? null;
   }
 
   return noteHistory[0] ?? null;
@@ -2389,6 +2963,12 @@ function formatScaleDegreePromptTarget(prompt: ScaleDegreePrompt): string {
     prompt.rootNote,
     prompt.quality
   )} on the ${getStringDisplayName(prompt.targetString)} string`;
+}
+
+function formatIntervalPromptTarget(prompt: IntervalLandmarkPrompt): string {
+  return `${getIntervalLandmarkName(prompt.targetInterval)} above ${
+    prompt.rootNote
+  } on the ${getStringDisplayName(prompt.targetString)} string`;
 }
 
 function formatChordPromptTarget(prompt: ChordTonePrompt): string {
@@ -2447,7 +3027,12 @@ function formatPerformanceChip(stat: PerformanceStat): string {
 }
 
 function formatHubAccuracy(
-  session: ChordToneSession | NoteRecognitionSession | ScaleDegreeSession | null
+  session:
+    | ChordToneSession
+    | IntervalLandmarkSession
+    | NoteRecognitionSession
+    | ScaleDegreeSession
+    | null
 ): string {
   return session ? `${session.accuracy}% last session` : "No sessions yet";
 }
@@ -2455,7 +3040,8 @@ function formatHubAccuracy(
 function buildRecentPracticeSessions(
   noteSessions: readonly NoteRecognitionSession[],
   chordSessions: readonly ChordToneSession[],
-  scaleSessions: readonly ScaleDegreeSession[]
+  scaleSessions: readonly ScaleDegreeSession[],
+  intervalSessions: readonly IntervalLandmarkSession[]
 ): RecentPracticeSession[] {
   return [
     ...noteSessions.map((session) => ({
@@ -2469,6 +3055,10 @@ function buildRecentPracticeSessions(
     ...scaleSessions.map((session) => ({
       session,
       drillLabel: "Scale degrees"
+    })),
+    ...intervalSessions.map((session) => ({
+      session,
+      drillLabel: "Interval landmarks"
     }))
   ]
     .sort(
@@ -2483,7 +3073,11 @@ function buildRecentPracticeSessions(
 }
 
 function toRecentPracticeSession(
-  session: NoteRecognitionSession | ChordToneSession | ScaleDegreeSession,
+  session:
+    | NoteRecognitionSession
+    | ChordToneSession
+    | ScaleDegreeSession
+    | IntervalLandmarkSession,
   drillLabel: string
 ): RecentPracticeSession {
   return {
@@ -2499,12 +3093,16 @@ function toRecentPracticeSession(
 function buildDashboardWeakSpots(
   noteWeakSpots: readonly NoteRecognitionPerformanceStat[],
   chordWeakSpots: readonly ChordTonePerformanceStat[],
-  scaleWeakSpots: readonly ScaleDegreePerformanceStat[]
+  scaleWeakSpots: readonly ScaleDegreePerformanceStat[],
+  intervalWeakSpots: readonly IntervalLandmarkPerformanceStat[]
 ): PracticeWeakSpot[] {
   return [
     ...noteWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Note recognition")),
     ...chordWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Chord tones")),
-    ...scaleWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Scale degrees"))
+    ...scaleWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Scale degrees")),
+    ...intervalWeakSpots.map((stat) =>
+      toPracticeWeakSpot(stat, "Interval landmarks")
+    )
   ]
     .sort(
       (left, right) =>
@@ -2578,13 +3176,38 @@ function getRecommendedScaleDegreePreset(
   return findPreset(presets, "quick-warmup");
 }
 
+function getRecommendedIntervalPreset(
+  performance: ReturnType<typeof buildIntervalLandmarkPerformanceSummary>,
+  presets: readonly IntervalLandmarkSessionPreset[]
+): IntervalLandmarkSessionPreset {
+  if (performance.weakSpots.length > 0) {
+    const weakestSpot = performance.weakSpots[0];
+
+    if (weakestSpot?.category === "interval") {
+      if (weakestSpot.id === "minorThird" || weakestSpot.id === "majorThird") {
+        return findPreset(presets, "thirds-focus");
+      }
+
+      if (weakestSpot.id === "perfectFifth") {
+        return findPreset(presets, "fifths-focus");
+      }
+    }
+
+    return findPreset(presets, "weak-spots");
+  }
+
+  return findPreset(presets, "quick-warmup");
+}
+
 function buildPracticeHubRecommendation(
   notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
   chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
   scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>,
+  intervalPerformance: ReturnType<typeof buildIntervalLandmarkPerformanceSummary>,
   notePreset: NoteRecognitionSessionPreset,
   chordPreset: ChordToneSessionPreset,
-  scaleDegreePreset: ScaleDegreeSessionPreset
+  scaleDegreePreset: ScaleDegreeSessionPreset,
+  intervalPreset: IntervalLandmarkSessionPreset
 ): PracticeHubRecommendation {
   const weakestSpots: Array<{
     drill: PracticeDrill;
@@ -2595,6 +3218,7 @@ function buildPracticeHubRecommendation(
   const weakestNoteSpot = notePerformance.weakSpots[0] ?? null;
   const weakestChordSpot = chordPerformance.weakSpots[0] ?? null;
   const weakestScaleDegreeSpot = scaleDegreePerformance.weakSpots[0] ?? null;
+  const weakestIntervalSpot = intervalPerformance.weakSpots[0] ?? null;
 
   if (weakestNoteSpot) {
     weakestSpots.push({
@@ -2620,6 +3244,15 @@ function buildPracticeHubRecommendation(
       stat: weakestScaleDegreeSpot,
       preset: scaleDegreePreset,
       sessionLabel: "scale"
+    });
+  }
+
+  if (weakestIntervalSpot) {
+    weakestSpots.push({
+      drill: "interval",
+      stat: weakestIntervalSpot,
+      preset: intervalPreset,
+      sessionLabel: "interval"
     });
   }
 
@@ -2705,6 +3338,23 @@ function collectScaleDegreeReviewPrompts(
   return [...promptsByTarget.values()];
 }
 
+function collectIntervalReviewPrompts(
+  sessions: readonly IntervalLandmarkSession[]
+): MissedIntervalLandmarkPrompt[] {
+  const promptsByTarget = new Map<string, MissedIntervalLandmarkPrompt>();
+
+  sessions.forEach((session) => {
+    session.missedPrompts.forEach((prompt) => {
+      promptsByTarget.set(
+        `${prompt.rootNote}-${prompt.targetInterval}-${prompt.targetString}`,
+        prompt
+      );
+    });
+  });
+
+  return [...promptsByTarget.values()];
+}
+
 function formatSessionDate(completedAt: string): string {
   return new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -2725,9 +3375,20 @@ function readStoredSessionHistory<Session>(
       return [];
     }
 
-    const parsedHistory = JSON.parse(storedHistory) as Session[];
+    const parsedHistory = JSON.parse(storedHistory) as unknown;
 
-    return Array.isArray(parsedHistory) ? parsedHistory.slice(0, limit) : [];
+    if (Array.isArray(parsedHistory)) {
+      return parsedHistory.slice(0, limit) as Session[];
+    }
+
+    if (
+      isVersionedStorageRecord(parsedHistory) &&
+      Array.isArray(parsedHistory.sessions)
+    ) {
+      return parsedHistory.sessions.slice(0, limit) as Session[];
+    }
+
+    return [];
   } catch {
     return [];
   }
@@ -2738,7 +3399,13 @@ function writeStoredSessionHistory<Session>(
   history: Session[]
 ): void {
   try {
-    window.localStorage.setItem(storageKey, JSON.stringify(history));
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        version: STORAGE_VERSION,
+        sessions: history
+      })
+    );
   } catch {
     // Local progress is a convenience; the drill should keep working if storage is unavailable.
   }
@@ -2767,7 +3434,24 @@ function readStoredPreset<Preset>(storageKey: string): Preset | null {
   try {
     const storedPreset = window.localStorage.getItem(storageKey);
 
-    return storedPreset ? (JSON.parse(storedPreset) as Preset) : null;
+    if (!storedPreset) {
+      return null;
+    }
+
+    const parsedPreset = JSON.parse(storedPreset) as unknown;
+
+    if (
+      isVersionedStorageRecord(parsedPreset) &&
+      "preset" in parsedPreset &&
+      parsedPreset.preset !== null &&
+      typeof parsedPreset.preset === "object"
+    ) {
+      return parsedPreset.preset as Preset;
+    }
+
+    return typeof parsedPreset === "object" && parsedPreset !== null
+      ? (parsedPreset as Preset)
+      : null;
   } catch {
     return null;
   }
@@ -2775,8 +3459,26 @@ function readStoredPreset<Preset>(storageKey: string): Preset | null {
 
 function writeStoredPreset<Preset>(storageKey: string, preset: Preset): void {
   try {
-    window.localStorage.setItem(storageKey, JSON.stringify(preset));
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        version: STORAGE_VERSION,
+        preset
+      })
+    );
   } catch {
     // Custom presets are a convenience; the drill should still work without storage.
   }
+}
+
+function isVersionedStorageRecord(
+  value: unknown
+): value is Record<string, unknown> & { version: number } {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as { version?: unknown };
+
+  return typeof candidate.version === "number";
 }

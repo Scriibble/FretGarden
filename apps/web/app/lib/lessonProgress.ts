@@ -5,6 +5,7 @@ import type {
 } from "./lessons";
 
 export const LESSON_PROGRESS_STORAGE_KEY = "pocket-practice:lesson-progress";
+export const LESSON_PROGRESS_STORAGE_VERSION = 1;
 
 export type LessonProgressStatus = "in-progress" | "complete";
 
@@ -54,12 +55,17 @@ export function parseLessonProgress(
 
   try {
     const parsedProgress = JSON.parse(storedProgress) as unknown;
+    const progressRecords = Array.isArray(parsedProgress)
+      ? parsedProgress
+      : isVersionedLessonProgress(parsedProgress)
+        ? parsedProgress.progress
+        : [];
 
-    if (!Array.isArray(parsedProgress)) {
+    if (!Array.isArray(progressRecords)) {
       return [];
     }
 
-    return parsedProgress.filter(isLessonProgressRecord);
+    return progressRecords.filter(isLessonProgressRecord);
   } catch {
     return [];
   }
@@ -68,7 +74,10 @@ export function parseLessonProgress(
 export function serializeLessonProgress(
   progress: readonly LessonProgressRecord[]
 ): string {
-  return JSON.stringify(progress);
+  return JSON.stringify({
+    version: LESSON_PROGRESS_STORAGE_VERSION,
+    progress
+  });
 }
 
 export function markLessonStarted(
@@ -245,8 +254,28 @@ function isLessonProgressRecord(value: unknown): value is LessonProgressRecord {
   );
 }
 
+function isVersionedLessonProgress(
+  value: unknown
+): value is { version: number; progress: unknown } {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as {
+    version?: unknown;
+    progress?: unknown;
+  };
+
+  return typeof candidate.version === "number" && "progress" in candidate;
+}
+
 function isLessonPracticeDrill(value: unknown): value is LessonPracticeDrill {
-  return value === "note" || value === "chordTone" || value === "scaleDegree";
+  return (
+    value === "note" ||
+    value === "chordTone" ||
+    value === "scaleDegree" ||
+    value === "interval"
+  );
 }
 
 function getCoursePathState(

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { lessons } from "./lessons";
 import {
+  LESSON_PROGRESS_STORAGE_VERSION,
   buildCourseProgress,
   doesLessonPracticeMeetCriteria,
   findLessonProgress,
@@ -14,22 +15,7 @@ import {
 
 describe("lessonProgress", () => {
   it("parses valid stored lesson progress", () => {
-    expect(
-      parseLessonProgress(
-        JSON.stringify([
-          {
-            slug: "triads",
-            drill: "chordTone",
-            status: "complete",
-            startedAt: "2026-07-07T12:00:00.000Z",
-            completedAt: "2026-07-07T12:05:00.000Z",
-            lastAttemptedAt: "2026-07-07T12:05:00.000Z",
-            lastAccuracy: 90,
-            lastPromptCount: 10
-          }
-        ])
-      )
-    ).toEqual([
+    const progress = [
       {
         slug: "triads",
         drill: "chordTone",
@@ -40,7 +26,12 @@ describe("lessonProgress", () => {
         lastAccuracy: 90,
         lastPromptCount: 10
       }
-    ]);
+    ] as const;
+
+    expect(
+      parseLessonProgress(JSON.stringify({ version: 1, progress }))
+    ).toEqual(progress);
+    expect(parseLessonProgress(JSON.stringify(progress))).toEqual(progress);
   });
 
   it("ignores invalid stored lesson progress", () => {
@@ -144,7 +135,12 @@ describe("lessonProgress", () => {
       "in-progress"
     );
     expect(getLessonProgressStatus(progress, "triads")).toBe("not-started");
-    expect(serializeLessonProgress(progress)).toBe(JSON.stringify(progress));
+    expect(serializeLessonProgress(progress)).toBe(
+      JSON.stringify({
+        version: LESSON_PROGRESS_STORAGE_VERSION,
+        progress
+      })
+    );
   });
 
   it("checks whether lesson practice meets completion criteria", () => {

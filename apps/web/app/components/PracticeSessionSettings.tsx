@@ -11,6 +11,15 @@ import type {
   ChordToneToneFocus
 } from "../lib/chordToneRecognition";
 import type {
+  IntervalLandmarkFamilyFocus,
+  IntervalLandmarkPromptOrder,
+  IntervalLandmarkReviewMode,
+  IntervalLandmarkSessionLength,
+  IntervalLandmarkSessionPreset,
+  IntervalLandmarkSessionSettings,
+  IntervalLandmarkStringFocus
+} from "../lib/intervalLandmarkRecognition";
+import type {
   NoteRecognitionNoteFocus,
   NoteRecognitionPromptOrder,
   NoteRecognitionReviewMode,
@@ -30,7 +39,7 @@ import type {
   ScaleDegreeStringFocus
 } from "../lib/scaleDegreeRecognition";
 
-type PracticeDrill = "note" | "chordTone" | "scaleDegree";
+type PracticeDrill = "note" | "chordTone" | "scaleDegree" | "interval";
 
 interface PracticeSessionSettingsProps {
   practiceDrill: PracticeDrill;
@@ -60,6 +69,16 @@ interface PracticeSessionSettingsProps {
     onSavePreset: () => void;
     onSettingsChange: (
       nextSettings: Partial<ScaleDegreeSessionSettings>
+    ) => void;
+  };
+  interval: {
+    presetOptions: readonly IntervalLandmarkSessionPreset[];
+    settings: IntervalLandmarkSessionSettings;
+    missedReviewCount: number;
+    onPresetSelect: (preset: IntervalLandmarkSessionPreset) => void;
+    onSavePreset: () => void;
+    onSettingsChange: (
+      nextSettings: Partial<IntervalLandmarkSessionSettings>
     ) => void;
   };
 }
@@ -96,21 +115,32 @@ const stringFocusOptions = [
   { id: 2, label: "B" },
   { id: 1, label: "High E" }
 ] as const satisfies ReadonlyArray<{
-  id: NoteRecognitionStringFocus | ScaleDegreeStringFocus;
+  id:
+    | NoteRecognitionStringFocus
+    | ScaleDegreeStringFocus
+    | IntervalLandmarkStringFocus;
   label: string;
 }>;
 const promptOrderOptions = [
   { id: "fixed", label: "Fixed" },
   { id: "random", label: "Random" }
 ] as const satisfies ReadonlyArray<{
-  id: NoteRecognitionPromptOrder | ChordTonePromptOrder | ScaleDegreePromptOrder;
+  id:
+    | NoteRecognitionPromptOrder
+    | ChordTonePromptOrder
+    | ScaleDegreePromptOrder
+    | IntervalLandmarkPromptOrder;
   label: string;
 }>;
 const reviewModeOptions = [
   { id: "full", label: "Full set" },
   { id: "missed", label: "Missed only" }
 ] as const satisfies ReadonlyArray<{
-  id: NoteRecognitionReviewMode | ChordToneReviewMode | ScaleDegreeReviewMode;
+  id:
+    | NoteRecognitionReviewMode
+    | ChordToneReviewMode
+    | ScaleDegreeReviewMode
+    | IntervalLandmarkReviewMode;
   label: string;
 }>;
 const chordSessionLengthOptions = [6, 12, 20] as const satisfies readonly ChordToneSessionLength[];
@@ -145,12 +175,26 @@ const scaleDegreeFocusOptions = [
   id: ScaleDegreeDegreeFocus;
   label: string;
 }>;
+const intervalSessionLengthOptions = [6, 12, 20] as const satisfies readonly IntervalLandmarkSessionLength[];
+const intervalFamilyFocusOptions = [
+  { id: "mixed", label: "Mixed" },
+  { id: "seconds", label: "2nds" },
+  { id: "thirds", label: "3rds" },
+  { id: "fourths", label: "4ths" },
+  { id: "fifths", label: "5ths" },
+  { id: "sixths", label: "6ths" },
+  { id: "sevenths", label: "7ths" }
+] as const satisfies ReadonlyArray<{
+  id: IntervalLandmarkFamilyFocus;
+  label: string;
+}>;
 
 export function PracticeSessionSettings({
   practiceDrill,
   note,
   chord,
-  scale
+  scale,
+  interval
 }: PracticeSessionSettingsProps) {
   if (practiceDrill === "note") {
     return (
@@ -312,6 +356,88 @@ export function PracticeSessionSettings({
     );
   }
 
+  if (practiceDrill === "interval") {
+    return (
+      <div className="session-setup-panel">
+        <span className="control-label">Session setup</span>
+
+        <PresetField
+          presets={interval.presetOptions}
+          testIdPrefix="interval"
+          onPresetSelect={interval.onPresetSelect}
+          onSavePreset={interval.onSavePreset}
+        />
+
+        <div className="setup-field">
+          <span>Length</span>
+          <div className="segmented-control option-grid three">
+            {intervalSessionLengthOptions.map((sessionLength) => (
+              <button
+                className={
+                  interval.settings.sessionLength === sessionLength
+                    ? "is-selected"
+                    : ""
+                }
+                data-testid={`interval-length-${sessionLength}`}
+                key={sessionLength}
+                onClick={() => interval.onSettingsChange({ sessionLength })}
+                type="button"
+              >
+                {sessionLength}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="setup-field">
+          <span>Interval family</span>
+          <div className="segmented-control option-grid degree-options">
+            {intervalFamilyFocusOptions.map((option) => (
+              <button
+                className={
+                  interval.settings.familyFocus === option.id
+                    ? "is-selected"
+                    : ""
+                }
+                data-testid={`interval-family-${option.id}`}
+                key={option.id}
+                onClick={() =>
+                  interval.onSettingsChange({
+                    familyFocus: option.id
+                  })
+                }
+                type="button"
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <StringFocusField
+          selectedString={interval.settings.stringFocus}
+          testIdPrefix="interval"
+          onChange={(stringFocus) => interval.onSettingsChange({ stringFocus })}
+        />
+
+        <PromptOrderField
+          selectedOrder={interval.settings.promptOrder}
+          testIdPrefix="interval"
+          onChange={(promptOrder) => interval.onSettingsChange({ promptOrder })}
+        />
+
+        <ReviewModeField
+          missedReviewCount={interval.missedReviewCount}
+          selectedReviewMode={interval.settings.reviewMode}
+          testIdPrefix="interval"
+          emptyMessage="No missed interval prompts yet, using the full set."
+          reviewLabel="missed interval prompt"
+          onChange={(reviewMode) => interval.onSettingsChange({ reviewMode })}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="session-setup-panel">
       <span className="control-label">Session setup</span>
@@ -441,7 +567,7 @@ function QualityFocusField({
 }: {
   selectedQuality: ChordToneQualityFocus | ScaleDegreeQualityFocus;
   testIdPrefix: "chord" | "scale";
-  onChange: (qualityFocus: ScaleDegreeQualityFocus) => void;
+  onChange: (qualityFocus: ChordToneQualityFocus | ScaleDegreeQualityFocus) => void;
 }) {
   return (
     <div className="setup-field">
@@ -468,9 +594,17 @@ function StringFocusField({
   testIdPrefix,
   onChange
 }: {
-  selectedString: NoteRecognitionStringFocus | ScaleDegreeStringFocus;
-  testIdPrefix: "note" | "scale";
-  onChange: (stringFocus: NoteRecognitionStringFocus) => void;
+  selectedString:
+    | NoteRecognitionStringFocus
+    | ScaleDegreeStringFocus
+    | IntervalLandmarkStringFocus;
+  testIdPrefix: "note" | "scale" | "interval";
+  onChange: (
+    stringFocus:
+      | NoteRecognitionStringFocus
+      | ScaleDegreeStringFocus
+      | IntervalLandmarkStringFocus
+  ) => void;
 }) {
   return (
     <div className="setup-field">
@@ -500,9 +634,16 @@ function PromptOrderField({
   selectedOrder:
     | NoteRecognitionPromptOrder
     | ChordTonePromptOrder
-    | ScaleDegreePromptOrder;
-  testIdPrefix: "note" | "chord" | "scale";
-  onChange: (promptOrder: NoteRecognitionPromptOrder) => void;
+    | ScaleDegreePromptOrder
+    | IntervalLandmarkPromptOrder;
+  testIdPrefix: "note" | "chord" | "scale" | "interval";
+  onChange: (
+    promptOrder:
+      | NoteRecognitionPromptOrder
+      | ChordTonePromptOrder
+      | ScaleDegreePromptOrder
+      | IntervalLandmarkPromptOrder
+  ) => void;
 }) {
   return (
     <div className="setup-field">
@@ -536,11 +677,18 @@ function ReviewModeField({
   selectedReviewMode:
     | NoteRecognitionReviewMode
     | ChordToneReviewMode
-    | ScaleDegreeReviewMode;
-  testIdPrefix: "note" | "chord" | "scale";
+    | ScaleDegreeReviewMode
+    | IntervalLandmarkReviewMode;
+  testIdPrefix: "note" | "chord" | "scale" | "interval";
   emptyMessage: string;
   reviewLabel: string;
-  onChange: (reviewMode: NoteRecognitionReviewMode) => void;
+  onChange: (
+    reviewMode:
+      | NoteRecognitionReviewMode
+      | ChordToneReviewMode
+      | ScaleDegreeReviewMode
+      | IntervalLandmarkReviewMode
+  ) => void;
 }) {
   return (
     <div className="setup-field">

@@ -154,6 +154,28 @@ button {
   border-color: #2f6b73;
 }
 
+.course-recommendation-card {
+  align-items: center;
+  background: #f8faf8;
+  border: 1px solid #c5d8d4;
+  border-radius: 8px;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.course-recommendation-card h3 {
+  margin-top: 0.25rem;
+}
+
+.course-recommendation-card p {
+  color: #52615c;
+  line-height: 1.45;
+  margin-top: 0.45rem;
+  max-width: 680px;
+}
+
 .hub-grid {
   display: grid;
   gap: 0.75rem;
@@ -1390,7 +1412,8 @@ button {
   .prompt-panel-header,
   .completion-heading,
   .lesson-outcome,
-  .lesson-practice-card {
+  .lesson-practice-card,
+  .course-recommendation-card {
     align-items: stretch;
     flex-direction: column;
   }
