@@ -50,6 +50,12 @@ export interface NoteRecognitionSessionSettings {
   reviewMode: NoteRecognitionReviewMode;
 }
 
+export interface NoteRecognitionSessionPreset {
+  id: string;
+  label: string;
+  settings: NoteRecognitionSessionSettings;
+}
+
 export type NoteRecognitionSummary = DrillSummary;
 export type NoteRecognitionPerformanceCategory = "note" | "string";
 
@@ -96,6 +102,41 @@ export const DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS: NoteRecognitionSessionSe
   promptOrder: "fixed",
   reviewMode: "full"
 };
+export const NOTE_RECOGNITION_SESSION_PRESETS = [
+  {
+    id: "quick-warmup",
+    label: "Quick warmup",
+    settings: {
+      sessionLength: 6,
+      noteFocus: "all",
+      stringFocus: "all",
+      promptOrder: "fixed",
+      reviewMode: "full"
+    }
+  },
+  {
+    id: "weak-spots",
+    label: "Weak spots",
+    settings: {
+      sessionLength: 10,
+      noteFocus: "all",
+      stringFocus: "all",
+      promptOrder: "random",
+      reviewMode: "missed"
+    }
+  },
+  {
+    id: "low-e-focus",
+    label: "Low E focus",
+    settings: {
+      sessionLength: 10,
+      noteFocus: "all",
+      stringFocus: 6,
+      promptOrder: "random",
+      reviewMode: "full"
+    }
+  }
+] as const satisfies readonly NoteRecognitionSessionPreset[];
 
 export function buildNoteRecognitionAttempt(
   promptIndex: number,

@@ -46,6 +46,12 @@ export interface ChordToneSessionSettings {
   reviewMode: ChordToneReviewMode;
 }
 
+export interface ChordToneSessionPreset {
+  id: string;
+  label: string;
+  settings: ChordToneSessionSettings;
+}
+
 export type ChordToneSummary = DrillSummary;
 export type ChordTonePerformanceCategory = "tone" | "quality" | "root";
 
@@ -94,6 +100,52 @@ export const DEFAULT_CHORD_TONE_SESSION_SETTINGS: ChordToneSessionSettings = {
   promptOrder: "fixed",
   reviewMode: "full"
 };
+export const CHORD_TONE_SESSION_PRESETS = [
+  {
+    id: "quick-warmup",
+    label: "Quick warmup",
+    settings: {
+      sessionLength: 6,
+      qualityFocus: "both",
+      toneFocus: "mixed",
+      promptOrder: "fixed",
+      reviewMode: "full"
+    }
+  },
+  {
+    id: "weak-spots",
+    label: "Weak spots",
+    settings: {
+      sessionLength: 12,
+      qualityFocus: "both",
+      toneFocus: "mixed",
+      promptOrder: "random",
+      reviewMode: "missed"
+    }
+  },
+  {
+    id: "thirds-focus",
+    label: "3rds focus",
+    settings: {
+      sessionLength: 12,
+      qualityFocus: "both",
+      toneFocus: "third",
+      promptOrder: "random",
+      reviewMode: "full"
+    }
+  },
+  {
+    id: "minor-triads",
+    label: "Minor triads",
+    settings: {
+      sessionLength: 12,
+      qualityFocus: "minor",
+      toneFocus: "mixed",
+      promptOrder: "random",
+      reviewMode: "full"
+    }
+  }
+] as const satisfies readonly ChordToneSessionPreset[];
 
 export function buildChordToneAttempt(
   promptIndex: number,
@@ -133,7 +185,7 @@ export function buildChordToneSession(
       missedPrompts: getMissedChordTonePrompts(attempts),
       promptCount
     }),
-    attempts,
+    attempts
   };
 }
 

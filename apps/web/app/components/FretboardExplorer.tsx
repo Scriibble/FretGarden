@@ -16,6 +16,7 @@ import type {
 import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   CHORD_TONE_HISTORY_LIMIT,
+  CHORD_TONE_SESSION_PRESETS,
   DEFAULT_CHORD_TONE_SESSION_SETTINGS,
   appendChordToneSession,
   buildChordToneAttempt,
@@ -36,6 +37,7 @@ import {
   type ChordToneReviewMode,
   type ChordToneSession,
   type ChordToneSessionLength,
+  type ChordToneSessionPreset,
   type ChordToneSessionSettings,
   type ChordToneToneFocus,
   type ChordToneSummary
@@ -43,6 +45,7 @@ import {
 import {
   DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS,
   NOTE_RECOGNITION_HISTORY_LIMIT,
+  NOTE_RECOGNITION_SESSION_PRESETS,
   appendNoteRecognitionSession,
   buildNoteRecognitionPerformanceSummary,
   buildNoteRecognitionPromptSession,
@@ -61,6 +64,7 @@ import {
   type NoteRecognitionReviewMode,
   type NoteRecognitionSession,
   type NoteRecognitionSessionLength,
+  type NoteRecognitionSessionPreset,
   type NoteRecognitionSessionSettings,
   type NoteRecognitionStringFocus,
   type NoteRecognitionSummary
@@ -129,6 +133,10 @@ const modes: Array<{ id: DisplayMode; label: string }> = [
 const NOTE_RECOGNITION_HISTORY_STORAGE_KEY =
   "pocket-practice:note-recognition-history";
 const CHORD_TONE_HISTORY_STORAGE_KEY = "pocket-practice:chord-tone-history";
+const NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY =
+  "pocket-practice:note-recognition-custom-preset";
+const CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY =
+  "pocket-practice:chord-tone-custom-preset";
 const noteSessionLengthOptions = [6, 10, 20] as const satisfies readonly NoteRecognitionSessionLength[];
 const noteFocusOptions = [
   { id: "all", label: "All" },
@@ -209,11 +217,15 @@ export function FretboardExplorer() {
       DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS
     );
   const [noteSessionNonce, setNoteSessionNonce] = useState(0);
+  const [customNotePreset, setCustomNotePreset] =
+    useState<NoteRecognitionSessionPreset | null>(null);
   const [chordPromptIndex, setChordPromptIndex] = useState(0);
   const [chordAttempts, setChordAttempts] = useState<ChordToneAttempt[]>([]);
   const [chordSessionSettings, setChordSessionSettings] =
     useState<ChordToneSessionSettings>(DEFAULT_CHORD_TONE_SESSION_SETTINGS);
   const [chordSessionNonce, setChordSessionNonce] = useState(0);
+  const [customChordPreset, setCustomChordPreset] =
+    useState<ChordToneSessionPreset | null>(null);
   const [completedSession, setCompletedSession] =
     useState<NoteRecognitionSession | null>(null);
   const [completedChordSession, setCompletedChordSession] =
@@ -383,6 +395,12 @@ export function FretboardExplorer() {
       : (chordSessionHistory[0] ?? null);
   const chordMissedReviewCount = latestChordMissedPrompts.length;
   const noteMissedReviewCount = latestNoteMissedPrompts.length;
+  const notePresetOptions = customNotePreset
+    ? [...NOTE_RECOGNITION_SESSION_PRESETS, customNotePreset]
+    : NOTE_RECOGNITION_SESSION_PRESETS;
+  const chordPresetOptions = customChordPreset
+    ? [...CHORD_TONE_SESSION_PRESETS, customChordPreset]
+    : CHORD_TONE_SESSION_PRESETS;
 
   useEffect(() => {
     setSessionHistory(
@@ -395,6 +413,16 @@ export function FretboardExplorer() {
       readStoredSessionHistory<ChordToneSession>(
         CHORD_TONE_HISTORY_STORAGE_KEY,
         CHORD_TONE_HISTORY_LIMIT
+      )
+    );
+    setCustomNotePreset(
+      readStoredPreset<NoteRecognitionSessionPreset>(
+        NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY
+      )
+    );
+    setCustomChordPreset(
+      readStoredPreset<ChordToneSessionPreset>(
+        CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY
       )
     );
   }, []);
@@ -524,6 +552,22 @@ export function FretboardExplorer() {
     resetChordToneDrill();
   }
 
+  function handleChordPresetSelect(preset: ChordToneSessionPreset): void {
+    setChordSessionSettings(preset.settings);
+    resetChordToneDrill();
+  }
+
+  function handleSaveChordPreset(): void {
+    const nextPreset = {
+      id: "custom",
+      label: "Custom",
+      settings: chordSessionSettings
+    } satisfies ChordToneSessionPreset;
+
+    setCustomChordPreset(nextPreset);
+    writeStoredPreset(CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
+  }
+
   function handleNoteSessionSettingsChange(
     nextSettings: Partial<NoteRecognitionSessionSettings>
   ): void {
@@ -532,6 +576,22 @@ export function FretboardExplorer() {
       ...nextSettings
     }));
     resetNoteRecognitionDrill();
+  }
+
+  function handleNotePresetSelect(preset: NoteRecognitionSessionPreset): void {
+    setNoteSessionSettings(preset.settings);
+    resetNoteRecognitionDrill();
+  }
+
+  function handleSaveNotePreset(): void {
+    const nextPreset = {
+      id: "custom",
+      label: "Custom",
+      settings: noteSessionSettings
+    } satisfies NoteRecognitionSessionPreset;
+
+    setCustomNotePreset(nextPreset);
+    writeStoredPreset(NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
   }
 
   function resetNoteRecognitionDrill(): void {
@@ -638,6 +698,29 @@ export function FretboardExplorer() {
           {mode === "practice" && practiceDrill === "note" ? (
             <div className="session-setup-panel">
               <span className="control-label">Session setup</span>
+
+              <div className="setup-field">
+                <span>Preset</span>
+                <div className="preset-grid">
+                  {notePresetOptions.map((preset) => (
+                    <button
+                      data-testid={`note-preset-${preset.id}`}
+                      key={preset.id}
+                      onClick={() => handleNotePresetSelect(preset)}
+                      type="button"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                  <button
+                    data-testid="note-preset-save"
+                    onClick={handleSaveNotePreset}
+                    type="button"
+                  >
+                    Save current
+                  </button>
+                </div>
+              </div>
 
               <div className="setup-field">
                 <span>Length</span>
@@ -778,6 +861,29 @@ export function FretboardExplorer() {
           {mode === "practice" && practiceDrill === "chordTone" ? (
             <div className="session-setup-panel">
               <span className="control-label">Session setup</span>
+
+              <div className="setup-field">
+                <span>Preset</span>
+                <div className="preset-grid">
+                  {chordPresetOptions.map((preset) => (
+                    <button
+                      data-testid={`chord-preset-${preset.id}`}
+                      key={preset.id}
+                      onClick={() => handleChordPresetSelect(preset)}
+                      type="button"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                  <button
+                    data-testid="chord-preset-save"
+                    onClick={handleSaveChordPreset}
+                    type="button"
+                  >
+                    Save current
+                  </button>
+                </div>
+              </div>
 
               <div className="setup-field">
                 <span>Length</span>
@@ -1908,5 +2014,23 @@ function writeStoredSessionHistory<Session>(
     window.localStorage.setItem(storageKey, JSON.stringify(history));
   } catch {
     // Local progress is a convenience; the drill should keep working if storage is unavailable.
+  }
+}
+
+function readStoredPreset<Preset>(storageKey: string): Preset | null {
+  try {
+    const storedPreset = window.localStorage.getItem(storageKey);
+
+    return storedPreset ? (JSON.parse(storedPreset) as Preset) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredPreset<Preset>(storageKey: string, preset: Preset): void {
+  try {
+    window.localStorage.setItem(storageKey, JSON.stringify(preset));
+  } catch {
+    // Custom presets are a convenience; the drill should still work without storage.
   }
 }

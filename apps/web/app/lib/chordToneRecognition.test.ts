@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   CHORD_TONE_PROMPTS,
+  CHORD_TONE_SESSION_PRESETS,
   appendChordToneSession,
   buildChordToneAttempt,
   buildChordTonePerformanceSummary,
@@ -29,6 +30,55 @@ describe("chordToneRecognition", () => {
       { rootNote: "C", quality: "minor", targetTone: 1 },
       { rootNote: "A", quality: "major", targetTone: 5 },
       { rootNote: "G", quality: "minor", targetTone: 3 }
+    ]);
+  });
+
+  it("defines reusable beginner chord-tone presets", () => {
+    expect(CHORD_TONE_SESSION_PRESETS).toEqual([
+      {
+        id: "quick-warmup",
+        label: "Quick warmup",
+        settings: {
+          sessionLength: 6,
+          qualityFocus: "both",
+          toneFocus: "mixed",
+          promptOrder: "fixed",
+          reviewMode: "full"
+        }
+      },
+      {
+        id: "weak-spots",
+        label: "Weak spots",
+        settings: {
+          sessionLength: 12,
+          qualityFocus: "both",
+          toneFocus: "mixed",
+          promptOrder: "random",
+          reviewMode: "missed"
+        }
+      },
+      {
+        id: "thirds-focus",
+        label: "3rds focus",
+        settings: {
+          sessionLength: 12,
+          qualityFocus: "both",
+          toneFocus: "third",
+          promptOrder: "random",
+          reviewMode: "full"
+        }
+      },
+      {
+        id: "minor-triads",
+        label: "Minor triads",
+        settings: {
+          sessionLength: 12,
+          qualityFocus: "minor",
+          toneFocus: "mixed",
+          promptOrder: "random",
+          reviewMode: "full"
+        }
+      }
     ]);
   });
 

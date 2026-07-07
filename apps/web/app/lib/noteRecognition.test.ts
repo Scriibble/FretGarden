@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   NOTE_RECOGNITION_PROMPTS,
+  NOTE_RECOGNITION_SESSION_PRESETS,
   appendNoteRecognitionSession,
   buildNoteRecognitionPromptSession,
   buildNoteRecognitionPerformanceSummary,
@@ -26,6 +27,44 @@ describe("noteRecognition", () => {
       { targetNote: "C", targetString: 3 },
       { targetNote: "A", targetString: 4 },
       { targetNote: "G", targetString: 1 }
+    ]);
+  });
+
+  it("defines reusable beginner note-drill presets", () => {
+    expect(NOTE_RECOGNITION_SESSION_PRESETS).toEqual([
+      {
+        id: "quick-warmup",
+        label: "Quick warmup",
+        settings: {
+          sessionLength: 6,
+          noteFocus: "all",
+          stringFocus: "all",
+          promptOrder: "fixed",
+          reviewMode: "full"
+        }
+      },
+      {
+        id: "weak-spots",
+        label: "Weak spots",
+        settings: {
+          sessionLength: 10,
+          noteFocus: "all",
+          stringFocus: "all",
+          promptOrder: "random",
+          reviewMode: "missed"
+        }
+      },
+      {
+        id: "low-e-focus",
+        label: "Low E focus",
+        settings: {
+          sessionLength: 10,
+          noteFocus: "all",
+          stringFocus: 6,
+          promptOrder: "random",
+          reviewMode: "full"
+        }
+      }
     ]);
   });
 

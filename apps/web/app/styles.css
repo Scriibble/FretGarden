@@ -176,6 +176,26 @@ button {
   line-height: 1.35;
 }
 
+.preset-grid {
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.preset-grid button {
+  border: 1px solid #d8dfda;
+  border-radius: 7px;
+  background: #f8faf8;
+  color: #27332f;
+  cursor: pointer;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.65rem;
+}
+
+.preset-grid button:hover {
+  border-color: #2f6b73;
+}
+
 .chord-answer-panel {
   border: 1px solid #d8dfda;
   border-radius: 8px;
