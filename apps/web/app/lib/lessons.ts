@@ -42,7 +42,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice note recognition",
-      href: "/#practice"
+      href: "/?drill=note#practice"
     }
   },
   {
@@ -69,7 +69,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice string-specific notes",
-      href: "/#practice"
+      href: "/?drill=note#practice"
     }
   },
   {
@@ -96,7 +96,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice chord tones",
-      href: "/#practice"
+      href: "/?drill=chordTone#practice"
     }
   },
   {
@@ -123,7 +123,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice scale degrees",
-      href: "/#practice"
+      href: "/?drill=scaleDegree#practice"
     }
   }
 ] as const satisfies readonly Lesson[];

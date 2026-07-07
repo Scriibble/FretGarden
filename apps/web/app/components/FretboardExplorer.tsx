@@ -524,6 +524,29 @@ export function FretboardExplorer() {
   }, []);
 
   useEffect(() => {
+    const requestedDrill = parsePracticeDrillParam(
+      new URLSearchParams(window.location.search).get("drill")
+    );
+
+    if (!requestedDrill) {
+      return;
+    }
+
+    setMode("practice");
+    setPracticeDrill(requestedDrill);
+
+    if (requestedDrill === "chordTone") {
+      resetChordToneDrill();
+    } else if (requestedDrill === "scaleDegree") {
+      resetScaleDegreeDrill();
+    } else {
+      resetNoteRecognitionDrill();
+    }
+
+    scrollPracticeSessionIntoView();
+  }, []);
+
+  useEffect(() => {
     if (!drillSummary.isComplete || completedSession !== null) {
       return;
     }
@@ -2070,6 +2093,18 @@ function getPracticeDrillLabel(practiceDrill: PracticeDrill): string {
   }
 
   return "Note recognition";
+}
+
+function parsePracticeDrillParam(value: string | null): PracticeDrill | null {
+  if (
+    value === "note" ||
+    value === "chordTone" ||
+    value === "scaleDegree"
+  ) {
+    return value;
+  }
+
+  return null;
 }
 
 function getCompletionTitle(practiceDrill: PracticeDrill): string {
