@@ -30,10 +30,24 @@ export interface NoteRecognitionPrompt {
   targetString: GuitarStringNumber;
 }
 
+export type NoteRecognitionNoteFocus = NoteName | "all";
+export type NoteRecognitionStringFocus = GuitarStringNumber | "all";
+export type NoteRecognitionPromptOrder = "fixed" | "random";
+export type NoteRecognitionReviewMode = "full" | "missed";
+export type NoteRecognitionSessionLength = 6 | 10 | 20;
+
 export interface MissedNoteRecognitionPrompt extends NoteRecognitionPrompt {
   selectedNote: NoteName;
   selectedString: GuitarStringNumber;
   selectedFret: number;
+}
+
+export interface NoteRecognitionSessionSettings {
+  sessionLength: NoteRecognitionSessionLength;
+  noteFocus: NoteRecognitionNoteFocus;
+  stringFocus: NoteRecognitionStringFocus;
+  promptOrder: NoteRecognitionPromptOrder;
+  reviewMode: NoteRecognitionReviewMode;
 }
 
 export type NoteRecognitionSummary = DrillSummary;
@@ -75,6 +89,13 @@ export const NOTE_RECOGNITION_PROMPTS = [
 ] as const satisfies readonly NoteRecognitionPrompt[];
 
 export const NOTE_RECOGNITION_HISTORY_LIMIT = 5;
+export const DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS: NoteRecognitionSessionSettings = {
+  sessionLength: 10,
+  noteFocus: "all",
+  stringFocus: "all",
+  promptOrder: "fixed",
+  reviewMode: "full"
+};
 
 export function buildNoteRecognitionAttempt(
   promptIndex: number,
@@ -177,6 +198,26 @@ export function getCurrentPrompt(
   return getCurrentDrillPrompt(promptIndex, prompts) as NoteRecognitionPrompt;
 }
 
+export function buildNoteRecognitionPromptSession(
+  settings: NoteRecognitionSessionSettings = DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS,
+  missedPrompts: readonly MissedNoteRecognitionPrompt[] = [],
+  random: () => number = Math.random
+): NoteRecognitionPrompt[] {
+  const reviewPrompts =
+    settings.reviewMode === "missed" && missedPrompts.length > 0
+      ? missedPrompts
+      : NOTE_RECOGNITION_PROMPTS;
+  const filteredPrompts = filterNoteRecognitionPrompts(reviewPrompts, settings);
+  const sourcePrompts =
+    filteredPrompts.length > 0 ? filteredPrompts : [...NOTE_RECOGNITION_PROMPTS];
+  const orderedPrompts =
+    settings.promptOrder === "random"
+      ? shuffleNoteRecognitionPrompts(sourcePrompts, random)
+      : sourcePrompts;
+
+  return cycleNoteRecognitionPrompts(orderedPrompts, settings.sessionLength);
+}
+
 export function isNoteRecognitionAnswerPosition(
   position: Pick<FretPosition, "fret">
 ): boolean {
@@ -244,4 +285,65 @@ function compareNoteRecognitionWeakSpots(
     right.attempted - left.attempted ||
     left.label.localeCompare(right.label)
   );
+}
+
+function filterNoteRecognitionPrompts(
+  prompts: readonly NoteRecognitionPrompt[],
+  settings: NoteRecognitionSessionSettings
+): NoteRecognitionPrompt[] {
+  return prompts.filter(
+    (prompt) =>
+      matchesNoteFocus(prompt, settings.noteFocus) &&
+      matchesStringFocus(prompt, settings.stringFocus)
+  );
+}
+
+function matchesNoteFocus(
+  prompt: NoteRecognitionPrompt,
+  noteFocus: NoteRecognitionNoteFocus
+): boolean {
+  return noteFocus === "all" || prompt.targetNote === noteFocus;
+}
+
+function matchesStringFocus(
+  prompt: NoteRecognitionPrompt,
+  stringFocus: NoteRecognitionStringFocus
+): boolean {
+  return stringFocus === "all" || prompt.targetString === stringFocus;
+}
+
+function shuffleNoteRecognitionPrompts(
+  prompts: readonly NoteRecognitionPrompt[],
+  random: () => number
+): NoteRecognitionPrompt[] {
+  const shuffledPrompts = [...prompts];
+
+  for (let index = shuffledPrompts.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    const prompt = shuffledPrompts[index]!;
+
+    shuffledPrompts[index] = shuffledPrompts[swapIndex]!;
+    shuffledPrompts[swapIndex] = prompt;
+  }
+
+  return shuffledPrompts;
+}
+
+function cycleNoteRecognitionPrompts(
+  prompts: readonly NoteRecognitionPrompt[],
+  sessionLength: NoteRecognitionSessionLength
+): NoteRecognitionPrompt[] {
+  return Array.from(
+    { length: sessionLength },
+    (_, index) => toNoteRecognitionPrompt(prompts[index % prompts.length]!)
+  );
+}
+
+function toNoteRecognitionPrompt(
+  prompt: NoteRecognitionPrompt
+): NoteRecognitionPrompt {
+  return {
+    targetNote: prompt.targetNote,
+    targetString: prompt.targetString
+  };
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   NOTE_RECOGNITION_PROMPTS,
   appendNoteRecognitionSession,
+  buildNoteRecognitionPromptSession,
   buildNoteRecognitionPerformanceSummary,
   buildNoteRecognitionSession,
   buildNoteRecognitionAttempt,
@@ -45,6 +46,109 @@ describe("noteRecognition", () => {
       selectedFret: 5,
       isCorrect: true
     });
+  });
+
+  it("builds configurable fixed prompt sessions", () => {
+    expect(
+      buildNoteRecognitionPromptSession({
+        sessionLength: 6,
+        noteFocus: "C",
+        stringFocus: "all",
+        promptOrder: "fixed",
+        reviewMode: "full"
+      })
+    ).toEqual([
+      { targetNote: "C", targetString: 2 },
+      { targetNote: "C", targetString: 3 },
+      { targetNote: "C", targetString: 2 },
+      { targetNote: "C", targetString: 3 },
+      { targetNote: "C", targetString: 2 },
+      { targetNote: "C", targetString: 3 }
+    ]);
+  });
+
+  it("filters configurable sessions by target string", () => {
+    expect(
+      buildNoteRecognitionPromptSession({
+        sessionLength: 6,
+        noteFocus: "all",
+        stringFocus: 6,
+        promptOrder: "fixed",
+        reviewMode: "full"
+      })
+    ).toEqual([
+      { targetNote: "G", targetString: 6 },
+      { targetNote: "F", targetString: 6 },
+      { targetNote: "G", targetString: 6 },
+      { targetNote: "F", targetString: 6 },
+      { targetNote: "G", targetString: 6 },
+      { targetNote: "F", targetString: 6 }
+    ]);
+  });
+
+  it("uses missed prompts when review mode has misses", () => {
+    expect(
+      buildNoteRecognitionPromptSession(
+        {
+          sessionLength: 6,
+          noteFocus: "all",
+          stringFocus: "all",
+          promptOrder: "fixed",
+          reviewMode: "missed"
+        },
+        [
+          {
+            targetNote: "G",
+            targetString: 6,
+            selectedNote: "G",
+            selectedString: 1,
+            selectedFret: 3
+          }
+        ]
+      )
+    ).toEqual([
+      { targetNote: "G", targetString: 6 },
+      { targetNote: "G", targetString: 6 },
+      { targetNote: "G", targetString: 6 },
+      { targetNote: "G", targetString: 6 },
+      { targetNote: "G", targetString: 6 },
+      { targetNote: "G", targetString: 6 }
+    ]);
+  });
+
+  it("falls back to the full prompt queue when missed review has no misses", () => {
+    expect(
+      buildNoteRecognitionPromptSession({
+        sessionLength: 6,
+        noteFocus: "all",
+        stringFocus: "all",
+        promptOrder: "fixed",
+        reviewMode: "missed"
+      })
+    ).toEqual(NOTE_RECOGNITION_PROMPTS.slice(0, 6));
+  });
+
+  it("can randomize prompt order with an injected random source", () => {
+    expect(
+      buildNoteRecognitionPromptSession(
+        {
+          sessionLength: 6,
+          noteFocus: "C",
+          stringFocus: "all",
+          promptOrder: "random",
+          reviewMode: "full"
+        },
+        [],
+        () => 0
+      )
+    ).toEqual([
+      { targetNote: "C", targetString: 3 },
+      { targetNote: "C", targetString: 2 },
+      { targetNote: "C", targetString: 3 },
+      { targetNote: "C", targetString: 2 },
+      { targetNote: "C", targetString: 3 },
+      { targetNote: "C", targetString: 2 }
+    ]);
   });
 
   it("builds a missed attempt when the selected pitch does not match", () => {

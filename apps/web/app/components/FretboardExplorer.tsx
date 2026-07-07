@@ -41,10 +41,11 @@ import {
   type ChordToneSummary
 } from "../lib/chordToneRecognition";
 import {
-  NOTE_RECOGNITION_PROMPTS,
+  DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS,
   NOTE_RECOGNITION_HISTORY_LIMIT,
   appendNoteRecognitionSession,
   buildNoteRecognitionPerformanceSummary,
+  buildNoteRecognitionPromptSession,
   buildNoteRecognitionSession,
   buildNoteRecognitionAttempt,
   getCurrentPrompt,
@@ -52,10 +53,16 @@ import {
   isNoteRecognitionAnswerPosition,
   isNoteRecognitionCorrectPosition,
   summarizeNoteRecognition,
+  type NoteRecognitionNoteFocus,
   type NoteRecognitionAttempt,
   type NoteRecognitionPerformanceStat,
+  type NoteRecognitionPromptOrder,
   type NoteRecognitionPrompt,
+  type NoteRecognitionReviewMode,
   type NoteRecognitionSession,
+  type NoteRecognitionSessionLength,
+  type NoteRecognitionSessionSettings,
+  type NoteRecognitionStringFocus,
   type NoteRecognitionSummary
 } from "../lib/noteRecognition";
 
@@ -122,6 +129,40 @@ const modes: Array<{ id: DisplayMode; label: string }> = [
 const NOTE_RECOGNITION_HISTORY_STORAGE_KEY =
   "pocket-practice:note-recognition-history";
 const CHORD_TONE_HISTORY_STORAGE_KEY = "pocket-practice:chord-tone-history";
+const noteSessionLengthOptions = [6, 10, 20] as const satisfies readonly NoteRecognitionSessionLength[];
+const noteFocusOptions = [
+  { id: "all", label: "All" },
+  ...notes.map((note) => ({ id: note, label: note }))
+] as const satisfies ReadonlyArray<{
+  id: NoteRecognitionNoteFocus;
+  label: string;
+}>;
+const noteStringFocusOptions = [
+  { id: "all", label: "All" },
+  { id: 6, label: "Low E" },
+  { id: 5, label: "A" },
+  { id: 4, label: "D" },
+  { id: 3, label: "G" },
+  { id: 2, label: "B" },
+  { id: 1, label: "High E" }
+] as const satisfies ReadonlyArray<{
+  id: NoteRecognitionStringFocus;
+  label: string;
+}>;
+const notePromptOrderOptions = [
+  { id: "fixed", label: "Fixed" },
+  { id: "random", label: "Random" }
+] as const satisfies ReadonlyArray<{
+  id: NoteRecognitionPromptOrder;
+  label: string;
+}>;
+const noteReviewModeOptions = [
+  { id: "full", label: "Full set" },
+  { id: "missed", label: "Missed only" }
+] as const satisfies ReadonlyArray<{
+  id: NoteRecognitionReviewMode;
+  label: string;
+}>;
 const chordSessionLengthOptions = [6, 12, 20] as const satisfies readonly ChordToneSessionLength[];
 const chordQualityFocusOptions = [
   { id: "both", label: "Both" },
@@ -163,6 +204,11 @@ export function FretboardExplorer() {
   const [chordQuality, setChordQuality] = useState<TriadQuality>("major");
   const [promptIndex, setPromptIndex] = useState(0);
   const [attempts, setAttempts] = useState<NoteRecognitionAttempt[]>([]);
+  const [noteSessionSettings, setNoteSessionSettings] =
+    useState<NoteRecognitionSessionSettings>(
+      DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS
+    );
+  const [noteSessionNonce, setNoteSessionNonce] = useState(0);
   const [chordPromptIndex, setChordPromptIndex] = useState(0);
   const [chordAttempts, setChordAttempts] = useState<ChordToneAttempt[]>([]);
   const [chordSessionSettings, setChordSessionSettings] =
@@ -196,6 +242,18 @@ export function FretboardExplorer() {
     () => buildNoteRecognitionPerformanceSummary(notePerformanceSessions),
     [notePerformanceSessions]
   );
+  const latestNoteMissedPrompts = useMemo(
+    () => sessionHistory[0]?.missedPrompts ?? [],
+    [sessionHistory]
+  );
+  const notePromptQueue = useMemo(
+    () =>
+      buildNoteRecognitionPromptSession(
+        noteSessionSettings,
+        latestNoteMissedPrompts
+      ),
+    [noteSessionSettings, noteSessionNonce, latestNoteMissedPrompts]
+  );
   const latestChordMissedPrompts = useMemo(
     () => chordSessionHistory[0]?.missedPrompts ?? [],
     [chordSessionHistory]
@@ -224,7 +282,7 @@ export function FretboardExplorer() {
       ),
     [chordSessionSettings, chordSessionNonce, latestChordMissedPrompts]
   );
-  const currentPrompt = getCurrentPrompt(promptIndex);
+  const currentPrompt = getCurrentPrompt(promptIndex, notePromptQueue);
   const currentAttempt =
     attempts.find((attempt) => attempt.promptIndex === promptIndex) ?? null;
   const currentChordPrompt = getCurrentChordTonePrompt(
@@ -235,8 +293,8 @@ export function FretboardExplorer() {
     chordAttempts.find((attempt) => attempt.promptIndex === chordPromptIndex) ??
     null;
   const drillSummary = useMemo(
-    () => summarizeNoteRecognition(attempts),
-    [attempts]
+    () => summarizeNoteRecognition(attempts, notePromptQueue.length),
+    [attempts, notePromptQueue.length]
   );
   const chordDrillSummary = useMemo(
     () => summarizeChordToneRecognition(chordAttempts, chordPromptQueue.length),
@@ -289,6 +347,7 @@ export function FretboardExplorer() {
         currentChordPrompt,
         currentChordAttempt,
         chordDrillSummary,
+        notePromptQueue.length,
         chordPromptQueue.length
       ),
     [
@@ -303,6 +362,7 @@ export function FretboardExplorer() {
       currentChordPrompt,
       currentChordAttempt,
       chordDrillSummary,
+      notePromptQueue.length,
       chordPromptQueue.length
     ]
   );
@@ -315,13 +375,14 @@ export function FretboardExplorer() {
     practiceDrill === "note" ? currentAttempt : currentChordAttempt;
   const activePromptCount =
     practiceDrill === "note"
-      ? NOTE_RECOGNITION_PROMPTS.length
+      ? notePromptQueue.length
       : chordPromptQueue.length;
   const latestSession =
     practiceDrill === "note"
       ? (sessionHistory[0] ?? null)
       : (chordSessionHistory[0] ?? null);
   const chordMissedReviewCount = latestChordMissedPrompts.length;
+  const noteMissedReviewCount = latestNoteMissedPrompts.length;
 
   useEffect(() => {
     setSessionHistory(
@@ -343,7 +404,11 @@ export function FretboardExplorer() {
       return;
     }
 
-    const nextSession = buildNoteRecognitionSession(attempts);
+    const nextSession = buildNoteRecognitionSession(
+      attempts,
+      undefined,
+      notePromptQueue.length
+    );
 
     setCompletedSession(nextSession);
     setSessionHistory((previousHistory) => {
@@ -358,7 +423,12 @@ export function FretboardExplorer() {
 
       return nextHistory;
     });
-  }, [attempts, completedSession, drillSummary.isComplete]);
+  }, [
+    attempts,
+    completedSession,
+    drillSummary.isComplete,
+    notePromptQueue.length
+  ]);
 
   useEffect(() => {
     if (!chordDrillSummary.isComplete || completedChordSession !== null) {
@@ -454,6 +524,24 @@ export function FretboardExplorer() {
     resetChordToneDrill();
   }
 
+  function handleNoteSessionSettingsChange(
+    nextSettings: Partial<NoteRecognitionSessionSettings>
+  ): void {
+    setNoteSessionSettings((previousSettings) => ({
+      ...previousSettings,
+      ...nextSettings
+    }));
+    resetNoteRecognitionDrill();
+  }
+
+  function resetNoteRecognitionDrill(): void {
+    setPromptIndex(0);
+    setAttempts([]);
+    setCompletedSession(null);
+    setSelectedPosition(null);
+    setNoteSessionNonce((previousNonce) => previousNonce + 1);
+  }
+
   function resetChordToneDrill(): void {
     setChordPromptIndex(0);
     setChordAttempts([]);
@@ -481,10 +569,7 @@ export function FretboardExplorer() {
     if (practiceDrill === "chordTone") {
       resetChordToneDrill();
     } else {
-      setPromptIndex(0);
-      setAttempts([]);
-      setCompletedSession(null);
-      setSelectedPosition(null);
+      resetNoteRecognitionDrill();
     }
   }
 
@@ -546,6 +631,146 @@ export function FretboardExplorer() {
                     {option.label}
                   </button>
                 ))}
+              </div>
+            </div>
+          ) : null}
+
+          {mode === "practice" && practiceDrill === "note" ? (
+            <div className="session-setup-panel">
+              <span className="control-label">Session setup</span>
+
+              <div className="setup-field">
+                <span>Length</span>
+                <div className="segmented-control option-grid three">
+                  {noteSessionLengthOptions.map((sessionLength) => (
+                    <button
+                      className={
+                        noteSessionSettings.sessionLength === sessionLength
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`note-length-${sessionLength}`}
+                      key={sessionLength}
+                      onClick={() =>
+                        handleNoteSessionSettingsChange({ sessionLength })
+                      }
+                      type="button"
+                    >
+                      {sessionLength}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Target note</span>
+                <div className="note-grid">
+                  {noteFocusOptions.map((option) => (
+                    <button
+                      className={
+                        noteSessionSettings.noteFocus === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`note-focus-${formatNoteFocusTestId(
+                        option.id
+                      )}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleNoteSessionSettingsChange({
+                          noteFocus: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>String</span>
+                <div className="segmented-control option-grid string-options">
+                  {noteStringFocusOptions.map((option) => (
+                    <button
+                      className={
+                        noteSessionSettings.stringFocus === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`note-string-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleNoteSessionSettingsChange({
+                          stringFocus: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Order</span>
+                <div className="segmented-control compact">
+                  {notePromptOrderOptions.map((option) => (
+                    <button
+                      className={
+                        noteSessionSettings.promptOrder === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`note-order-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleNoteSessionSettingsChange({
+                          promptOrder: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Review</span>
+                <div className="segmented-control compact">
+                  {noteReviewModeOptions.map((option) => (
+                    <button
+                      className={
+                        noteSessionSettings.reviewMode === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`note-review-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleNoteSessionSettingsChange({
+                          reviewMode: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                {noteSessionSettings.reviewMode === "missed" &&
+                noteMissedReviewCount === 0 ? (
+                  <small>No missed note prompts yet, using the full set.</small>
+                ) : noteSessionSettings.reviewMode === "missed" ? (
+                  <small>
+                    Reviewing {noteMissedReviewCount} missed note prompt
+                    {noteMissedReviewCount === 1 ? "" : "s"}.
+                  </small>
+                ) : null}
               </div>
             </div>
           ) : null}
@@ -1328,6 +1553,7 @@ function buildModeSummary(
   chordPrompt: ChordTonePrompt,
   currentChordAttempt: ChordToneAttempt | null,
   chordDrillSummary: ChordToneSummary,
+  notePromptCount: number,
   chordPromptCount: number
 ): ModeSummary {
   if (mode === "practice") {
@@ -1389,7 +1615,7 @@ function buildModeSummary(
             : `You chose ${currentAttempt.selectedNote} on the ${getStringDisplayName(
                 currentAttempt.selectedString
               )} string. The correct ${drillPrompt.targetNote} on the ${targetStringName} string is highlighted.`,
-      badge: `${drillSummary.attempted + 1}/${NOTE_RECOGNITION_PROMPTS.length}`,
+      badge: `${drillSummary.attempted + 1}/${notePromptCount}`,
       tones: [drillPrompt.targetNote, `${targetStringName} string`]
     };
   }
@@ -1632,6 +1858,10 @@ function buildChordAnswerClassName(
 
 function formatNoteTestId(note: NoteName): string {
   return note.replace("#", "sharp").replace("b", "flat");
+}
+
+function formatNoteFocusTestId(noteFocus: NoteRecognitionNoteFocus): string {
+  return noteFocus === "all" ? noteFocus : formatNoteTestId(noteFocus);
 }
 
 function formatPerformanceStat(stat: PerformanceStat): string {
