@@ -15,8 +15,11 @@ import type {
 } from "@pocket-practice/music-theory-engine";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import {
+  CHORD_TONE_HISTORY_LIMIT,
   CHORD_TONE_PROMPTS,
+  appendChordToneSession,
   buildChordToneAttempt,
+  buildChordToneSession,
   getChordToneAnswerOptions,
   getCurrentChordTonePrompt,
   getMissedChordTonePrompts,
@@ -25,6 +28,7 @@ import {
   type ChordTone,
   type ChordToneAttempt,
   type ChordTonePrompt,
+  type ChordToneSession,
   type ChordToneSummary
 } from "../lib/chordToneRecognition";
 import {
@@ -103,6 +107,7 @@ const modes: Array<{ id: DisplayMode; label: string }> = [
 
 const NOTE_RECOGNITION_HISTORY_STORAGE_KEY =
   "pocket-practice:note-recognition-history";
+const CHORD_TONE_HISTORY_STORAGE_KEY = "pocket-practice:chord-tone-history";
 
 export function FretboardExplorer() {
   const [mode, setMode] = useState<DisplayMode>("practice");
@@ -116,8 +121,13 @@ export function FretboardExplorer() {
   const [chordAttempts, setChordAttempts] = useState<ChordToneAttempt[]>([]);
   const [completedSession, setCompletedSession] =
     useState<NoteRecognitionSession | null>(null);
+  const [completedChordSession, setCompletedChordSession] =
+    useState<ChordToneSession | null>(null);
   const [sessionHistory, setSessionHistory] = useState<
     NoteRecognitionSession[]
+  >([]);
+  const [chordSessionHistory, setChordSessionHistory] = useState<
+    ChordToneSession[]
   >([]);
   const [selectedPosition, setSelectedPosition] = useState<FretPosition | null>(
     null
@@ -203,7 +213,6 @@ export function FretboardExplorer() {
   const selectedActive = selectedPosition
     ? activePositions.get(positionKey(selectedPosition))
     : undefined;
-  const latestSession = sessionHistory[0] ?? null;
   const activeDrillSummary =
     practiceDrill === "note" ? drillSummary : chordDrillSummary;
   const activeDrillAttempt =
@@ -212,9 +221,24 @@ export function FretboardExplorer() {
     practiceDrill === "note"
       ? NOTE_RECOGNITION_PROMPTS.length
       : CHORD_TONE_PROMPTS.length;
+  const latestSession =
+    practiceDrill === "note"
+      ? (sessionHistory[0] ?? null)
+      : (chordSessionHistory[0] ?? null);
 
   useEffect(() => {
-    setSessionHistory(readStoredSessionHistory());
+    setSessionHistory(
+      readStoredSessionHistory<NoteRecognitionSession>(
+        NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
+        NOTE_RECOGNITION_HISTORY_LIMIT
+      )
+    );
+    setChordSessionHistory(
+      readStoredSessionHistory<ChordToneSession>(
+        CHORD_TONE_HISTORY_STORAGE_KEY,
+        CHORD_TONE_HISTORY_LIMIT
+      )
+    );
   }, []);
 
   useEffect(() => {
@@ -230,11 +254,30 @@ export function FretboardExplorer() {
         previousHistory,
         nextSession
       );
-      writeStoredSessionHistory(nextHistory);
+      writeStoredSessionHistory(
+        NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
+        nextHistory
+      );
 
       return nextHistory;
     });
   }, [attempts, completedSession, drillSummary.isComplete]);
+
+  useEffect(() => {
+    if (!chordDrillSummary.isComplete || completedChordSession !== null) {
+      return;
+    }
+
+    const nextSession = buildChordToneSession(chordAttempts);
+
+    setCompletedChordSession(nextSession);
+    setChordSessionHistory((previousHistory) => {
+      const nextHistory = appendChordToneSession(previousHistory, nextSession);
+      writeStoredSessionHistory(CHORD_TONE_HISTORY_STORAGE_KEY, nextHistory);
+
+      return nextHistory;
+    });
+  }, [chordAttempts, completedChordSession, chordDrillSummary.isComplete]);
 
   function handleModeChange(nextMode: DisplayMode): void {
     setMode(nextMode);
@@ -314,6 +357,7 @@ export function FretboardExplorer() {
     if (practiceDrill === "chordTone") {
       setChordPromptIndex(0);
       setChordAttempts([]);
+      setCompletedChordSession(null);
     } else {
       setPromptIndex(0);
       setAttempts([]);
@@ -752,7 +796,8 @@ export function FretboardExplorer() {
                         <strong>{formatChordPromptTarget(missedPrompt)}</strong>
                         <span>
                           You chose {missedPrompt.selectedNote}; correct answer
-                          was {missedPrompt.targetNote}.
+                          was {missedPrompt.targetNote}.{" "}
+                          {formatChordSpelling(missedPrompt)}.
                         </span>
                       </li>
                     ))}
@@ -792,7 +837,7 @@ function buildActivePositions(
         frets: fretboard.frets
       }).forEach((position) => {
         activePositions.set(positionKey(position), {
-          label: position.note,
+          label: currentChordAttempt.targetNote,
           variant: "answer",
           descriptor: `Correct ${getChordToneName(
             chordPrompt.targetTone
@@ -805,7 +850,7 @@ function buildActivePositions(
           frets: fretboard.frets
         }).forEach((position) => {
           activePositions.set(positionKey(position), {
-            label: position.note,
+            label: currentChordAttempt.selectedNote,
             variant: "miss",
             descriptor: `Your answer: ${currentChordAttempt.selectedNote}`
           });
@@ -922,6 +967,7 @@ function buildModeSummary(
       const chordName = formatChordName(chordPrompt.rootNote, chordPrompt.quality);
       const targetToneName = getChordToneName(chordPrompt.targetTone);
       const targetNote = getTargetChordToneNote(chordPrompt);
+      const chordSpelling = formatChordSpelling(chordPrompt);
 
       if (chordDrillSummary.isComplete) {
         return {
@@ -941,8 +987,8 @@ function buildModeSummary(
           currentChordAttempt === null
             ? `Choose the note that functions as the ${targetToneName} of ${chordName}. The fretboard will reveal the answer after you choose.`
             : currentChordAttempt.isCorrect
-              ? `Correct. ${targetNote} is the ${targetToneName} of ${chordName}, now highlighted across the fretboard.`
-              : `You chose ${currentChordAttempt.selectedNote}. ${targetNote} is the ${targetToneName} of ${chordName}, now highlighted across the fretboard.`,
+              ? `Correct. ${chordSpelling}, so ${targetNote} is the ${targetToneName}.`
+              : `You chose ${currentChordAttempt.selectedNote}. ${chordSpelling}, so ${targetNote} is the ${targetToneName}.`,
         badge: `${chordDrillSummary.attempted + 1}/${CHORD_TONE_PROMPTS.length}`,
         tones:
           currentChordAttempt === null
@@ -1155,10 +1201,12 @@ function buildChordPracticeDetail(
   }
 
   if (currentAttempt.isCorrect) {
-    return `Correct: ${targetNote} is the ${targetToneName} of ${chordName}.`;
+    return `Correct: ${formatChordSpelling(prompt)}, so ${targetNote} is the ${targetToneName}.`;
   }
 
-  return `Not quite: you chose ${currentAttempt.selectedNote}. ${targetNote} is the ${targetToneName} of ${chordName}.`;
+  return `Not quite: you chose ${currentAttempt.selectedNote}. ${formatChordSpelling(
+    prompt
+  )}, so ${targetNote} is the ${targetToneName}.`;
 }
 
 function positionKey(position: FretPosition): string {
@@ -1184,6 +1232,12 @@ function formatChordPromptTarget(prompt: ChordTonePrompt): string {
 
 function formatChordName(rootNote: NoteName, quality: TriadQuality): string {
   return `${rootNote} ${quality}`;
+}
+
+function formatChordSpelling(prompt: ChordTonePrompt): string {
+  return `${formatChordName(prompt.rootNote, prompt.quality)} = ${getChordToneAnswerOptions(
+    prompt
+  ).join(" ")}`;
 }
 
 function getChordToneName(chordTone: ChordTone): string {
@@ -1221,32 +1275,31 @@ function formatSessionDate(completedAt: string): string {
   }).format(new Date(completedAt));
 }
 
-function readStoredSessionHistory(): NoteRecognitionSession[] {
+function readStoredSessionHistory<Session>(
+  storageKey: string,
+  limit: number
+): Session[] {
   try {
-    const storedHistory = window.localStorage.getItem(
-      NOTE_RECOGNITION_HISTORY_STORAGE_KEY
-    );
+    const storedHistory = window.localStorage.getItem(storageKey);
 
     if (!storedHistory) {
       return [];
     }
 
-    const parsedHistory = JSON.parse(storedHistory) as NoteRecognitionSession[];
+    const parsedHistory = JSON.parse(storedHistory) as Session[];
 
-    return Array.isArray(parsedHistory)
-      ? parsedHistory.slice(0, NOTE_RECOGNITION_HISTORY_LIMIT)
-      : [];
+    return Array.isArray(parsedHistory) ? parsedHistory.slice(0, limit) : [];
   } catch {
     return [];
   }
 }
 
-function writeStoredSessionHistory(history: NoteRecognitionSession[]): void {
+function writeStoredSessionHistory<Session>(
+  storageKey: string,
+  history: Session[]
+): void {
   try {
-    window.localStorage.setItem(
-      NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
-      JSON.stringify(history.slice(0, NOTE_RECOGNITION_HISTORY_LIMIT))
-    );
+    window.localStorage.setItem(storageKey, JSON.stringify(history));
   } catch {
     // Local progress is a convenience; the drill should keep working if storage is unavailable.
   }

@@ -6,6 +6,14 @@ import {
   getPitchClass,
   type NoteName
 } from "@pocket-practice/music-theory-engine";
+import {
+  appendDrillSession,
+  buildDrillSession,
+  getCurrentDrillPrompt,
+  summarizeDrill,
+  type DrillSession,
+  type DrillSummary
+} from "./drillSession";
 
 export interface NoteRecognitionAttempt {
   promptIndex: number;
@@ -28,23 +36,9 @@ export interface MissedNoteRecognitionPrompt extends NoteRecognitionPrompt {
   selectedFret: number;
 }
 
-export interface NoteRecognitionSummary {
-  attempted: number;
-  correct: number;
-  missed: number;
-  accuracy: number;
-  isComplete: boolean;
-}
-
-export interface NoteRecognitionSession {
-  id: string;
-  completedAt: string;
-  promptCount: number;
-  correct: number;
-  missed: number;
-  accuracy: number;
-  missedPrompts: MissedNoteRecognitionPrompt[];
-}
+export type NoteRecognitionSummary = DrillSummary;
+export type NoteRecognitionSession =
+  DrillSession<MissedNoteRecognitionPrompt>;
 
 export const NOTE_RECOGNITION_PROMPTS = [
   { targetNote: "D", targetString: 5 },
@@ -85,16 +79,7 @@ export function summarizeNoteRecognition(
   attempts: NoteRecognitionAttempt[],
   promptCount: number = NOTE_RECOGNITION_PROMPTS.length
 ): NoteRecognitionSummary {
-  const correct = attempts.filter((attempt) => attempt.isCorrect).length;
-  const attempted = attempts.length;
-
-  return {
-    attempted,
-    correct,
-    missed: attempted - correct,
-    accuracy: attempted === 0 ? 0 : Math.round((correct / attempted) * 100),
-    isComplete: attempted >= promptCount
-  };
+  return summarizeDrill(attempts, promptCount);
 }
 
 export function buildNoteRecognitionSession(
@@ -102,17 +87,13 @@ export function buildNoteRecognitionSession(
   completedAt = new Date().toISOString(),
   promptCount: number = NOTE_RECOGNITION_PROMPTS.length
 ): NoteRecognitionSession {
-  const summary = summarizeNoteRecognition(attempts, promptCount);
-
-  return {
-    id: `note-recognition-${completedAt}`,
+  return buildDrillSession({
+    attempts,
     completedAt,
-    promptCount,
-    correct: summary.correct,
-    missed: summary.missed,
-    accuracy: summary.accuracy,
-    missedPrompts: getMissedNoteRecognitionPrompts(attempts)
-  };
+    idPrefix: "note-recognition",
+    missedPrompts: getMissedNoteRecognitionPrompts(attempts),
+    promptCount
+  });
 }
 
 export function appendNoteRecognitionSession(
@@ -120,7 +101,7 @@ export function appendNoteRecognitionSession(
   session: NoteRecognitionSession,
   limit = NOTE_RECOGNITION_HISTORY_LIMIT
 ): NoteRecognitionSession[] {
-  return [session, ...history].slice(0, limit);
+  return appendDrillSession(history, session, limit);
 }
 
 export function getMissedNoteRecognitionPrompts(
@@ -141,7 +122,7 @@ export function getCurrentPrompt(
   promptIndex: number,
   prompts: readonly NoteRecognitionPrompt[] = NOTE_RECOGNITION_PROMPTS
 ): NoteRecognitionPrompt {
-  return prompts[promptIndex % prompts.length] as NoteRecognitionPrompt;
+  return getCurrentDrillPrompt(promptIndex, prompts) as NoteRecognitionPrompt;
 }
 
 export function isNoteRecognitionAnswerPosition(

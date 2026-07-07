@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   CHORD_TONE_PROMPTS,
+  appendChordToneSession,
   buildChordToneAttempt,
+  buildChordToneSession,
   getChordToneAnswerOptions,
   getCurrentChordTonePrompt,
   getMissedChordTonePrompts,
@@ -18,7 +20,13 @@ describe("chordToneRecognition", () => {
       { rootNote: "A", quality: "minor", targetTone: 5 },
       { rootNote: "E", quality: "minor", targetTone: 3 },
       { rootNote: "D", quality: "major", targetTone: 1 },
-      { rootNote: "F", quality: "major", targetTone: 5 }
+      { rootNote: "F", quality: "major", targetTone: 5 },
+      { rootNote: "Bb", quality: "major", targetTone: 3 },
+      { rootNote: "D", quality: "minor", targetTone: 5 },
+      { rootNote: "E", quality: "major", targetTone: 3 },
+      { rootNote: "C", quality: "minor", targetTone: 1 },
+      { rootNote: "A", quality: "major", targetTone: 5 },
+      { rootNote: "G", quality: "minor", targetTone: 3 }
     ]);
   });
 
@@ -47,6 +55,13 @@ describe("chordToneRecognition", () => {
         targetTone: 5
       })
     ).toEqual(["A", "C", "E"]);
+    expect(
+      getChordToneAnswerOptions({
+        rootNote: "Bb",
+        quality: "major",
+        targetTone: 3
+      })
+    ).toEqual(["Bb", "D", "F"]);
   });
 
   it("builds a correct attempt when the selected note matches the requested chord tone", () => {
@@ -143,6 +158,58 @@ describe("chordToneRecognition", () => {
         selectedNote: "G",
         targetNote: "B"
       }
+    ]);
+  });
+
+  it("builds a compact completed chord-tone session record", () => {
+    const attempts = [
+      buildChordToneAttempt(0, {
+        rootNote: "C",
+        quality: "major",
+        targetTone: 1
+      }, "C"),
+      buildChordToneAttempt(1, {
+        rootNote: "G",
+        quality: "major",
+        targetTone: 3
+      }, "G")
+    ];
+
+    expect(
+      buildChordToneSession(attempts, "2026-07-07T12:00:00.000Z", 2)
+    ).toEqual({
+      id: "chord-tone-2026-07-07T12:00:00.000Z",
+      completedAt: "2026-07-07T12:00:00.000Z",
+      promptCount: 2,
+      correct: 1,
+      missed: 1,
+      accuracy: 50,
+      missedPrompts: [
+        {
+          rootNote: "G",
+          quality: "major",
+          targetTone: 3,
+          selectedNote: "G",
+          targetNote: "B"
+        }
+      ]
+    });
+  });
+
+  it("keeps the newest chord-tone sessions first and applies a history limit", () => {
+    const sessions = ["one", "two", "three"].map((label) => ({
+      id: label,
+      completedAt: label,
+      promptCount: 12,
+      correct: 12,
+      missed: 0,
+      accuracy: 100,
+      missedPrompts: []
+    }));
+
+    expect(appendChordToneSession(sessions, sessions[2]!, 2)).toEqual([
+      sessions[2]!,
+      sessions[0]!
     ]);
   });
 

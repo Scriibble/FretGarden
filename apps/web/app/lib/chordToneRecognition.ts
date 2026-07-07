@@ -4,6 +4,14 @@ import {
   type NoteName,
   type TriadQuality
 } from "@pocket-practice/music-theory-engine";
+import {
+  appendDrillSession,
+  buildDrillSession,
+  getCurrentDrillPrompt,
+  summarizeDrill,
+  type DrillSession,
+  type DrillSummary
+} from "./drillSession";
 
 export type ChordTone = 1 | 3 | 5;
 
@@ -25,13 +33,8 @@ export interface MissedChordTonePrompt extends ChordTonePrompt {
   targetNote: NoteName;
 }
 
-export interface ChordToneSummary {
-  attempted: number;
-  correct: number;
-  missed: number;
-  accuracy: number;
-  isComplete: boolean;
-}
+export type ChordToneSummary = DrillSummary;
+export type ChordToneSession = DrillSession<MissedChordTonePrompt>;
 
 export const CHORD_TONE_PROMPTS = [
   { rootNote: "C", quality: "major", targetTone: 1 },
@@ -39,8 +42,16 @@ export const CHORD_TONE_PROMPTS = [
   { rootNote: "A", quality: "minor", targetTone: 5 },
   { rootNote: "E", quality: "minor", targetTone: 3 },
   { rootNote: "D", quality: "major", targetTone: 1 },
-  { rootNote: "F", quality: "major", targetTone: 5 }
+  { rootNote: "F", quality: "major", targetTone: 5 },
+  { rootNote: "Bb", quality: "major", targetTone: 3 },
+  { rootNote: "D", quality: "minor", targetTone: 5 },
+  { rootNote: "E", quality: "major", targetTone: 3 },
+  { rootNote: "C", quality: "minor", targetTone: 1 },
+  { rootNote: "A", quality: "major", targetTone: 5 },
+  { rootNote: "G", quality: "minor", targetTone: 3 }
 ] as const satisfies readonly ChordTonePrompt[];
+
+export const CHORD_TONE_HISTORY_LIMIT = 5;
 
 export function buildChordToneAttempt(
   promptIndex: number,
@@ -64,16 +75,29 @@ export function summarizeChordToneRecognition(
   attempts: ChordToneAttempt[],
   promptCount: number = CHORD_TONE_PROMPTS.length
 ): ChordToneSummary {
-  const correct = attempts.filter((attempt) => attempt.isCorrect).length;
-  const attempted = attempts.length;
+  return summarizeDrill(attempts, promptCount);
+}
 
-  return {
-    attempted,
-    correct,
-    missed: attempted - correct,
-    accuracy: attempted === 0 ? 0 : Math.round((correct / attempted) * 100),
-    isComplete: attempted >= promptCount
-  };
+export function buildChordToneSession(
+  attempts: ChordToneAttempt[],
+  completedAt = new Date().toISOString(),
+  promptCount: number = CHORD_TONE_PROMPTS.length
+): ChordToneSession {
+  return buildDrillSession({
+    attempts,
+    completedAt,
+    idPrefix: "chord-tone",
+    missedPrompts: getMissedChordTonePrompts(attempts),
+    promptCount
+  });
+}
+
+export function appendChordToneSession(
+  history: ChordToneSession[],
+  session: ChordToneSession,
+  limit = CHORD_TONE_HISTORY_LIMIT
+): ChordToneSession[] {
+  return appendDrillSession(history, session, limit);
 }
 
 export function getMissedChordTonePrompts(
@@ -94,7 +118,7 @@ export function getCurrentChordTonePrompt(
   promptIndex: number,
   prompts: readonly ChordTonePrompt[] = CHORD_TONE_PROMPTS
 ): ChordTonePrompt {
-  return prompts[promptIndex % prompts.length] as ChordTonePrompt;
+  return getCurrentDrillPrompt(promptIndex, prompts) as ChordTonePrompt;
 }
 
 export function getTargetChordToneNote(prompt: ChordTonePrompt): NoteName {
