@@ -76,6 +76,28 @@ describe("lessonProgress", () => {
     ]);
   });
 
+  it("accepts octave-shape lesson progress records", () => {
+    expect(
+      parseLessonProgress(
+        JSON.stringify([
+          {
+            slug: "octave-shapes",
+            drill: "octaveShape",
+            status: "in-progress",
+            startedAt: "2026-07-07T12:00:00.000Z"
+          }
+        ])
+      )
+    ).toEqual([
+      {
+        slug: "octave-shapes",
+        drill: "octaveShape",
+        status: "in-progress",
+        startedAt: "2026-07-07T12:00:00.000Z"
+      }
+    ]);
+  });
+
   it("keeps completed lessons complete when started again", () => {
     const progress = markLessonComplete(
       [],

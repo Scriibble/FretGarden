@@ -7,7 +7,8 @@ export type LessonPracticeDrill =
   | "note"
   | "chordTone"
   | "scaleDegree"
-  | "interval";
+  | "interval"
+  | "octaveShape";
 
 export interface LessonPracticeLink {
   label: string;
@@ -206,17 +207,24 @@ export const lessons = [
         ]
       },
       {
+        heading: "CAGED shapes give the octave a route",
+        body: [
+          "In this drill, the C, A, G, E, and D labels name common root-to-root paths, such as A string to G string or low E string to D string.",
+          "The highlighted source note is your anchor. Your job is to use the shape name to land on the matching octave target."
+        ]
+      },
+      {
         heading: "Shapes become navigation tools",
         body: [
-          "Common CAGED-adjacent octave shapes help connect the low strings to the middle and high strings.",
-          "The goal is not only to memorize a shape, but to use it to confirm note names quickly."
+          "Octave shapes help connect low-string roots to middle and high-string targets without counting every fret from scratch.",
+          "The goal is not only to memorize a shape, but to use it to confirm note names quickly as you move through the neck."
         ]
       }
     ],
     practice: {
-      label: "Practice octave note targets",
-      href: "/?drill=note&lesson=octave-shapes#practice",
-      drill: "note",
+      label: "Practice CAGED octave shapes",
+      href: "/?drill=octaveShape&lesson=octave-shapes#practice",
+      drill: "octaveShape",
       criteria: {
         promptCount: 10,
         minAccuracy: 80

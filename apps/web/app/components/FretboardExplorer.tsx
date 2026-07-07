@@ -119,6 +119,33 @@ import {
   type NoteRecognitionSummary
 } from "../lib/noteRecognition";
 import {
+  DEFAULT_OCTAVE_SHAPE_SESSION_SETTINGS,
+  OCTAVE_SHAPE_HISTORY_LIMIT,
+  OCTAVE_SHAPE_SESSION_PRESETS,
+  appendOctaveShapeSession,
+  buildOctaveShapeAttempt,
+  buildOctaveShapePerformanceSummary,
+  buildOctaveShapePromptSession,
+  buildOctaveShapeSession,
+  getCurrentOctaveShapePrompt,
+  getMissedOctaveShapePrompts,
+  getOctaveShapeName,
+  getSourceOctaveShapePosition,
+  getTargetOctaveShapeNote,
+  getTargetOctaveShapePosition,
+  isOctaveShapeAnswerPosition,
+  isOctaveShapeCorrectPosition,
+  summarizeOctaveShapeRecognition,
+  type MissedOctaveShapePrompt,
+  type OctaveShapeAttempt,
+  type OctaveShapePerformanceStat,
+  type OctaveShapePrompt,
+  type OctaveShapeSession,
+  type OctaveShapeSessionPreset,
+  type OctaveShapeSessionSettings,
+  type OctaveShapeSummary
+} from "../lib/octaveShapeRecognition";
+import {
   DEFAULT_SCALE_DEGREE_SESSION_SETTINGS,
   SCALE_DEGREE_HISTORY_LIMIT,
   SCALE_DEGREE_SESSION_PRESETS,
@@ -146,17 +173,24 @@ import {
 } from "../lib/scaleDegreeRecognition";
 
 type DisplayMode = "practice" | "notes" | "find" | "scale" | "chord";
-type PracticeDrill = "note" | "chordTone" | "scaleDegree" | "interval";
+type PracticeDrill =
+  | "note"
+  | "chordTone"
+  | "scaleDegree"
+  | "interval"
+  | "octaveShape";
 type ActiveVariant = "note" | "root" | "scale" | "chord" | "answer" | "miss";
 type PerformanceStat =
   | ChordTonePerformanceStat
   | IntervalLandmarkPerformanceStat
   | NoteRecognitionPerformanceStat
+  | OctaveShapePerformanceStat
   | ScaleDegreePerformanceStat;
 type PracticePreset =
   | ChordToneSessionPreset
   | IntervalLandmarkSessionPreset
   | NoteRecognitionSessionPreset
+  | OctaveShapeSessionPreset
   | ScaleDegreeSessionPreset;
 
 interface PracticeHubRecommendation {
@@ -233,6 +267,8 @@ const SCALE_DEGREE_HISTORY_STORAGE_KEY =
   "pocket-practice:scale-degree-history";
 const INTERVAL_LANDMARK_HISTORY_STORAGE_KEY =
   "pocket-practice:interval-landmark-history";
+const OCTAVE_SHAPE_HISTORY_STORAGE_KEY =
+  "pocket-practice:octave-shape-history";
 const NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:note-recognition-custom-preset";
 const CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY =
@@ -241,6 +277,8 @@ const SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:scale-degree-custom-preset";
 const INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:interval-landmark-custom-preset";
+const OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY =
+  "pocket-practice:octave-shape-custom-preset";
 const STORAGE_VERSION = 1;
 
 export function FretboardExplorer() {
@@ -285,6 +323,17 @@ export function FretboardExplorer() {
   const [intervalSessionNonce, setIntervalSessionNonce] = useState(0);
   const [customIntervalPreset, setCustomIntervalPreset] =
     useState<IntervalLandmarkSessionPreset | null>(null);
+  const [octavePromptIndex, setOctavePromptIndex] = useState(0);
+  const [octaveAttempts, setOctaveAttempts] = useState<OctaveShapeAttempt[]>(
+    []
+  );
+  const [octaveSessionSettings, setOctaveSessionSettings] =
+    useState<OctaveShapeSessionSettings>(
+      DEFAULT_OCTAVE_SHAPE_SESSION_SETTINGS
+    );
+  const [octaveSessionNonce, setOctaveSessionNonce] = useState(0);
+  const [customOctavePreset, setCustomOctavePreset] =
+    useState<OctaveShapeSessionPreset | null>(null);
   const [completedSession, setCompletedSession] =
     useState<NoteRecognitionSession | null>(null);
   const [completedChordSession, setCompletedChordSession] =
@@ -293,6 +342,8 @@ export function FretboardExplorer() {
     useState<ScaleDegreeSession | null>(null);
   const [completedIntervalSession, setCompletedIntervalSession] =
     useState<IntervalLandmarkSession | null>(null);
+  const [completedOctaveSession, setCompletedOctaveSession] =
+    useState<OctaveShapeSession | null>(null);
   const [sessionHistory, setSessionHistory] = useState<
     NoteRecognitionSession[]
   >([]);
@@ -304,6 +355,9 @@ export function FretboardExplorer() {
   >([]);
   const [intervalSessionHistory, setIntervalSessionHistory] = useState<
     IntervalLandmarkSession[]
+  >([]);
+  const [octaveSessionHistory, setOctaveSessionHistory] = useState<
+    OctaveShapeSession[]
   >([]);
   const [lessonProgressRecords, setLessonProgressRecords] = useState<
     LessonProgressRecord[]
@@ -428,6 +482,34 @@ export function FretboardExplorer() {
       ),
     [intervalSessionSettings, intervalSessionNonce, intervalReviewPrompts]
   );
+  const octavePerformanceSessions = useMemo(() => {
+    if (completedOctaveSession === null) {
+      return octaveSessionHistory;
+    }
+
+    return [
+      completedOctaveSession,
+      ...octaveSessionHistory.filter(
+        (session) => session.id !== completedOctaveSession.id
+      )
+    ];
+  }, [octaveSessionHistory, completedOctaveSession]);
+  const octavePerformance = useMemo(
+    () => buildOctaveShapePerformanceSummary(octavePerformanceSessions),
+    [octavePerformanceSessions]
+  );
+  const octaveReviewPrompts = useMemo(
+    () => collectOctaveReviewPrompts(octavePerformanceSessions),
+    [octavePerformanceSessions]
+  );
+  const octavePromptQueue = useMemo(
+    () =>
+      buildOctaveShapePromptSession(
+        octaveSessionSettings,
+        octaveReviewPrompts
+      ),
+    [octaveSessionSettings, octaveSessionNonce, octaveReviewPrompts]
+  );
   const currentPrompt = getCurrentPrompt(promptIndex, notePromptQueue);
   const currentAttempt =
     attempts.find((attempt) => attempt.promptIndex === promptIndex) ?? null;
@@ -453,6 +535,14 @@ export function FretboardExplorer() {
     intervalAttempts.find(
       (attempt) => attempt.promptIndex === intervalPromptIndex
     ) ?? null;
+  const currentOctavePrompt = getCurrentOctaveShapePrompt(
+    octavePromptIndex,
+    octavePromptQueue
+  );
+  const currentOctaveAttempt =
+    octaveAttempts.find(
+      (attempt) => attempt.promptIndex === octavePromptIndex
+    ) ?? null;
   const drillSummary = useMemo(
     () => summarizeNoteRecognition(attempts, notePromptQueue.length),
     [attempts, notePromptQueue.length]
@@ -477,6 +567,14 @@ export function FretboardExplorer() {
       ),
     [intervalAttempts, intervalPromptQueue.length]
   );
+  const octaveDrillSummary = useMemo(
+    () =>
+      summarizeOctaveShapeRecognition(
+        octaveAttempts,
+        octavePromptQueue.length
+      ),
+    [octaveAttempts, octavePromptQueue.length]
+  );
   const missedPrompts = useMemo(
     () => getMissedNoteRecognitionPrompts(attempts),
     [attempts]
@@ -493,6 +591,10 @@ export function FretboardExplorer() {
     () => getMissedIntervalLandmarkPrompts(intervalAttempts),
     [intervalAttempts]
   );
+  const missedOctavePrompts = useMemo(
+    () => getMissedOctaveShapePrompts(octaveAttempts),
+    [octaveAttempts]
+  );
   const activePositions = useMemo(
     () =>
       buildActivePositions(
@@ -508,7 +610,9 @@ export function FretboardExplorer() {
         currentScaleDegreePrompt,
         currentScaleDegreeAttempt,
         currentIntervalPrompt,
-        currentIntervalAttempt
+        currentIntervalAttempt,
+        currentOctavePrompt,
+        currentOctaveAttempt
       ),
     [
       mode,
@@ -523,7 +627,9 @@ export function FretboardExplorer() {
       currentScaleDegreePrompt,
       currentScaleDegreeAttempt,
       currentIntervalPrompt,
-      currentIntervalAttempt
+      currentIntervalAttempt,
+      currentOctavePrompt,
+      currentOctaveAttempt
     ]
   );
   const summary = useMemo(
@@ -546,10 +652,14 @@ export function FretboardExplorer() {
         currentIntervalPrompt,
         currentIntervalAttempt,
         intervalDrillSummary,
+        currentOctavePrompt,
+        currentOctaveAttempt,
+        octaveDrillSummary,
         notePromptQueue.length,
         chordPromptQueue.length,
         scaleDegreePromptQueue.length,
-        intervalPromptQueue.length
+        intervalPromptQueue.length,
+        octavePromptQueue.length
       ),
     [
       mode,
@@ -569,10 +679,14 @@ export function FretboardExplorer() {
       currentIntervalPrompt,
       currentIntervalAttempt,
       intervalDrillSummary,
+      currentOctavePrompt,
+      currentOctaveAttempt,
+      octaveDrillSummary,
       notePromptQueue.length,
       chordPromptQueue.length,
       scaleDegreePromptQueue.length,
-      intervalPromptQueue.length
+      intervalPromptQueue.length,
+      octavePromptQueue.length
     ]
   );
   const selectedActive = selectedPosition
@@ -583,33 +697,38 @@ export function FretboardExplorer() {
     drillSummary,
     chordDrillSummary,
     scaleDegreeDrillSummary,
-    intervalDrillSummary
+    intervalDrillSummary,
+    octaveDrillSummary
   );
   const activeDrillAttempt = getActiveDrillAttempt(
     practiceDrill,
     currentAttempt,
     currentChordAttempt,
     currentScaleDegreeAttempt,
-    currentIntervalAttempt
+    currentIntervalAttempt,
+    currentOctaveAttempt
   );
   const activePromptCount = getActivePromptCount(
     practiceDrill,
     notePromptQueue.length,
     chordPromptQueue.length,
     scaleDegreePromptQueue.length,
-    intervalPromptQueue.length
+    intervalPromptQueue.length,
+    octavePromptQueue.length
   );
   const latestSession = getLatestSession(
     practiceDrill,
     sessionHistory,
     chordSessionHistory,
     scaleDegreeSessionHistory,
-    intervalSessionHistory
+    intervalSessionHistory,
+    octaveSessionHistory
   );
   const chordMissedReviewCount = chordReviewPrompts.length;
   const noteMissedReviewCount = noteReviewPrompts.length;
   const scaleDegreeMissedReviewCount = scaleDegreeReviewPrompts.length;
   const intervalMissedReviewCount = intervalReviewPrompts.length;
+  const octaveMissedReviewCount = octaveReviewPrompts.length;
   const notePresetOptions = customNotePreset
     ? [...NOTE_RECOGNITION_SESSION_PRESETS, customNotePreset]
     : NOTE_RECOGNITION_SESSION_PRESETS;
@@ -622,6 +741,9 @@ export function FretboardExplorer() {
   const intervalPresetOptions = customIntervalPreset
     ? [...INTERVAL_LANDMARK_SESSION_PRESETS, customIntervalPreset]
     : INTERVAL_LANDMARK_SESSION_PRESETS;
+  const octavePresetOptions = customOctavePreset
+    ? [...OCTAVE_SHAPE_SESSION_PRESETS, customOctavePreset]
+    : OCTAVE_SHAPE_SESSION_PRESETS;
   const recommendedNotePreset = getRecommendedNotePreset(
     notePerformance,
     notePresetOptions
@@ -638,19 +760,26 @@ export function FretboardExplorer() {
     intervalPerformance,
     intervalPresetOptions
   );
+  const recommendedOctavePreset = getRecommendedOctavePreset(
+    octavePerformance,
+    octavePresetOptions
+  );
+  const courseProgress = useMemo(
+    () => buildCourseProgress(lessons, lessonProgressRecords),
+    [lessonProgressRecords]
+  );
   const practiceRecommendation = buildPracticeHubRecommendation(
     notePerformance,
     chordPerformance,
     scaleDegreePerformance,
     intervalPerformance,
+    octavePerformance,
     recommendedNotePreset,
     recommendedChordPreset,
     recommendedScaleDegreePreset,
-    recommendedIntervalPreset
-  );
-  const courseProgress = useMemo(
-    () => buildCourseProgress(lessons, lessonProgressRecords),
-    [lessonProgressRecords]
+    recommendedIntervalPreset,
+    recommendedOctavePreset,
+    courseProgress
   );
   const courseRecommendationLesson =
     courseProgress.currentLesson ?? lessons[0] ?? null;
@@ -666,13 +795,15 @@ export function FretboardExplorer() {
         sessionHistory,
         chordSessionHistory,
         scaleDegreeSessionHistory,
-        intervalSessionHistory
+        intervalSessionHistory,
+        octaveSessionHistory
       ),
     [
       sessionHistory,
       chordSessionHistory,
       scaleDegreeSessionHistory,
-      intervalSessionHistory
+      intervalSessionHistory,
+      octaveSessionHistory
     ]
   );
   const dashboardWeakSpots = useMemo(
@@ -681,13 +812,15 @@ export function FretboardExplorer() {
         notePerformance.weakSpots,
         chordPerformance.weakSpots,
         scaleDegreePerformance.weakSpots,
-        intervalPerformance.weakSpots
+        intervalPerformance.weakSpots,
+        octavePerformance.weakSpots
       ),
     [
       notePerformance.weakSpots,
       chordPerformance.weakSpots,
       scaleDegreePerformance.weakSpots,
-      intervalPerformance.weakSpots
+      intervalPerformance.weakSpots,
+      octavePerformance.weakSpots
     ]
   );
   const activeLesson = useMemo(
@@ -718,19 +851,23 @@ export function FretboardExplorer() {
         missedChordPrompts,
         missedScaleDegreePrompts,
         missedIntervalPrompts,
+        missedOctavePrompts,
         notePerformance,
         chordPerformance,
         scaleDegreePerformance,
-        intervalPerformance
+        intervalPerformance,
+        octavePerformance
       ),
     [
       activeDrillSummary,
       chordPerformance,
       missedChordPrompts,
       missedIntervalPrompts,
+      missedOctavePrompts,
       missedPrompts,
       missedScaleDegreePrompts,
       notePerformance,
+      octavePerformance,
       practiceDrill,
       scaleDegreePerformance,
       intervalPerformance
@@ -762,6 +899,12 @@ export function FretboardExplorer() {
         INTERVAL_LANDMARK_HISTORY_LIMIT
       )
     );
+    setOctaveSessionHistory(
+      readStoredSessionHistory<OctaveShapeSession>(
+        OCTAVE_SHAPE_HISTORY_STORAGE_KEY,
+        OCTAVE_SHAPE_HISTORY_LIMIT
+      )
+    );
     setLessonProgressRecords(readStoredLessonProgress());
     setCustomNotePreset(
       readStoredPreset<NoteRecognitionSessionPreset>(
@@ -781,6 +924,11 @@ export function FretboardExplorer() {
     setCustomIntervalPreset(
       readStoredPreset<IntervalLandmarkSessionPreset>(
         INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY
+      )
+    );
+    setCustomOctavePreset(
+      readStoredPreset<OctaveShapeSessionPreset>(
+        OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY
       )
     );
   }, []);
@@ -809,6 +957,8 @@ export function FretboardExplorer() {
       resetScaleDegreeDrill();
     } else if (requestedDrill === "interval") {
       resetIntervalLandmarkDrill();
+    } else if (requestedDrill === "octaveShape") {
+      resetOctaveShapeDrill();
     } else {
       resetNoteRecognitionDrill();
     }
@@ -950,6 +1100,36 @@ export function FretboardExplorer() {
     intervalPromptQueue.length
   ]);
 
+  useEffect(() => {
+    if (!octaveDrillSummary.isComplete || completedOctaveSession !== null) {
+      return;
+    }
+
+    const nextSession = buildOctaveShapeSession(
+      octaveAttempts,
+      undefined,
+      octavePromptQueue.length
+    );
+
+    setCompletedOctaveSession(nextSession);
+    setOctaveSessionHistory((previousHistory) => {
+      const nextHistory = appendOctaveShapeSession(
+        previousHistory,
+        nextSession
+      );
+      writeStoredSessionHistory(OCTAVE_SHAPE_HISTORY_STORAGE_KEY, nextHistory);
+
+      return nextHistory;
+    });
+    recordActiveLessonSession("octaveShape", nextSession);
+  }, [
+    activeLessonSlug,
+    completedOctaveSession,
+    octaveAttempts,
+    octaveDrillSummary.isComplete,
+    octavePromptQueue.length
+  ]);
+
   function handleModeChange(nextMode: DisplayMode): void {
     setMode(nextMode);
     setSelectedPosition(null);
@@ -962,6 +1142,7 @@ export function FretboardExplorer() {
       | ChordToneSession
       | ScaleDegreeSession
       | IntervalLandmarkSession
+      | OctaveShapeSession
   ): void {
     if (!activeLessonSlug) {
       return;
@@ -1003,6 +1184,14 @@ export function FretboardExplorer() {
       mode === "practice" &&
       practiceDrill === "interval" &&
       !isIntervalLandmarkAnswerPosition(position)
+    ) {
+      return;
+    }
+
+    if (
+      mode === "practice" &&
+      practiceDrill === "octaveShape" &&
+      !isOctaveShapeAnswerPosition(position)
     ) {
       return;
     }
@@ -1058,6 +1247,27 @@ export function FretboardExplorer() {
       setIntervalAttempts((previousAttempts) =>
         previousAttempts.some(
           (attempt) => attempt.promptIndex === intervalPromptIndex
+        )
+          ? previousAttempts
+          : [...previousAttempts, nextAttempt]
+      );
+      return;
+    }
+
+    if (practiceDrill === "octaveShape") {
+      if (octaveDrillSummary.isComplete || currentOctaveAttempt !== null) {
+        return;
+      }
+
+      const nextAttempt = buildOctaveShapeAttempt(
+        octavePromptIndex,
+        currentOctavePrompt,
+        position
+      );
+
+      setOctaveAttempts((previousAttempts) =>
+        previousAttempts.some(
+          (attempt) => attempt.promptIndex === octavePromptIndex
         )
           ? previousAttempts
           : [...previousAttempts, nextAttempt]
@@ -1207,6 +1417,39 @@ export function FretboardExplorer() {
     writeStoredPreset(INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
   }
 
+  function handleOctaveSessionSettingsChange(
+    nextSettings: Partial<OctaveShapeSessionSettings>
+  ): void {
+    setOctaveSessionSettings((previousSettings) => ({
+      ...previousSettings,
+      ...nextSettings
+    }));
+    resetOctaveShapeDrill();
+  }
+
+  function handleOctavePresetSelect(preset: OctaveShapeSessionPreset): void {
+    setOctaveSessionSettings(preset.settings);
+    resetOctaveShapeDrill();
+  }
+
+  function handleStartOctavePreset(preset: OctaveShapeSessionPreset): void {
+    setMode("practice");
+    setPracticeDrill("octaveShape");
+    handleOctavePresetSelect(preset);
+    scrollPracticeSessionIntoView();
+  }
+
+  function handleSaveOctavePreset(): void {
+    const nextPreset = {
+      id: "custom",
+      label: "Custom",
+      settings: octaveSessionSettings
+    } satisfies OctaveShapeSessionPreset;
+
+    setCustomOctavePreset(nextPreset);
+    writeStoredPreset(OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
+  }
+
   function handleNoteSessionSettingsChange(
     nextSettings: Partial<NoteRecognitionSessionSettings>
   ): void {
@@ -1248,6 +1491,11 @@ export function FretboardExplorer() {
       handleStartIntervalPreset(
         recommendation.preset as IntervalLandmarkSessionPreset
       );
+      return;
+    }
+
+    if (recommendation.drill === "octaveShape") {
+      handleStartOctavePreset(recommendation.preset as OctaveShapeSessionPreset);
       return;
     }
 
@@ -1297,6 +1545,14 @@ export function FretboardExplorer() {
     setIntervalSessionNonce((previousNonce) => previousNonce + 1);
   }
 
+  function resetOctaveShapeDrill(): void {
+    setOctavePromptIndex(0);
+    setOctaveAttempts([]);
+    setCompletedOctaveSession(null);
+    setSelectedPosition(null);
+    setOctaveSessionNonce((previousNonce) => previousNonce + 1);
+  }
+
   function scrollPracticeSessionIntoView(): void {
     window.setTimeout(() => {
       practiceLayoutRef.current?.scrollIntoView({
@@ -1328,6 +1584,11 @@ export function FretboardExplorer() {
       return;
     }
 
+    if (practiceDrill === "octaveShape") {
+      setOctavePromptIndex((previousPromptIndex) => previousPromptIndex + 1);
+      return;
+    }
+
     setPromptIndex((previousPromptIndex) => previousPromptIndex + 1);
   }
 
@@ -1338,6 +1599,8 @@ export function FretboardExplorer() {
       resetScaleDegreeDrill();
     } else if (practiceDrill === "interval") {
       resetIntervalLandmarkDrill();
+    } else if (practiceDrill === "octaveShape") {
+      resetOctaveShapeDrill();
     } else {
       resetNoteRecognitionDrill();
     }
@@ -1375,6 +1638,16 @@ export function FretboardExplorer() {
         reviewMode: "missed"
       }));
       resetIntervalLandmarkDrill();
+      return;
+    }
+
+    if (practiceDrill === "octaveShape") {
+      setOctaveSessionSettings((previousSettings) => ({
+        ...previousSettings,
+        promptOrder: "fixed",
+        reviewMode: "missed"
+      }));
+      resetOctaveShapeDrill();
       return;
     }
 
@@ -1437,6 +1710,14 @@ export function FretboardExplorer() {
         onStartInterval={() =>
           handleStartIntervalPreset(recommendedIntervalPreset)
         }
+        octaveLastSessionLabel={formatHubAccuracy(
+          octaveSessionHistory[0] ?? null
+        )}
+        octaveWeakSpotLabel={
+          octavePerformance.weakSpots[0]?.label ?? "No weak spots"
+        }
+        octavePresetLabel={recommendedOctavePreset.label}
+        onStartOctave={() => handleStartOctavePreset(recommendedOctavePreset)}
         courseRecommendationTitle={
           courseProgress.isComplete
             ? "Course path complete"
@@ -1499,12 +1780,13 @@ export function FretboardExplorer() {
           {mode === "practice" ? (
             <div className="control-group">
               <span className="control-label">Drill</span>
-              <div className="segmented-control option-grid four">
+              <div className="segmented-control option-grid five">
                 {([
                   { id: "note", label: "Note drill" },
                   { id: "chordTone", label: "Chord drill" },
                   { id: "scaleDegree", label: "Scale drill" },
-                  { id: "interval", label: "Interval drill" }
+                  { id: "interval", label: "Interval drill" },
+                  { id: "octaveShape", label: "Octave drill" }
                 ] as const).map((option) => (
                   <button
                     className={option.id === practiceDrill ? "is-selected" : ""}
@@ -1557,6 +1839,14 @@ export function FretboardExplorer() {
                 onPresetSelect: handleIntervalPresetSelect,
                 onSavePreset: handleSaveIntervalPreset,
                 onSettingsChange: handleIntervalSessionSettingsChange
+              }}
+              octave={{
+                presetOptions: octavePresetOptions,
+                settings: octaveSessionSettings,
+                missedReviewCount: octaveMissedReviewCount,
+                onPresetSelect: handleOctavePresetSelect,
+                onSavePreset: handleSaveOctavePreset,
+                onSettingsChange: handleOctaveSessionSettingsChange
               }}
             />
           ) : null}
@@ -1755,7 +2045,8 @@ export function FretboardExplorer() {
                       stringTuning.string,
                       currentPrompt,
                       currentScaleDegreePrompt,
-                      currentIntervalPrompt
+                      currentIntervalPrompt,
+                      currentOctavePrompt
                     )}
                   >
                     <strong>{stringTuning.openNote}</strong>
@@ -1772,7 +2063,9 @@ export function FretboardExplorer() {
                         (practiceDrill === "scaleDegree" &&
                           !isScaleDegreeAnswerPosition(position)) ||
                         (practiceDrill === "interval" &&
-                          !isIntervalLandmarkAnswerPosition(position)));
+                          !isIntervalLandmarkAnswerPosition(position)) ||
+                        (practiceDrill === "octaveShape" &&
+                          !isOctaveShapeAnswerPosition(position)));
                     const isTargetString =
                       mode === "practice" &&
                       ((practiceDrill === "note" &&
@@ -1782,7 +2075,12 @@ export function FretboardExplorer() {
                             currentScaleDegreePrompt.targetString) ||
                         (practiceDrill === "interval" &&
                           position.string ===
-                            currentIntervalPrompt.targetString));
+                            currentIntervalPrompt.targetString) ||
+                        (practiceDrill === "octaveShape" &&
+                          (position.string ===
+                            currentOctavePrompt.sourceString ||
+                            position.string ===
+                              currentOctavePrompt.targetString)));
                     const isSelected =
                       selectedPosition !== null &&
                       positionKey(selectedPosition) === positionKey(position);
@@ -1883,7 +2181,9 @@ function buildActivePositions(
   scaleDegreePrompt: ScaleDegreePrompt,
   currentScaleDegreeAttempt: ScaleDegreeAttempt | null,
   intervalPrompt: IntervalLandmarkPrompt,
-  currentIntervalAttempt: IntervalLandmarkAttempt | null
+  currentIntervalAttempt: IntervalLandmarkAttempt | null,
+  octavePrompt: OctaveShapePrompt,
+  currentOctaveAttempt: OctaveShapeAttempt | null
 ): Map<string, ActivePosition> {
   const activePositions = new Map<string, ActivePosition>();
 
@@ -2007,6 +2307,47 @@ function buildActivePositions(
       return activePositions;
     }
 
+    if (practiceDrill === "octaveShape") {
+      const sourcePosition = getSourceOctaveShapePosition(octavePrompt);
+
+      activePositions.set(positionKey(sourcePosition), {
+        label: octavePrompt.sourceNote,
+        variant: "root",
+        descriptor: `${getOctaveShapeName(octavePrompt.shape)} source anchor`
+      });
+
+      if (currentOctaveAttempt === null) {
+        return activePositions;
+      }
+
+      const targetPosition = getTargetOctaveShapePosition(octavePrompt);
+
+      activePositions.set(positionKey(targetPosition), {
+        label: currentOctaveAttempt.targetNote,
+        variant: "answer",
+        descriptor: `Correct ${getOctaveShapeName(
+          octavePrompt.shape
+        )} octave target`
+      });
+
+      if (!currentOctaveAttempt.isCorrect) {
+        activePositions.set(
+          `${currentOctaveAttempt.selectedString}-${currentOctaveAttempt.selectedFret}`,
+          {
+            label: currentOctaveAttempt.selectedNote,
+            variant: "miss",
+            descriptor: `Your answer: ${
+              currentOctaveAttempt.selectedNote
+            } on the ${getStringDisplayName(
+              currentOctaveAttempt.selectedString
+            )} string`
+          }
+        );
+      }
+
+      return activePositions;
+    }
+
     if (currentAttempt === null) {
       return activePositions;
     }
@@ -2114,10 +2455,14 @@ function buildModeSummary(
   intervalPrompt: IntervalLandmarkPrompt,
   currentIntervalAttempt: IntervalLandmarkAttempt | null,
   intervalDrillSummary: IntervalLandmarkSummary,
+  octavePrompt: OctaveShapePrompt,
+  currentOctaveAttempt: OctaveShapeAttempt | null,
+  octaveDrillSummary: OctaveShapeSummary,
   notePromptCount: number,
   chordPromptCount: number,
   scaleDegreePromptCount: number,
-  intervalPromptCount: number
+  intervalPromptCount: number,
+  octavePromptCount: number
 ): ModeSummary {
   if (mode === "practice") {
     if (practiceDrill === "chordTone") {
@@ -2229,6 +2574,43 @@ function buildModeSummary(
         tones: [
           intervalPrompt.rootNote,
           intervalName,
+          `${targetStringName} string`
+        ]
+      };
+    }
+
+    if (practiceDrill === "octaveShape") {
+      const sourceStringName = getStringDisplayName(octavePrompt.sourceString);
+      const targetStringName = getStringDisplayName(octavePrompt.targetString);
+      const shapeName = getOctaveShapeName(octavePrompt.shape);
+      const targetNote = getTargetOctaveShapeNote(octavePrompt);
+
+      if (octaveDrillSummary.isComplete) {
+        return {
+          title: "Octave shape drill complete",
+          description: `You found ${octaveDrillSummary.correct} of ${octaveDrillSummary.attempted} octave-shape prompts.`,
+          badge: `${octaveDrillSummary.accuracy}% accuracy`,
+          tones: [
+            `${octaveDrillSummary.correct} correct`,
+            `${octaveDrillSummary.missed} missed`
+          ]
+        };
+      }
+
+      return {
+        title: `Find the ${shapeName} octave from ${octavePrompt.sourceNote} on the ${sourceStringName} string`,
+        description:
+          currentOctaveAttempt === null
+            ? `Use the highlighted source at string ${octavePrompt.sourceString}, fret ${octavePrompt.sourceFret}. Click the matching octave on the ${targetStringName} string.`
+            : currentOctaveAttempt.isCorrect
+              ? `Correct. ${targetNote} at string ${octavePrompt.targetString}, fret ${octavePrompt.targetFret} completes the ${shapeName} octave.`
+              : `You chose ${currentOctaveAttempt.selectedNote} on the ${getStringDisplayName(
+                  currentOctaveAttempt.selectedString
+                )} string. The ${shapeName} octave is ${targetNote} at string ${octavePrompt.targetString}, fret ${octavePrompt.targetFret}.`,
+        badge: `${octaveDrillSummary.attempted + 1}/${octavePromptCount}`,
+        tones: [
+          shapeName,
+          `${octavePrompt.sourceNote} anchor`,
           `${targetStringName} string`
         ]
       };
@@ -2347,7 +2729,8 @@ function buildStringLabelClassName(
   string: GuitarStringNumber,
   drillPrompt: NoteRecognitionPrompt,
   scaleDegreePrompt: ScaleDegreePrompt,
-  intervalPrompt: IntervalLandmarkPrompt
+  intervalPrompt: IntervalLandmarkPrompt,
+  octavePrompt: OctaveShapePrompt
 ): string {
   return [
     "string-label",
@@ -2357,7 +2740,8 @@ function buildStringLabelClassName(
       string,
       drillPrompt,
       scaleDegreePrompt,
-      intervalPrompt
+      intervalPrompt,
+      octavePrompt
     )
       ? "is-target-string"
       : ""
@@ -2390,6 +2774,13 @@ function buildPositionLabel(
     if (
       practiceDrill === "interval" &&
       !isIntervalLandmarkAnswerPosition(position)
+    ) {
+      return `String ${position.string}, open string, unavailable in this drill`;
+    }
+
+    if (
+      practiceDrill === "octaveShape" &&
+      !isOctaveShapeAnswerPosition(position)
     ) {
       return `String ${position.string}, open string, unavailable in this drill`;
     }
@@ -2440,6 +2831,14 @@ function buildCellLabel(
     return "open";
   }
 
+  if (
+    mode === "practice" &&
+    practiceDrill === "octaveShape" &&
+    !isOctaveShapeAnswerPosition(position)
+  ) {
+    return "open";
+  }
+
   return mode === "practice" ? "" : position.note;
 }
 
@@ -2449,7 +2848,8 @@ function isPracticeTargetString(
   string: GuitarStringNumber,
   drillPrompt: NoteRecognitionPrompt,
   scaleDegreePrompt: ScaleDegreePrompt,
-  intervalPrompt: IntervalLandmarkPrompt
+  intervalPrompt: IntervalLandmarkPrompt,
+  octavePrompt: OctaveShapePrompt
 ): boolean {
   if (mode !== "practice") {
     return false;
@@ -2465,6 +2865,13 @@ function isPracticeTargetString(
 
   if (practiceDrill === "interval") {
     return string === intervalPrompt.targetString;
+  }
+
+  if (practiceDrill === "octaveShape") {
+    return (
+      string === octavePrompt.sourceString ||
+      string === octavePrompt.targetString
+    );
   }
 
   return false;
@@ -2491,6 +2898,10 @@ function getPracticeDrillLabel(practiceDrill: PracticeDrill): string {
     return "Interval landmarks";
   }
 
+  if (practiceDrill === "octaveShape") {
+    return "Octave shapes";
+  }
+
   return "Note recognition";
 }
 
@@ -2499,7 +2910,8 @@ function parsePracticeDrillParam(value: string | null): PracticeDrill | null {
     value === "note" ||
     value === "chordTone" ||
     value === "scaleDegree" ||
-    value === "interval"
+    value === "interval" ||
+    value === "octaveShape"
   ) {
     return value;
   }
@@ -2543,7 +2955,8 @@ function markStoredLessonPracticed(
     | NoteRecognitionSession
     | ChordToneSession
     | ScaleDegreeSession
-    | IntervalLandmarkSession,
+    | IntervalLandmarkSession
+    | OctaveShapeSession,
   criteria: Lesson["practice"]["criteria"]
 ): void {
   writeStoredLessonProgress(
@@ -2574,6 +2987,10 @@ function getCompletionTitle(practiceDrill: PracticeDrill): string {
     return "Interval landmark drill complete";
   }
 
+  if (practiceDrill === "octaveShape") {
+    return "Octave shape drill complete";
+  }
+
   return "Note recognition complete";
 }
 
@@ -2583,7 +3000,8 @@ function buildLessonReviewOutcome(
     | NoteRecognitionSummary
     | ChordToneSummary
     | ScaleDegreeSummary
-    | IntervalLandmarkSummary,
+    | IntervalLandmarkSummary
+    | OctaveShapeSummary,
   nextLesson: Lesson | null
 ): LessonReviewOutcome {
   const criteria = lesson.practice.criteria;
@@ -2632,15 +3050,18 @@ function buildPracticeReviewContent(
     | NoteRecognitionSummary
     | ChordToneSummary
     | ScaleDegreeSummary
-    | IntervalLandmarkSummary,
+    | IntervalLandmarkSummary
+    | OctaveShapeSummary,
   noteMisses: readonly MissedNoteRecognitionPrompt[],
   chordMisses: readonly MissedChordTonePrompt[],
   scaleDegreeMisses: readonly MissedScaleDegreePrompt[],
   intervalMisses: readonly MissedIntervalLandmarkPrompt[],
+  octaveMisses: readonly MissedOctaveShapePrompt[],
   notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
   chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
   scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>,
-  intervalPerformance: ReturnType<typeof buildIntervalLandmarkPerformanceSummary>
+  intervalPerformance: ReturnType<typeof buildIntervalLandmarkPerformanceSummary>,
+  octavePerformance: ReturnType<typeof buildOctaveShapePerformanceSummary>
 ): PracticeReviewContent {
   const metrics = [
     {
@@ -2738,6 +3159,40 @@ function buildPracticeReviewContent(
     };
   }
 
+  if (practiceDrill === "octaveShape") {
+    return {
+      metrics,
+      missedPrompts: octaveMisses.map(toOctaveMissedReviewItem),
+      weakSpots: octavePerformance.weakSpots.map(toPerformanceReviewItem),
+      breakdowns: [
+        {
+          title: "Shape breakdown",
+          emptyMessage: "No octave-shape attempts yet.",
+          chips: octavePerformance.shapeStats.map(formatPerformanceChip)
+        },
+        {
+          title: "Note breakdown",
+          emptyMessage: "No octave-note attempts yet.",
+          chips: octavePerformance.noteStats.map(formatPerformanceChip)
+        },
+        {
+          title: "Source-string trouble spots",
+          emptyMessage: "No source-string misses yet.",
+          chips: octavePerformance.sourceStringStats
+            .filter((stat) => stat.missed > 0)
+            .map(formatPerformanceChip)
+        },
+        {
+          title: "Target-string trouble spots",
+          emptyMessage: "No target-string misses yet.",
+          chips: octavePerformance.targetStringStats
+            .filter((stat) => stat.missed > 0)
+            .map(formatPerformanceChip)
+        }
+      ]
+    };
+  }
+
   return {
     metrics,
     missedPrompts: noteMisses.map(toNoteMissedReviewItem),
@@ -2809,6 +3264,22 @@ function toIntervalMissedReviewItem(
   };
 }
 
+function toOctaveMissedReviewItem(
+  missedPrompt: MissedOctaveShapePrompt
+): PracticeReviewItem {
+  return {
+    id: `${missedPrompt.shape}-${missedPrompt.sourceString}-${missedPrompt.sourceFret}-${missedPrompt.targetString}-${missedPrompt.targetFret}-${missedPrompt.selectedString}-${missedPrompt.selectedFret}`,
+    title: formatOctavePromptTarget(missedPrompt),
+    detail: `You chose ${missedPrompt.selectedNote} on the ${getStringDisplayName(
+      missedPrompt.selectedString
+    )} string, fret ${missedPrompt.selectedFret}; correct target was ${
+      missedPrompt.targetNote
+    } on the ${getStringDisplayName(missedPrompt.targetString)} string, fret ${
+      missedPrompt.targetFret
+    }.`
+  };
+}
+
 function toPerformanceReviewItem(stat: PerformanceStat): PracticeReviewItem {
   return {
     id: `${stat.category}-${stat.id}`,
@@ -2827,12 +3298,14 @@ function getPracticePromptStatus(
     | NoteRecognitionSummary
     | ChordToneSummary
     | ScaleDegreeSummary
-    | IntervalLandmarkSummary,
+    | IntervalLandmarkSummary
+    | OctaveShapeSummary,
   attempt:
     | NoteRecognitionAttempt
     | ChordToneAttempt
     | ScaleDegreeAttempt
     | IntervalLandmarkAttempt
+    | OctaveShapeAttempt
     | null
 ): string {
   if (summary.isComplete) {
@@ -2855,12 +3328,14 @@ function getActiveDrillSummary(
   noteSummary: NoteRecognitionSummary,
   chordSummary: ChordToneSummary,
   scaleDegreeSummary: ScaleDegreeSummary,
-  intervalSummary: IntervalLandmarkSummary
+  intervalSummary: IntervalLandmarkSummary,
+  octaveSummary: OctaveShapeSummary
 ):
   | NoteRecognitionSummary
   | ChordToneSummary
   | ScaleDegreeSummary
-  | IntervalLandmarkSummary {
+  | IntervalLandmarkSummary
+  | OctaveShapeSummary {
   if (practiceDrill === "chordTone") {
     return chordSummary;
   }
@@ -2873,6 +3348,10 @@ function getActiveDrillSummary(
     return intervalSummary;
   }
 
+  if (practiceDrill === "octaveShape") {
+    return octaveSummary;
+  }
+
   return noteSummary;
 }
 
@@ -2881,12 +3360,14 @@ function getActiveDrillAttempt(
   noteAttempt: NoteRecognitionAttempt | null,
   chordAttempt: ChordToneAttempt | null,
   scaleDegreeAttempt: ScaleDegreeAttempt | null,
-  intervalAttempt: IntervalLandmarkAttempt | null
+  intervalAttempt: IntervalLandmarkAttempt | null,
+  octaveAttempt: OctaveShapeAttempt | null
 ):
   | NoteRecognitionAttempt
   | ChordToneAttempt
   | ScaleDegreeAttempt
   | IntervalLandmarkAttempt
+  | OctaveShapeAttempt
   | null {
   if (practiceDrill === "chordTone") {
     return chordAttempt;
@@ -2900,6 +3381,10 @@ function getActiveDrillAttempt(
     return intervalAttempt;
   }
 
+  if (practiceDrill === "octaveShape") {
+    return octaveAttempt;
+  }
+
   return noteAttempt;
 }
 
@@ -2908,7 +3393,8 @@ function getActivePromptCount(
   notePromptCount: number,
   chordPromptCount: number,
   scaleDegreePromptCount: number,
-  intervalPromptCount: number
+  intervalPromptCount: number,
+  octavePromptCount: number
 ): number {
   if (practiceDrill === "chordTone") {
     return chordPromptCount;
@@ -2922,6 +3408,10 @@ function getActivePromptCount(
     return intervalPromptCount;
   }
 
+  if (practiceDrill === "octaveShape") {
+    return octavePromptCount;
+  }
+
   return notePromptCount;
 }
 
@@ -2930,12 +3420,14 @@ function getLatestSession(
   noteHistory: readonly NoteRecognitionSession[],
   chordHistory: readonly ChordToneSession[],
   scaleDegreeHistory: readonly ScaleDegreeSession[],
-  intervalHistory: readonly IntervalLandmarkSession[]
+  intervalHistory: readonly IntervalLandmarkSession[],
+  octaveHistory: readonly OctaveShapeSession[]
 ):
   | NoteRecognitionSession
   | ChordToneSession
   | ScaleDegreeSession
   | IntervalLandmarkSession
+  | OctaveShapeSession
   | null {
   if (practiceDrill === "chordTone") {
     return chordHistory[0] ?? null;
@@ -2947,6 +3439,10 @@ function getLatestSession(
 
   if (practiceDrill === "interval") {
     return intervalHistory[0] ?? null;
+  }
+
+  if (practiceDrill === "octaveShape") {
+    return octaveHistory[0] ?? null;
   }
 
   return noteHistory[0] ?? null;
@@ -2969,6 +3465,14 @@ function formatIntervalPromptTarget(prompt: IntervalLandmarkPrompt): string {
   return `${getIntervalLandmarkName(prompt.targetInterval)} above ${
     prompt.rootNote
   } on the ${getStringDisplayName(prompt.targetString)} string`;
+}
+
+function formatOctavePromptTarget(prompt: OctaveShapePrompt): string {
+  return `${getOctaveShapeName(prompt.shape)} octave from ${
+    prompt.sourceNote
+  } on the ${getStringDisplayName(prompt.sourceString)} string, fret ${
+    prompt.sourceFret
+  }`;
 }
 
 function formatChordPromptTarget(prompt: ChordTonePrompt): string {
@@ -3031,6 +3535,7 @@ function formatHubAccuracy(
     | ChordToneSession
     | IntervalLandmarkSession
     | NoteRecognitionSession
+    | OctaveShapeSession
     | ScaleDegreeSession
     | null
 ): string {
@@ -3041,7 +3546,8 @@ function buildRecentPracticeSessions(
   noteSessions: readonly NoteRecognitionSession[],
   chordSessions: readonly ChordToneSession[],
   scaleSessions: readonly ScaleDegreeSession[],
-  intervalSessions: readonly IntervalLandmarkSession[]
+  intervalSessions: readonly IntervalLandmarkSession[],
+  octaveSessions: readonly OctaveShapeSession[]
 ): RecentPracticeSession[] {
   return [
     ...noteSessions.map((session) => ({
@@ -3059,6 +3565,10 @@ function buildRecentPracticeSessions(
     ...intervalSessions.map((session) => ({
       session,
       drillLabel: "Interval landmarks"
+    })),
+    ...octaveSessions.map((session) => ({
+      session,
+      drillLabel: "Octave shapes"
     }))
   ]
     .sort(
@@ -3077,7 +3587,8 @@ function toRecentPracticeSession(
     | NoteRecognitionSession
     | ChordToneSession
     | ScaleDegreeSession
-    | IntervalLandmarkSession,
+    | IntervalLandmarkSession
+    | OctaveShapeSession,
   drillLabel: string
 ): RecentPracticeSession {
   return {
@@ -3094,7 +3605,8 @@ function buildDashboardWeakSpots(
   noteWeakSpots: readonly NoteRecognitionPerformanceStat[],
   chordWeakSpots: readonly ChordTonePerformanceStat[],
   scaleWeakSpots: readonly ScaleDegreePerformanceStat[],
-  intervalWeakSpots: readonly IntervalLandmarkPerformanceStat[]
+  intervalWeakSpots: readonly IntervalLandmarkPerformanceStat[],
+  octaveWeakSpots: readonly OctaveShapePerformanceStat[]
 ): PracticeWeakSpot[] {
   return [
     ...noteWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Note recognition")),
@@ -3102,6 +3614,9 @@ function buildDashboardWeakSpots(
     ...scaleWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Scale degrees")),
     ...intervalWeakSpots.map((stat) =>
       toPracticeWeakSpot(stat, "Interval landmarks")
+    ),
+    ...octaveWeakSpots.map((stat) =>
+      toPracticeWeakSpot(stat, "Octave shapes")
     )
   ]
     .sort(
@@ -3199,15 +3714,42 @@ function getRecommendedIntervalPreset(
   return findPreset(presets, "quick-warmup");
 }
 
+function getRecommendedOctavePreset(
+  performance: ReturnType<typeof buildOctaveShapePerformanceSummary>,
+  presets: readonly OctaveShapeSessionPreset[]
+): OctaveShapeSessionPreset {
+  if (performance.weakSpots.length > 0) {
+    const weakestSpot = performance.weakSpots[0];
+
+    if (weakestSpot?.category === "shape" && weakestSpot.id === "A") {
+      return findPreset(presets, "a-shape-focus");
+    }
+
+    if (
+      (weakestSpot?.category === "shape" && weakestSpot.id === "E") ||
+      weakestSpot?.category === "sourceString"
+    ) {
+      return findPreset(presets, "low-string-shapes");
+    }
+
+    return findPreset(presets, "weak-spots");
+  }
+
+  return findPreset(presets, "quick-warmup");
+}
+
 function buildPracticeHubRecommendation(
   notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
   chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
   scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>,
   intervalPerformance: ReturnType<typeof buildIntervalLandmarkPerformanceSummary>,
+  octavePerformance: ReturnType<typeof buildOctaveShapePerformanceSummary>,
   notePreset: NoteRecognitionSessionPreset,
   chordPreset: ChordToneSessionPreset,
   scaleDegreePreset: ScaleDegreeSessionPreset,
-  intervalPreset: IntervalLandmarkSessionPreset
+  intervalPreset: IntervalLandmarkSessionPreset,
+  octavePreset: OctaveShapeSessionPreset,
+  courseProgress: ReturnType<typeof buildCourseProgress>
 ): PracticeHubRecommendation {
   const weakestSpots: Array<{
     drill: PracticeDrill;
@@ -3219,6 +3761,7 @@ function buildPracticeHubRecommendation(
   const weakestChordSpot = chordPerformance.weakSpots[0] ?? null;
   const weakestScaleDegreeSpot = scaleDegreePerformance.weakSpots[0] ?? null;
   const weakestIntervalSpot = intervalPerformance.weakSpots[0] ?? null;
+  const weakestOctaveSpot = octavePerformance.weakSpots[0] ?? null;
 
   if (weakestNoteSpot) {
     weakestSpots.push({
@@ -3256,6 +3799,15 @@ function buildPracticeHubRecommendation(
     });
   }
 
+  if (weakestOctaveSpot) {
+    weakestSpots.push({
+      drill: "octaveShape",
+      stat: weakestOctaveSpot,
+      preset: octavePreset,
+      sessionLabel: "octave"
+    });
+  }
+
   weakestSpots.sort(
     (left, right) =>
       left.stat.accuracy - right.stat.accuracy ||
@@ -3264,12 +3816,33 @@ function buildPracticeHubRecommendation(
   );
 
   const weakestSpot = weakestSpots[0] ?? null;
+  const courseRecommendation = getCoursePracticeRecommendation(
+    courseProgress,
+    notePreset,
+    chordPreset,
+    scaleDegreePreset,
+    intervalPreset,
+    octavePreset
+  );
+
+  if (weakestSpot && isStrongWeakSpot(weakestSpot.stat)) {
+    return {
+      drill: weakestSpot.drill,
+      title: `Review ${weakestSpot.stat.label}`,
+      description: `${weakestSpot.stat.label} are at ${weakestSpot.stat.accuracy}% across tracked ${weakestSpot.sessionLabel} sessions. Start ${weakestSpot.preset.label.toLowerCase()} to reinforce it.`,
+      preset: weakestSpot.preset
+    };
+  }
+
+  if (courseRecommendation) {
+    return courseRecommendation;
+  }
 
   if (weakestSpot) {
     return {
       drill: weakestSpot.drill,
       title: `Review ${weakestSpot.stat.label}`,
-      description: `${weakestSpot.stat.label} are at ${weakestSpot.stat.accuracy}% across tracked ${weakestSpot.sessionLabel} sessions. Start ${weakestSpot.preset.label.toLowerCase()} to reinforce it.`,
+      description: `${weakestSpot.stat.label} are the next visible weak spot in tracked ${weakestSpot.sessionLabel} sessions. Start ${weakestSpot.preset.label.toLowerCase()} to reinforce it.`,
       preset: weakestSpot.preset
     };
   }
@@ -3280,6 +3853,45 @@ function buildPracticeHubRecommendation(
     description:
       "No weak spots yet. Begin with a short note session, then Pocket.Practice can recommend more targeted work.",
     preset: notePreset
+  };
+}
+
+function isStrongWeakSpot(stat: PerformanceStat): boolean {
+  return stat.accuracy < 80 || stat.missed >= 2;
+}
+
+function getCoursePracticeRecommendation(
+  courseProgress: ReturnType<typeof buildCourseProgress>,
+  notePreset: NoteRecognitionSessionPreset,
+  chordPreset: ChordToneSessionPreset,
+  scaleDegreePreset: ScaleDegreeSessionPreset,
+  intervalPreset: IntervalLandmarkSessionPreset,
+  octavePreset: OctaveShapeSessionPreset
+): PracticeHubRecommendation | null {
+  const currentLesson = courseProgress.currentLesson;
+
+  if (!currentLesson) {
+    return null;
+  }
+
+  const presetByDrill: Record<PracticeDrill, PracticePreset> = {
+    note: notePreset,
+    chordTone: chordPreset,
+    scaleDegree: scaleDegreePreset,
+    interval: intervalPreset,
+    octaveShape: octavePreset
+  };
+
+  const preset = presetByDrill[currentLesson.practice.drill];
+
+  return {
+    drill: currentLesson.practice.drill,
+    title: `Continue ${currentLesson.title}`,
+    description: `Course progress points to ${currentLesson.title}. Start ${preset.label.toLowerCase()} to work toward ${formatLessonCriteria(
+      currentLesson.practice.criteria.promptCount,
+      currentLesson.practice.criteria.minAccuracy
+    )}.`,
+    preset
   };
 }
 
@@ -3347,6 +3959,23 @@ function collectIntervalReviewPrompts(
     session.missedPrompts.forEach((prompt) => {
       promptsByTarget.set(
         `${prompt.rootNote}-${prompt.targetInterval}-${prompt.targetString}`,
+        prompt
+      );
+    });
+  });
+
+  return [...promptsByTarget.values()];
+}
+
+function collectOctaveReviewPrompts(
+  sessions: readonly OctaveShapeSession[]
+): MissedOctaveShapePrompt[] {
+  const promptsByTarget = new Map<string, MissedOctaveShapePrompt>();
+
+  sessions.forEach((session) => {
+    session.missedPrompts.forEach((prompt) => {
+      promptsByTarget.set(
+        `${prompt.shape}-${prompt.sourceString}-${prompt.sourceFret}-${prompt.targetString}-${prompt.targetFret}`,
         prompt
       );
     });

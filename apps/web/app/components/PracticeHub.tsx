@@ -19,6 +19,10 @@ interface PracticeHubProps {
   intervalWeakSpotLabel: string;
   intervalPresetLabel: string;
   onStartInterval: () => void;
+  octaveLastSessionLabel: string;
+  octaveWeakSpotLabel: string;
+  octavePresetLabel: string;
+  onStartOctave: () => void;
   courseRecommendationTitle: string;
   courseRecommendationDescription: string;
   courseLessonHref: string;
@@ -45,6 +49,10 @@ export function PracticeHub({
   intervalWeakSpotLabel,
   intervalPresetLabel,
   onStartInterval,
+  octaveLastSessionLabel,
+  octaveWeakSpotLabel,
+  octavePresetLabel,
+  onStartOctave,
   courseRecommendationTitle,
   courseRecommendationDescription,
   courseLessonHref,
@@ -164,6 +172,25 @@ export function PracticeHub({
             type="button"
           >
             Start {intervalPresetLabel}
+          </button>
+        </article>
+
+        <article className="hub-card">
+          <div>
+            <span className="control-label">Octave Shapes</span>
+            <h3>Find CAGED octaves</h3>
+            <p>Use highlighted anchors to connect CAGED octave positions.</p>
+          </div>
+          <div className="hub-metrics">
+            <span>{octaveLastSessionLabel}</span>
+            <span>{octaveWeakSpotLabel}</span>
+          </div>
+          <button
+            data-testid="hub-start-octave"
+            onClick={onStartOctave}
+            type="button"
+          >
+            Start {octavePresetLabel}
           </button>
         </article>
 

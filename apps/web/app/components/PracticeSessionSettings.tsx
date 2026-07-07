@@ -29,6 +29,15 @@ import type {
   NoteRecognitionStringFocus
 } from "../lib/noteRecognition";
 import type {
+  OctaveShapeFocus,
+  OctaveShapePromptOrder,
+  OctaveShapeReviewMode,
+  OctaveShapeSessionLength,
+  OctaveShapeSessionPreset,
+  OctaveShapeSessionSettings,
+  OctaveShapeStringFocus
+} from "../lib/octaveShapeRecognition";
+import type {
   ScaleDegreeDegreeFocus,
   ScaleDegreePromptOrder,
   ScaleDegreeQualityFocus,
@@ -39,7 +48,12 @@ import type {
   ScaleDegreeStringFocus
 } from "../lib/scaleDegreeRecognition";
 
-type PracticeDrill = "note" | "chordTone" | "scaleDegree" | "interval";
+type PracticeDrill =
+  | "note"
+  | "chordTone"
+  | "scaleDegree"
+  | "interval"
+  | "octaveShape";
 
 interface PracticeSessionSettingsProps {
   practiceDrill: PracticeDrill;
@@ -81,6 +95,16 @@ interface PracticeSessionSettingsProps {
       nextSettings: Partial<IntervalLandmarkSessionSettings>
     ) => void;
   };
+  octave: {
+    presetOptions: readonly OctaveShapeSessionPreset[];
+    settings: OctaveShapeSessionSettings;
+    missedReviewCount: number;
+    onPresetSelect: (preset: OctaveShapeSessionPreset) => void;
+    onSavePreset: () => void;
+    onSettingsChange: (
+      nextSettings: Partial<OctaveShapeSessionSettings>
+    ) => void;
+  };
 }
 
 const notes = [
@@ -118,7 +142,8 @@ const stringFocusOptions = [
   id:
     | NoteRecognitionStringFocus
     | ScaleDegreeStringFocus
-    | IntervalLandmarkStringFocus;
+    | IntervalLandmarkStringFocus
+    | OctaveShapeStringFocus;
   label: string;
 }>;
 const promptOrderOptions = [
@@ -129,7 +154,8 @@ const promptOrderOptions = [
     | NoteRecognitionPromptOrder
     | ChordTonePromptOrder
     | ScaleDegreePromptOrder
-    | IntervalLandmarkPromptOrder;
+    | IntervalLandmarkPromptOrder
+    | OctaveShapePromptOrder;
   label: string;
 }>;
 const reviewModeOptions = [
@@ -140,7 +166,8 @@ const reviewModeOptions = [
     | NoteRecognitionReviewMode
     | ChordToneReviewMode
     | ScaleDegreeReviewMode
-    | IntervalLandmarkReviewMode;
+    | IntervalLandmarkReviewMode
+    | OctaveShapeReviewMode;
   label: string;
 }>;
 const chordSessionLengthOptions = [6, 12, 20] as const satisfies readonly ChordToneSessionLength[];
@@ -188,13 +215,26 @@ const intervalFamilyFocusOptions = [
   id: IntervalLandmarkFamilyFocus;
   label: string;
 }>;
+const octaveSessionLengthOptions = [6, 10, 20] as const satisfies readonly OctaveShapeSessionLength[];
+const octaveShapeFocusOptions = [
+  { id: "mixed", label: "Mixed" },
+  { id: "C", label: "C" },
+  { id: "A", label: "A" },
+  { id: "G", label: "G" },
+  { id: "E", label: "E" },
+  { id: "D", label: "D" }
+] as const satisfies ReadonlyArray<{
+  id: OctaveShapeFocus;
+  label: string;
+}>;
 
 export function PracticeSessionSettings({
   practiceDrill,
   note,
   chord,
   scale,
-  interval
+  interval,
+  octave
 }: PracticeSessionSettingsProps) {
   if (practiceDrill === "note") {
     return (
@@ -438,6 +478,86 @@ export function PracticeSessionSettings({
     );
   }
 
+  if (practiceDrill === "octaveShape") {
+    return (
+      <div className="session-setup-panel">
+        <span className="control-label">Session setup</span>
+
+        <PresetField
+          presets={octave.presetOptions}
+          testIdPrefix="octave"
+          onPresetSelect={octave.onPresetSelect}
+          onSavePreset={octave.onSavePreset}
+        />
+
+        <div className="setup-field">
+          <span>Length</span>
+          <div className="segmented-control option-grid three">
+            {octaveSessionLengthOptions.map((sessionLength) => (
+              <button
+                className={
+                  octave.settings.sessionLength === sessionLength
+                    ? "is-selected"
+                    : ""
+                }
+                data-testid={`octave-length-${sessionLength}`}
+                key={sessionLength}
+                onClick={() => octave.onSettingsChange({ sessionLength })}
+                type="button"
+              >
+                {sessionLength}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="setup-field">
+          <span>CAGED shape</span>
+          <div className="segmented-control option-grid shape-options">
+            {octaveShapeFocusOptions.map((option) => (
+              <button
+                className={
+                  octave.settings.shapeFocus === option.id ? "is-selected" : ""
+                }
+                data-testid={`octave-shape-${option.id}`}
+                key={option.id}
+                onClick={() =>
+                  octave.onSettingsChange({
+                    shapeFocus: option.id
+                  })
+                }
+                type="button"
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <StringFocusField
+          selectedString={octave.settings.stringFocus}
+          testIdPrefix="octave"
+          onChange={(stringFocus) => octave.onSettingsChange({ stringFocus })}
+        />
+
+        <PromptOrderField
+          selectedOrder={octave.settings.promptOrder}
+          testIdPrefix="octave"
+          onChange={(promptOrder) => octave.onSettingsChange({ promptOrder })}
+        />
+
+        <ReviewModeField
+          missedReviewCount={octave.missedReviewCount}
+          selectedReviewMode={octave.settings.reviewMode}
+          testIdPrefix="octave"
+          emptyMessage="No missed octave prompts yet, using the full set."
+          reviewLabel="missed octave prompt"
+          onChange={(reviewMode) => octave.onSettingsChange({ reviewMode })}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="session-setup-panel">
       <span className="control-label">Session setup</span>
@@ -597,13 +717,15 @@ function StringFocusField({
   selectedString:
     | NoteRecognitionStringFocus
     | ScaleDegreeStringFocus
-    | IntervalLandmarkStringFocus;
-  testIdPrefix: "note" | "scale" | "interval";
+    | IntervalLandmarkStringFocus
+    | OctaveShapeStringFocus;
+  testIdPrefix: "note" | "scale" | "interval" | "octave";
   onChange: (
     stringFocus:
       | NoteRecognitionStringFocus
       | ScaleDegreeStringFocus
       | IntervalLandmarkStringFocus
+      | OctaveShapeStringFocus
   ) => void;
 }) {
   return (
@@ -635,14 +757,16 @@ function PromptOrderField({
     | NoteRecognitionPromptOrder
     | ChordTonePromptOrder
     | ScaleDegreePromptOrder
-    | IntervalLandmarkPromptOrder;
-  testIdPrefix: "note" | "chord" | "scale" | "interval";
+    | IntervalLandmarkPromptOrder
+    | OctaveShapePromptOrder;
+  testIdPrefix: "note" | "chord" | "scale" | "interval" | "octave";
   onChange: (
     promptOrder:
       | NoteRecognitionPromptOrder
       | ChordTonePromptOrder
       | ScaleDegreePromptOrder
       | IntervalLandmarkPromptOrder
+      | OctaveShapePromptOrder
   ) => void;
 }) {
   return (
@@ -678,8 +802,9 @@ function ReviewModeField({
     | NoteRecognitionReviewMode
     | ChordToneReviewMode
     | ScaleDegreeReviewMode
-    | IntervalLandmarkReviewMode;
-  testIdPrefix: "note" | "chord" | "scale" | "interval";
+    | IntervalLandmarkReviewMode
+    | OctaveShapeReviewMode;
+  testIdPrefix: "note" | "chord" | "scale" | "interval" | "octave";
   emptyMessage: string;
   reviewLabel: string;
   onChange: (
@@ -688,6 +813,7 @@ function ReviewModeField({
       | ChordToneReviewMode
       | ScaleDegreeReviewMode
       | IntervalLandmarkReviewMode
+      | OctaveShapeReviewMode
   ) => void;
 }) {
   return (

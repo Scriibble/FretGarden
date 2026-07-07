@@ -368,12 +368,20 @@ button {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.segmented-control.option-grid.five {
+  grid-template-columns: repeat(auto-fit, minmax(6.6rem, 1fr));
+}
+
 .segmented-control.option-grid.string-options {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .segmented-control.option-grid.degree-options {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.segmented-control.option-grid.shape-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .note-grid {
@@ -1485,7 +1493,9 @@ button {
 
   .segmented-control.option-grid.three,
   .segmented-control.option-grid.four,
-  .segmented-control.option-grid.degree-options {
+  .segmented-control.option-grid.five,
+  .segmented-control.option-grid.degree-options,
+  .segmented-control.option-grid.shape-options {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
