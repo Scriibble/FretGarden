@@ -3,9 +3,12 @@ export interface LessonSection {
   body: string[];
 }
 
+export type LessonPracticeDrill = "note" | "chordTone" | "scaleDegree";
+
 export interface LessonPracticeLink {
   label: string;
   href: string;
+  drill: LessonPracticeDrill;
 }
 
 export interface Lesson {
@@ -42,7 +45,8 @@ export const lessons = [
     ],
     practice: {
       label: "Practice note recognition",
-      href: "/?drill=note#practice"
+      href: "/?drill=note&lesson=fretboard-map#practice",
+      drill: "note"
     }
   },
   {
@@ -69,7 +73,8 @@ export const lessons = [
     ],
     practice: {
       label: "Practice string-specific notes",
-      href: "/?drill=note#practice"
+      href: "/?drill=note&lesson=repeating-notes#practice",
+      drill: "note"
     }
   },
   {
@@ -96,7 +101,8 @@ export const lessons = [
     ],
     practice: {
       label: "Practice chord tones",
-      href: "/?drill=chordTone#practice"
+      href: "/?drill=chordTone&lesson=triads#practice",
+      drill: "chordTone"
     }
   },
   {
@@ -123,7 +129,8 @@ export const lessons = [
     ],
     practice: {
       label: "Practice scale degrees",
-      href: "/?drill=scaleDegree#practice"
+      href: "/?drill=scaleDegree&lesson=scale-degrees#practice",
+      drill: "scaleDegree"
     }
   }
 ] as const satisfies readonly Lesson[];

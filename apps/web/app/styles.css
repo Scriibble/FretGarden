@@ -212,6 +212,99 @@ button {
   border-color: #c5d8d4;
 }
 
+.progress-dashboard {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: minmax(260px, 1.15fr) repeat(2, minmax(220px, 1fr));
+}
+
+.next-session-card,
+.progress-card {
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  background: #ffffff;
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.next-session-card {
+  background: #f8faf8;
+  border-color: #9bbab2;
+}
+
+.next-session-card h2 {
+  margin-top: 0.25rem;
+}
+
+.next-session-card p:last-child,
+.empty-progress-copy {
+  color: #52615c;
+  line-height: 1.45;
+}
+
+.next-session-card button {
+  border: 1px solid #173f43;
+  border-radius: 7px;
+  background: #173f43;
+  color: #ffffff;
+  cursor: pointer;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.8rem;
+}
+
+.next-session-card button:hover {
+  background: #225b60;
+  border-color: #225b60;
+}
+
+.progress-card-heading,
+.recent-session-row,
+.weak-spot-row {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.progress-card-heading strong {
+  color: #173f43;
+  font-size: 1.2rem;
+}
+
+.recent-session-list,
+.weak-spot-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.recent-session-row,
+.weak-spot-row {
+  border: 1px solid #d8dfda;
+  border-radius: 7px;
+  padding: 0.7rem;
+}
+
+.recent-session-row div,
+.weak-spot-row div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.recent-session-row span,
+.weak-spot-row span {
+  color: #52615c;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.recent-session-row > span,
+.weak-spot-row > span {
+  color: #173f43;
+  font-weight: 800;
+  text-align: right;
+}
+
 .controls-panel {
   display: grid;
   gap: 1rem;
@@ -870,6 +963,25 @@ button {
   padding: 1rem;
 }
 
+.lesson-card-complete {
+  background: #f8faf8;
+  border-color: #9bbab2;
+}
+
+.lesson-card-meta,
+.lesson-card-actions,
+.lesson-practice-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: space-between;
+}
+
+.lesson-card-actions {
+  justify-content: flex-start;
+}
+
 .lesson-card h2,
 .lesson-practice-card h2 {
   margin-top: 0.25rem;
@@ -898,6 +1010,43 @@ button {
 .lesson-cta:hover {
   background: #225b60;
   border-color: #225b60;
+}
+
+.lesson-secondary-link {
+  border: 1px solid #d8dfda;
+  border-radius: 7px;
+  color: #173f43;
+  display: inline-flex;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.8rem;
+  text-decoration: none;
+}
+
+.lesson-secondary-link:hover {
+  border-color: #2f6b73;
+}
+
+.lesson-status-pill {
+  border: 1px solid #d8dfda;
+  border-radius: 999px;
+  color: #52615c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.3rem 0.55rem;
+}
+
+.lesson-status-pill.status-in-progress {
+  background: #fff1df;
+  border-color: #d9a65e;
+  color: #7a4b0f;
+}
+
+.lesson-status-pill.status-complete {
+  background: #e5f2ef;
+  border-color: #9bbab2;
+  color: #173f43;
 }
 
 .lesson-page {
@@ -973,6 +1122,10 @@ button {
   }
 
   .practice-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-dashboard {
     grid-template-columns: 1fr;
   }
 

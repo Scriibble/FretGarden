@@ -1,0 +1,73 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import type { Lesson } from "../lib/lessons";
+import {
+  LESSON_PROGRESS_STORAGE_KEY,
+  getLessonProgressStatus,
+  parseLessonProgress,
+  type LessonProgressRecord
+} from "../lib/lessonProgress";
+
+interface LessonPracticeCardProps {
+  lesson: Lesson;
+}
+
+export function LessonPracticeCard({ lesson }: LessonPracticeCardProps) {
+  const [progress, setProgress] = useState<LessonProgressRecord[]>([]);
+  const status = getLessonProgressStatus(progress, lesson.slug);
+
+  useEffect(() => {
+    setProgress(
+      parseLessonProgress(window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY))
+    );
+  }, []);
+
+  return (
+    <aside className={`lesson-practice-card lesson-practice-${status}`}>
+      <div>
+        <span className="control-label">Apply it now</span>
+        <div className="lesson-practice-heading">
+          <h2>{lesson.practice.label}</h2>
+          <span className={`lesson-status-pill status-${status}`}>
+            {formatLessonStatus(status)}
+          </span>
+        </div>
+        <p>
+          Jump back to the fretboard and use the matching drill to make the
+          concept concrete.
+        </p>
+      </div>
+      <Link className="lesson-cta" href={lesson.practice.href}>
+        {getPracticeCtaLabel(status)}
+      </Link>
+    </aside>
+  );
+}
+
+function getPracticeCtaLabel(
+  status: "not-started" | "in-progress" | "complete"
+): string {
+  if (status === "complete") {
+    return "Practice again";
+  }
+
+  if (status === "in-progress") {
+    return "Continue lesson practice";
+  }
+
+  return "Start lesson practice";
+}
+
+function formatLessonStatus(status: "not-started" | "in-progress" | "complete") {
+  if (status === "complete") {
+    return "Complete";
+  }
+
+  if (status === "in-progress") {
+    return "In progress";
+  }
+
+  return "Not started";
+}

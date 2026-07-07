@@ -18,6 +18,19 @@ import { PracticeHub } from "./PracticeHub";
 import { PracticePromptPanel } from "./PracticePromptPanel";
 import { PracticeSessionSettings } from "./PracticeSessionSettings";
 import {
+  ProgressDashboard,
+  type PracticeWeakSpot,
+  type RecentPracticeSession
+} from "./ProgressDashboard";
+import { getLesson, type LessonPracticeDrill } from "../lib/lessons";
+import {
+  LESSON_PROGRESS_STORAGE_KEY,
+  markLessonComplete,
+  markLessonStarted,
+  parseLessonProgress,
+  serializeLessonProgress
+} from "../lib/lessonProgress";
+import {
   CHORD_TONE_HISTORY_LIMIT,
   CHORD_TONE_SESSION_PRESETS,
   DEFAULT_CHORD_TONE_SESSION_SETTINGS,
@@ -224,6 +237,7 @@ export function FretboardExplorer() {
   const [selectedPosition, setSelectedPosition] = useState<FretPosition | null>(
     null
   );
+  const [activeLessonSlug, setActiveLessonSlug] = useState<string | null>(null);
   const practiceLayoutRef = useRef<HTMLElement | null>(null);
 
   const notePerformanceSessions = useMemo(() => {
@@ -486,6 +500,28 @@ export function FretboardExplorer() {
     recommendedChordPreset,
     recommendedScaleDegreePreset
   );
+  const recentPracticeSessions = useMemo(
+    () =>
+      buildRecentPracticeSessions(
+        sessionHistory,
+        chordSessionHistory,
+        scaleDegreeSessionHistory
+      ),
+    [sessionHistory, chordSessionHistory, scaleDegreeSessionHistory]
+  );
+  const dashboardWeakSpots = useMemo(
+    () =>
+      buildDashboardWeakSpots(
+        notePerformance.weakSpots,
+        chordPerformance.weakSpots,
+        scaleDegreePerformance.weakSpots
+      ),
+    [
+      notePerformance.weakSpots,
+      chordPerformance.weakSpots,
+      scaleDegreePerformance.weakSpots
+    ]
+  );
 
   useEffect(() => {
     setSessionHistory(
@@ -524,8 +560,13 @@ export function FretboardExplorer() {
   }, []);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
     const requestedDrill = parsePracticeDrillParam(
-      new URLSearchParams(window.location.search).get("drill")
+      searchParams.get("drill")
+    );
+    const requestedLesson = parseLessonPracticeRequest(
+      searchParams.get("lesson"),
+      requestedDrill
     );
 
     if (!requestedDrill) {
@@ -534,6 +575,7 @@ export function FretboardExplorer() {
 
     setMode("practice");
     setPracticeDrill(requestedDrill);
+    setActiveLessonSlug(requestedLesson?.slug ?? null);
 
     if (requestedDrill === "chordTone") {
       resetChordToneDrill();
@@ -541,6 +583,10 @@ export function FretboardExplorer() {
       resetScaleDegreeDrill();
     } else {
       resetNoteRecognitionDrill();
+    }
+
+    if (requestedLesson) {
+      markStoredLessonStarted(requestedLesson.slug, requestedLesson.drill);
     }
 
     scrollPracticeSessionIntoView();
@@ -570,7 +616,9 @@ export function FretboardExplorer() {
 
       return nextHistory;
     });
+    markActiveLessonComplete("note");
   }, [
+    activeLessonSlug,
     attempts,
     completedSession,
     drillSummary.isComplete,
@@ -595,7 +643,9 @@ export function FretboardExplorer() {
 
       return nextHistory;
     });
+    markActiveLessonComplete("chordTone");
   }, [
+    activeLessonSlug,
     chordAttempts,
     chordDrillSummary.isComplete,
     chordPromptQueue.length,
@@ -626,7 +676,9 @@ export function FretboardExplorer() {
 
       return nextHistory;
     });
+    markActiveLessonComplete("scaleDegree");
   }, [
+    activeLessonSlug,
     completedScaleDegreeSession,
     scaleAttempts,
     scaleDegreeDrillSummary.isComplete,
@@ -636,6 +688,20 @@ export function FretboardExplorer() {
   function handleModeChange(nextMode: DisplayMode): void {
     setMode(nextMode);
     setSelectedPosition(null);
+  }
+
+  function markActiveLessonComplete(completedDrill: PracticeDrill): void {
+    if (!activeLessonSlug) {
+      return;
+    }
+
+    const activeLesson = getLesson(activeLessonSlug);
+
+    if (!activeLesson || activeLesson.practice.drill !== completedDrill) {
+      return;
+    }
+
+    markStoredLessonComplete(activeLesson.slug, activeLesson.practice.drill);
   }
 
   function handlePositionClick(position: FretPosition): void {
@@ -954,6 +1020,16 @@ export function FretboardExplorer() {
         onStartRecommendation={() =>
           handleStartRecommendation(practiceRecommendation)
         }
+      />
+
+      <ProgressDashboard
+        recommendationTitle={practiceRecommendation.title}
+        recommendationDescription={practiceRecommendation.description}
+        onStartRecommendation={() =>
+          handleStartRecommendation(practiceRecommendation)
+        }
+        recentSessions={recentPracticeSessions}
+        weakSpots={dashboardWeakSpots}
       />
 
       <section
@@ -2107,6 +2183,44 @@ function parsePracticeDrillParam(value: string | null): PracticeDrill | null {
   return null;
 }
 
+function parseLessonPracticeRequest(
+  slug: string | null,
+  requestedDrill: PracticeDrill | null
+): { slug: string; drill: LessonPracticeDrill } | null {
+  if (!slug || !requestedDrill) {
+    return null;
+  }
+
+  const lesson = getLesson(slug);
+
+  if (!lesson || lesson.practice.drill !== requestedDrill) {
+    return null;
+  }
+
+  return {
+    slug: lesson.slug,
+    drill: lesson.practice.drill
+  };
+}
+
+function markStoredLessonStarted(
+  slug: string,
+  drill: LessonPracticeDrill
+): void {
+  writeStoredLessonProgress(
+    markLessonStarted(readStoredLessonProgress(), slug, drill)
+  );
+}
+
+function markStoredLessonComplete(
+  slug: string,
+  drill: LessonPracticeDrill
+): void {
+  writeStoredLessonProgress(
+    markLessonComplete(readStoredLessonProgress(), slug, drill)
+  );
+}
+
 function getCompletionTitle(practiceDrill: PracticeDrill): string {
   if (practiceDrill === "chordTone") {
     return "Chord tone drill complete";
@@ -2279,6 +2393,84 @@ function formatHubAccuracy(
   session: ChordToneSession | NoteRecognitionSession | ScaleDegreeSession | null
 ): string {
   return session ? `${session.accuracy}% last session` : "No sessions yet";
+}
+
+function buildRecentPracticeSessions(
+  noteSessions: readonly NoteRecognitionSession[],
+  chordSessions: readonly ChordToneSession[],
+  scaleSessions: readonly ScaleDegreeSession[]
+): RecentPracticeSession[] {
+  return [
+    ...noteSessions.map((session) => ({
+      session,
+      drillLabel: "Note recognition"
+    })),
+    ...chordSessions.map((session) => ({
+      session,
+      drillLabel: "Chord tones"
+    })),
+    ...scaleSessions.map((session) => ({
+      session,
+      drillLabel: "Scale degrees"
+    }))
+  ]
+    .sort(
+      (left, right) =>
+        new Date(right.session.completedAt).getTime() -
+        new Date(left.session.completedAt).getTime()
+    )
+    .slice(0, 5)
+    .map(({ session, drillLabel }) =>
+      toRecentPracticeSession(session, drillLabel)
+    );
+}
+
+function toRecentPracticeSession(
+  session: NoteRecognitionSession | ChordToneSession | ScaleDegreeSession,
+  drillLabel: string
+): RecentPracticeSession {
+  return {
+    id: `${drillLabel}-${session.id}`,
+    drillLabel,
+    accuracy: session.accuracy,
+    correct: session.correct,
+    promptCount: session.promptCount,
+    completedAtLabel: formatSessionDate(session.completedAt)
+  };
+}
+
+function buildDashboardWeakSpots(
+  noteWeakSpots: readonly NoteRecognitionPerformanceStat[],
+  chordWeakSpots: readonly ChordTonePerformanceStat[],
+  scaleWeakSpots: readonly ScaleDegreePerformanceStat[]
+): PracticeWeakSpot[] {
+  return [
+    ...noteWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Note recognition")),
+    ...chordWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Chord tones")),
+    ...scaleWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Scale degrees"))
+  ]
+    .sort(
+      (left, right) =>
+        left.accuracy - right.accuracy ||
+        right.missed - left.missed ||
+        right.attempted - left.attempted ||
+        left.label.localeCompare(right.label)
+    )
+    .slice(0, 6);
+}
+
+function toPracticeWeakSpot(
+  stat: PerformanceStat,
+  drillLabel: string
+): PracticeWeakSpot {
+  return {
+    id: `${drillLabel}-${stat.category}-${stat.id}`,
+    drillLabel,
+    label: stat.label,
+    accuracy: stat.accuracy,
+    missed: stat.missed,
+    attempted: stat.attempted
+  };
 }
 
 function getRecommendedNotePreset(
@@ -2492,6 +2684,25 @@ function writeStoredSessionHistory<Session>(
     window.localStorage.setItem(storageKey, JSON.stringify(history));
   } catch {
     // Local progress is a convenience; the drill should keep working if storage is unavailable.
+  }
+}
+
+function readStoredLessonProgress() {
+  return parseLessonProgress(
+    window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY)
+  );
+}
+
+function writeStoredLessonProgress(
+  progress: ReturnType<typeof parseLessonProgress>
+): void {
+  try {
+    window.localStorage.setItem(
+      LESSON_PROGRESS_STORAGE_KEY,
+      serializeLessonProgress(progress)
+    );
+  } catch {
+    // Lesson progress is a convenience; practice should keep working if storage is unavailable.
   }
 }
 

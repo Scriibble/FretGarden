@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { LessonPracticeCard } from "../../components/LessonPracticeCard";
 import { getLesson, lessons } from "../../lib/lessons";
 
 interface LessonPageProps {
@@ -60,19 +61,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           </section>
         ))}
 
-        <aside className="lesson-practice-card">
-          <div>
-            <span className="control-label">Apply it now</span>
-            <h2>{lesson.practice.label}</h2>
-            <p>
-              Jump back to the fretboard and use the matching drill to make the
-              concept concrete.
-            </p>
-          </div>
-          <Link className="lesson-cta" href={lesson.practice.href}>
-            Open practice
-          </Link>
-        </aside>
+        <LessonPracticeCard lesson={lesson} />
       </article>
     </main>
   );

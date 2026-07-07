@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LessonLibrary } from "../components/LessonLibrary";
 import { lessons } from "../lib/lessons";
 
 export default function LessonsPage() {
@@ -18,20 +19,7 @@ export default function LessonsPage() {
         </Link>
       </header>
 
-      <section className="lesson-grid" aria-label="Lesson library">
-        {lessons.map((lesson) => (
-          <article className="lesson-card" key={lesson.slug}>
-            <div>
-              <span className="control-label">{lesson.eyebrow}</span>
-              <h2>{lesson.title}</h2>
-              <p>{lesson.summary}</p>
-            </div>
-            <Link className="lesson-cta" href={`/lessons/${lesson.slug}`}>
-              Read lesson
-            </Link>
-          </article>
-        ))}
-      </section>
+      <LessonLibrary lessons={lessons} />
     </main>
   );
 }
