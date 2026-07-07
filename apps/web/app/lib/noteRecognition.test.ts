@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   NOTE_RECOGNITION_PROMPTS,
   appendNoteRecognitionSession,
+  buildNoteRecognitionPerformanceSummary,
   buildNoteRecognitionSession,
   buildNoteRecognitionAttempt,
   getCurrentPrompt,
@@ -191,6 +192,7 @@ describe("noteRecognition", () => {
       correct: 1,
       missed: 1,
       accuracy: 50,
+      attempts,
       missedPrompts: [
         {
           targetNote: "G",
@@ -203,6 +205,88 @@ describe("noteRecognition", () => {
     });
   });
 
+  it("summarizes note performance by target note and string", () => {
+    const attempts = [
+      buildNoteRecognitionAttempt(0, { targetNote: "D", targetString: 5 }, {
+        string: 5,
+        fret: 5,
+        note: "D",
+        pitchClass: 2
+      }),
+      buildNoteRecognitionAttempt(1, { targetNote: "G", targetString: 6 }, {
+        string: 1,
+        fret: 3,
+        note: "G",
+        pitchClass: 7
+      }),
+      buildNoteRecognitionAttempt(2, { targetNote: "D", targetString: 4 }, {
+        string: 4,
+        fret: 2,
+        note: "E",
+        pitchClass: 4
+      })
+    ];
+    const summary = buildNoteRecognitionPerformanceSummary([
+      buildNoteRecognitionSession(attempts, "2026-07-07T12:00:00.000Z", 3)
+    ]);
+
+    expect(summary.attempted).toBe(3);
+    expect(summary.noteStats).toEqual([
+      {
+        id: "D",
+        label: "D notes",
+        category: "note",
+        attempted: 2,
+        correct: 1,
+        missed: 1,
+        accuracy: 50
+      },
+      {
+        id: "G",
+        label: "G notes",
+        category: "note",
+        attempted: 1,
+        correct: 0,
+        missed: 1,
+        accuracy: 0
+      }
+    ]);
+    expect(summary.stringStats).toEqual([
+      {
+        id: "4",
+        label: "String 4",
+        category: "string",
+        attempted: 1,
+        correct: 0,
+        missed: 1,
+        accuracy: 0
+      },
+      {
+        id: "5",
+        label: "String 5",
+        category: "string",
+        attempted: 1,
+        correct: 1,
+        missed: 0,
+        accuracy: 100
+      },
+      {
+        id: "6",
+        label: "String 6",
+        category: "string",
+        attempted: 1,
+        correct: 0,
+        missed: 1,
+        accuracy: 0
+      }
+    ]);
+    expect(summary.weakSpots.map((stat) => stat.label)).toEqual([
+      "G notes",
+      "String 4",
+      "String 6"
+    ]);
+  });
+
   it("keeps the newest local sessions first and applies a history limit", () => {
     const sessions = ["one", "two", "three"].map((label) => ({
       id: label,
@@ -211,6 +295,7 @@ describe("noteRecognition", () => {
       correct: 10,
       missed: 0,
       accuracy: 100,
+      attempts: [],
       missedPrompts: []
     }));
 

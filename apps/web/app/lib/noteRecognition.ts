@@ -37,8 +37,29 @@ export interface MissedNoteRecognitionPrompt extends NoteRecognitionPrompt {
 }
 
 export type NoteRecognitionSummary = DrillSummary;
-export type NoteRecognitionSession =
-  DrillSession<MissedNoteRecognitionPrompt>;
+export type NoteRecognitionPerformanceCategory = "note" | "string";
+
+export interface NoteRecognitionSession
+  extends DrillSession<MissedNoteRecognitionPrompt> {
+  attempts: NoteRecognitionAttempt[];
+}
+
+export interface NoteRecognitionPerformanceStat {
+  id: string;
+  label: string;
+  category: NoteRecognitionPerformanceCategory;
+  attempted: number;
+  correct: number;
+  missed: number;
+  accuracy: number;
+}
+
+export interface NoteRecognitionPerformanceSummary {
+  attempted: number;
+  noteStats: NoteRecognitionPerformanceStat[];
+  stringStats: NoteRecognitionPerformanceStat[];
+  weakSpots: NoteRecognitionPerformanceStat[];
+}
 
 export const NOTE_RECOGNITION_PROMPTS = [
   { targetNote: "D", targetString: 5 },
@@ -87,13 +108,16 @@ export function buildNoteRecognitionSession(
   completedAt = new Date().toISOString(),
   promptCount: number = NOTE_RECOGNITION_PROMPTS.length
 ): NoteRecognitionSession {
-  return buildDrillSession({
-    attempts,
-    completedAt,
-    idPrefix: "note-recognition",
-    missedPrompts: getMissedNoteRecognitionPrompts(attempts),
-    promptCount
-  });
+  return {
+    ...buildDrillSession({
+      attempts,
+      completedAt,
+      idPrefix: "note-recognition",
+      missedPrompts: getMissedNoteRecognitionPrompts(attempts),
+      promptCount
+    }),
+    attempts
+  };
 }
 
 export function appendNoteRecognitionSession(
@@ -118,6 +142,34 @@ export function getMissedNoteRecognitionPrompts(
     }));
 }
 
+export function buildNoteRecognitionPerformanceSummary(
+  sessions: readonly NoteRecognitionSession[]
+): NoteRecognitionPerformanceSummary {
+  const attempts = sessions.flatMap((session) => session.attempts ?? []);
+  const noteStats = buildNoteRecognitionStats(
+    attempts,
+    "note",
+    (attempt) => attempt.targetNote,
+    (attempt) => `${attempt.targetNote} notes`
+  );
+  const stringStats = buildNoteRecognitionStats(
+    attempts,
+    "string",
+    (attempt) => String(attempt.targetString),
+    (attempt) => `String ${attempt.targetString}`
+  );
+
+  return {
+    attempted: attempts.length,
+    noteStats,
+    stringStats,
+    weakSpots: [...noteStats, ...stringStats]
+      .filter((stat) => stat.missed > 0)
+      .sort(compareNoteRecognitionWeakSpots)
+      .slice(0, 3)
+  };
+}
+
 export function getCurrentPrompt(
   promptIndex: number,
   prompts: readonly NoteRecognitionPrompt[] = NOTE_RECOGNITION_PROMPTS
@@ -139,5 +191,57 @@ export function isNoteRecognitionCorrectPosition(
     isNoteRecognitionAnswerPosition(position) &&
     position.string === prompt.targetString &&
     getPitchClass(position.note) === getPitchClass(prompt.targetNote)
+  );
+}
+
+function buildNoteRecognitionStats(
+  attempts: readonly NoteRecognitionAttempt[],
+  category: NoteRecognitionPerformanceCategory,
+  getId: (attempt: NoteRecognitionAttempt) => string,
+  getLabel: (attempt: NoteRecognitionAttempt) => string
+): NoteRecognitionPerformanceStat[] {
+  const statsById = new Map<string, NoteRecognitionPerformanceStat>();
+
+  attempts.forEach((attempt) => {
+    const id = getId(attempt);
+    const existingStat = statsById.get(id);
+    const nextStat = existingStat ?? {
+      id,
+      label: getLabel(attempt),
+      category,
+      attempted: 0,
+      correct: 0,
+      missed: 0,
+      accuracy: 0
+    };
+
+    nextStat.attempted += 1;
+    nextStat.correct += attempt.isCorrect ? 1 : 0;
+    nextStat.missed += attempt.isCorrect ? 0 : 1;
+    nextStat.accuracy = Math.round(
+      (nextStat.correct / nextStat.attempted) * 100
+    );
+    statsById.set(id, nextStat);
+  });
+
+  return [...statsById.values()].sort(compareNoteRecognitionStats);
+}
+
+function compareNoteRecognitionStats(
+  left: NoteRecognitionPerformanceStat,
+  right: NoteRecognitionPerformanceStat
+): number {
+  return left.label.localeCompare(right.label);
+}
+
+function compareNoteRecognitionWeakSpots(
+  left: NoteRecognitionPerformanceStat,
+  right: NoteRecognitionPerformanceStat
+): number {
+  return (
+    left.accuracy - right.accuracy ||
+    right.missed - left.missed ||
+    right.attempted - left.attempted ||
+    left.label.localeCompare(right.label)
   );
 }

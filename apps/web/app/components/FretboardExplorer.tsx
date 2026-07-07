@@ -44,6 +44,7 @@ import {
   NOTE_RECOGNITION_PROMPTS,
   NOTE_RECOGNITION_HISTORY_LIMIT,
   appendNoteRecognitionSession,
+  buildNoteRecognitionPerformanceSummary,
   buildNoteRecognitionSession,
   buildNoteRecognitionAttempt,
   getCurrentPrompt,
@@ -52,6 +53,7 @@ import {
   isNoteRecognitionCorrectPosition,
   summarizeNoteRecognition,
   type NoteRecognitionAttempt,
+  type NoteRecognitionPerformanceStat,
   type NoteRecognitionPrompt,
   type NoteRecognitionSession,
   type NoteRecognitionSummary
@@ -60,6 +62,9 @@ import {
 type DisplayMode = "practice" | "notes" | "find" | "scale" | "chord";
 type PracticeDrill = "note" | "chordTone";
 type ActiveVariant = "note" | "root" | "scale" | "chord" | "answer" | "miss";
+type PerformanceStat =
+  | ChordTonePerformanceStat
+  | NoteRecognitionPerformanceStat;
 
 interface ActivePosition {
   label: string;
@@ -177,6 +182,20 @@ export function FretboardExplorer() {
     null
   );
 
+  const notePerformanceSessions = useMemo(() => {
+    if (completedSession === null) {
+      return sessionHistory;
+    }
+
+    return [
+      completedSession,
+      ...sessionHistory.filter((session) => session.id !== completedSession.id)
+    ];
+  }, [sessionHistory, completedSession]);
+  const notePerformance = useMemo(
+    () => buildNoteRecognitionPerformanceSummary(notePerformanceSessions),
+    [notePerformanceSessions]
+  );
   const latestChordMissedPrompts = useMemo(
     () => chordSessionHistory[0]?.missedPrompts ?? [],
     [chordSessionHistory]
@@ -1047,8 +1066,51 @@ export function FretboardExplorer() {
                 )}
               </div>
 
-              {practiceDrill === "chordTone" &&
-              chordPerformance.attempted > 0 ? (
+              {practiceDrill === "note" && notePerformance.attempted > 0 ? (
+                <div className="performance-panel">
+                  <div className="performance-section">
+                    <span className="control-label">Weak spots</span>
+                    {notePerformance.weakSpots.length > 0 ? (
+                      <div className="performance-card-list">
+                        {notePerformance.weakSpots.map((stat) => (
+                          <div
+                            className="performance-card"
+                            key={`${stat.category}-${stat.id}`}
+                          >
+                            <strong>{stat.label}</strong>
+                            <span>{formatPerformanceStat(stat)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>No weak spots yet. Every tracked category is clean.</p>
+                    )}
+                  </div>
+
+                  <div className="performance-section">
+                    <span className="control-label">Target note breakdown</span>
+                    <div className="performance-chip-list">
+                      {notePerformance.noteStats.map((stat) => (
+                        <span key={`${stat.category}-${stat.id}`}>
+                          {formatPerformanceChip(stat)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="performance-section">
+                    <span className="control-label">String breakdown</span>
+                    <div className="performance-chip-list">
+                      {notePerformance.stringStats.map((stat) => (
+                        <span key={`${stat.category}-${stat.id}`}>
+                          {formatPerformanceChip(stat)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : practiceDrill === "chordTone" &&
+                chordPerformance.attempted > 0 ? (
                 <div className="performance-panel">
                   <div className="performance-section">
                     <span className="control-label">Weak spots</span>
@@ -1572,11 +1634,11 @@ function formatNoteTestId(note: NoteName): string {
   return note.replace("#", "sharp").replace("b", "flat");
 }
 
-function formatPerformanceStat(stat: ChordTonePerformanceStat): string {
+function formatPerformanceStat(stat: PerformanceStat): string {
   return `${stat.accuracy}% accuracy · ${stat.missed}/${stat.attempted} missed`;
 }
 
-function formatPerformanceChip(stat: ChordTonePerformanceStat): string {
+function formatPerformanceChip(stat: PerformanceStat): string {
   return `${stat.label}: ${stat.accuracy}% (${stat.correct}/${stat.attempted})`;
 }
 
