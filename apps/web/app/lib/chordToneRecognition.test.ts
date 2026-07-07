@@ -3,6 +3,7 @@ import {
   CHORD_TONE_PROMPTS,
   appendChordToneSession,
   buildChordToneAttempt,
+  buildChordTonePerformanceSummary,
   buildChordTonePromptSession,
   buildChordToneSession,
   getChordToneAnswerOptions,
@@ -286,6 +287,7 @@ describe("chordToneRecognition", () => {
       correct: 1,
       missed: 1,
       accuracy: 50,
+      attempts,
       missedPrompts: [
         {
           rootNote: "G",
@@ -298,6 +300,114 @@ describe("chordToneRecognition", () => {
     });
   });
 
+  it("summarizes chord-tone performance by tone, quality, and root", () => {
+    const attempts = [
+      buildChordToneAttempt(0, {
+        rootNote: "C",
+        quality: "major",
+        targetTone: 1
+      }, "C"),
+      buildChordToneAttempt(1, {
+        rootNote: "G",
+        quality: "major",
+        targetTone: 3
+      }, "G"),
+      buildChordToneAttempt(2, {
+        rootNote: "A",
+        quality: "minor",
+        targetTone: 5
+      }, "A")
+    ];
+    const summary = buildChordTonePerformanceSummary([
+      buildChordToneSession(attempts, "2026-07-07T12:00:00.000Z", 3)
+    ]);
+
+    expect(summary.attempted).toBe(3);
+    expect(summary.toneStats).toEqual([
+      {
+        id: "3",
+        label: "3rds",
+        category: "tone",
+        attempted: 1,
+        correct: 0,
+        missed: 1,
+        accuracy: 0
+      },
+      {
+        id: "5",
+        label: "5ths",
+        category: "tone",
+        attempted: 1,
+        correct: 0,
+        missed: 1,
+        accuracy: 0
+      },
+      {
+        id: "1",
+        label: "roots",
+        category: "tone",
+        attempted: 1,
+        correct: 1,
+        missed: 0,
+        accuracy: 100
+      }
+    ]);
+    expect(summary.qualityStats).toEqual([
+      {
+        id: "major",
+        label: "major chords",
+        category: "quality",
+        attempted: 2,
+        correct: 1,
+        missed: 1,
+        accuracy: 50
+      },
+      {
+        id: "minor",
+        label: "minor chords",
+        category: "quality",
+        attempted: 1,
+        correct: 0,
+        missed: 1,
+        accuracy: 0
+      }
+    ]);
+    expect(summary.rootStats).toEqual([
+      {
+        id: "A",
+        label: "A chords",
+        category: "root",
+        attempted: 1,
+        correct: 0,
+        missed: 1,
+        accuracy: 0
+      },
+      {
+        id: "C",
+        label: "C chords",
+        category: "root",
+        attempted: 1,
+        correct: 1,
+        missed: 0,
+        accuracy: 100
+      },
+      {
+        id: "G",
+        label: "G chords",
+        category: "root",
+        attempted: 1,
+        correct: 0,
+        missed: 1,
+        accuracy: 0
+      }
+    ]);
+    expect(summary.weakSpots.map((stat) => stat.label)).toEqual([
+      "3rds",
+      "5ths",
+      "A chords"
+    ]);
+  });
+
   it("keeps the newest chord-tone sessions first and applies a history limit", () => {
     const sessions = ["one", "two", "three"].map((label) => ({
       id: label,
@@ -306,6 +416,7 @@ describe("chordToneRecognition", () => {
       correct: 12,
       missed: 0,
       accuracy: 100,
+      attempts: [],
       missedPrompts: []
     }));
 

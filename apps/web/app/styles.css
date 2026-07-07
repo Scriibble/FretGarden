@@ -621,6 +621,56 @@ button {
   line-height: 1.4;
 }
 
+.performance-panel {
+  border-top: 1px solid #d8dfda;
+  display: grid;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.performance-section {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.performance-section p {
+  color: #52615c;
+  line-height: 1.4;
+}
+
+.performance-card-list {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.performance-card {
+  border: 1px solid #d8dfda;
+  border-radius: 7px;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem;
+}
+
+.performance-card span {
+  color: #52615c;
+  line-height: 1.35;
+}
+
+.performance-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.performance-chip-list span {
+  border: 1px solid #cfd8d3;
+  border-radius: 999px;
+  color: #27332f;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+}
+
 @media (max-width: 900px) {
   .app-header,
   .fretboard-heading,
@@ -672,6 +722,10 @@ button {
   }
 
   .summary-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .performance-card-list {
     grid-template-columns: 1fr;
   }
 }

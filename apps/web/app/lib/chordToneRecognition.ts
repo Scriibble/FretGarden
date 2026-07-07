@@ -47,7 +47,29 @@ export interface ChordToneSessionSettings {
 }
 
 export type ChordToneSummary = DrillSummary;
-export type ChordToneSession = DrillSession<MissedChordTonePrompt>;
+export type ChordTonePerformanceCategory = "tone" | "quality" | "root";
+
+export interface ChordToneSession extends DrillSession<MissedChordTonePrompt> {
+  attempts: ChordToneAttempt[];
+}
+
+export interface ChordTonePerformanceStat {
+  id: string;
+  label: string;
+  category: ChordTonePerformanceCategory;
+  attempted: number;
+  correct: number;
+  missed: number;
+  accuracy: number;
+}
+
+export interface ChordTonePerformanceSummary {
+  attempted: number;
+  toneStats: ChordTonePerformanceStat[];
+  qualityStats: ChordTonePerformanceStat[];
+  rootStats: ChordTonePerformanceStat[];
+  weakSpots: ChordTonePerformanceStat[];
+}
 
 export const CHORD_TONE_PROMPTS = [
   { rootNote: "C", quality: "major", targetTone: 1 },
@@ -103,13 +125,16 @@ export function buildChordToneSession(
   completedAt = new Date().toISOString(),
   promptCount: number = CHORD_TONE_PROMPTS.length
 ): ChordToneSession {
-  return buildDrillSession({
+  return {
+    ...buildDrillSession({
+      attempts,
+      completedAt,
+      idPrefix: "chord-tone",
+      missedPrompts: getMissedChordTonePrompts(attempts),
+      promptCount
+    }),
     attempts,
-    completedAt,
-    idPrefix: "chord-tone",
-    missedPrompts: getMissedChordTonePrompts(attempts),
-    promptCount
-  });
+  };
 }
 
 export function appendChordToneSession(
@@ -132,6 +157,41 @@ export function getMissedChordTonePrompts(
       selectedNote: attempt.selectedNote,
       targetNote: attempt.targetNote
     }));
+}
+
+export function buildChordTonePerformanceSummary(
+  sessions: readonly ChordToneSession[]
+): ChordTonePerformanceSummary {
+  const attempts = sessions.flatMap((session) => session.attempts ?? []);
+  const toneStats = buildChordToneStats(
+    attempts,
+    "tone",
+    (attempt) => String(attempt.targetTone),
+    (attempt) => `${getChordToneName(attempt.targetTone)}s`
+  );
+  const qualityStats = buildChordToneStats(
+    attempts,
+    "quality",
+    (attempt) => attempt.quality,
+    (attempt) => `${attempt.quality} chords`
+  );
+  const rootStats = buildChordToneStats(
+    attempts,
+    "root",
+    (attempt) => attempt.rootNote,
+    (attempt) => `${attempt.rootNote} chords`
+  );
+
+  return {
+    attempted: attempts.length,
+    toneStats,
+    qualityStats,
+    rootStats,
+    weakSpots: [...toneStats, ...qualityStats, ...rootStats]
+      .filter((stat) => stat.missed > 0)
+      .sort(compareChordToneWeakSpots)
+      .slice(0, 3)
+  };
 }
 
 export function getCurrentChordTonePrompt(
@@ -246,4 +306,64 @@ function toChordTonePrompt(prompt: ChordTonePrompt): ChordTonePrompt {
     quality: prompt.quality,
     targetTone: prompt.targetTone
   };
+}
+
+function buildChordToneStats(
+  attempts: readonly ChordToneAttempt[],
+  category: ChordTonePerformanceCategory,
+  getId: (attempt: ChordToneAttempt) => string,
+  getLabel: (attempt: ChordToneAttempt) => string
+): ChordTonePerformanceStat[] {
+  const statsById = new Map<string, ChordTonePerformanceStat>();
+
+  attempts.forEach((attempt) => {
+    const id = getId(attempt);
+    const existingStat = statsById.get(id);
+    const nextStat = existingStat ?? {
+      id,
+      label: getLabel(attempt),
+      category,
+      attempted: 0,
+      correct: 0,
+      missed: 0,
+      accuracy: 0
+    };
+
+    nextStat.attempted += 1;
+    nextStat.correct += attempt.isCorrect ? 1 : 0;
+    nextStat.missed += attempt.isCorrect ? 0 : 1;
+    nextStat.accuracy = Math.round(
+      (nextStat.correct / nextStat.attempted) * 100
+    );
+    statsById.set(id, nextStat);
+  });
+
+  return [...statsById.values()].sort(compareChordToneStats);
+}
+
+function compareChordToneStats(
+  left: ChordTonePerformanceStat,
+  right: ChordTonePerformanceStat
+): number {
+  return left.label.localeCompare(right.label);
+}
+
+function compareChordToneWeakSpots(
+  left: ChordTonePerformanceStat,
+  right: ChordTonePerformanceStat
+): number {
+  return (
+    left.accuracy - right.accuracy ||
+    right.missed - left.missed ||
+    right.attempted - left.attempted ||
+    left.label.localeCompare(right.label)
+  );
+}
+
+function getChordToneName(chordTone: ChordTone): string {
+  if (chordTone === 1) {
+    return "root";
+  }
+
+  return chordTone === 3 ? "3rd" : "5th";
 }

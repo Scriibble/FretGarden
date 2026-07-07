@@ -19,6 +19,7 @@ import {
   DEFAULT_CHORD_TONE_SESSION_SETTINGS,
   appendChordToneSession,
   buildChordToneAttempt,
+  buildChordTonePerformanceSummary,
   buildChordTonePromptSession,
   buildChordToneSession,
   getChordToneAnswerOptions,
@@ -30,6 +31,7 @@ import {
   type ChordToneAttempt,
   type ChordTonePrompt,
   type ChordTonePromptOrder,
+  type ChordTonePerformanceStat,
   type ChordToneQualityFocus,
   type ChordToneReviewMode,
   type ChordToneSession,
@@ -178,6 +180,22 @@ export function FretboardExplorer() {
   const latestChordMissedPrompts = useMemo(
     () => chordSessionHistory[0]?.missedPrompts ?? [],
     [chordSessionHistory]
+  );
+  const chordPerformanceSessions = useMemo(() => {
+    if (completedChordSession === null) {
+      return chordSessionHistory;
+    }
+
+    return [
+      completedChordSession,
+      ...chordSessionHistory.filter(
+        (session) => session.id !== completedChordSession.id
+      )
+    ];
+  }, [chordSessionHistory, completedChordSession]);
+  const chordPerformance = useMemo(
+    () => buildChordTonePerformanceSummary(chordPerformanceSessions),
+    [chordPerformanceSessions]
   );
   const chordPromptQueue = useMemo(
     () =>
@@ -1028,6 +1046,71 @@ export function FretboardExplorer() {
                   <p>No missed prompts. Clean run.</p>
                 )}
               </div>
+
+              {practiceDrill === "chordTone" &&
+              chordPerformance.attempted > 0 ? (
+                <div className="performance-panel">
+                  <div className="performance-section">
+                    <span className="control-label">Weak spots</span>
+                    {chordPerformance.weakSpots.length > 0 ? (
+                      <div className="performance-card-list">
+                        {chordPerformance.weakSpots.map((stat) => (
+                          <div
+                            className="performance-card"
+                            key={`${stat.category}-${stat.id}`}
+                          >
+                            <strong>{stat.label}</strong>
+                            <span>{formatPerformanceStat(stat)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>No weak spots yet. Every tracked category is clean.</p>
+                    )}
+                  </div>
+
+                  <div className="performance-section">
+                    <span className="control-label">Tone breakdown</span>
+                    <div className="performance-chip-list">
+                      {chordPerformance.toneStats.map((stat) => (
+                        <span key={`${stat.category}-${stat.id}`}>
+                          {formatPerformanceChip(stat)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="performance-section">
+                    <span className="control-label">Quality breakdown</span>
+                    <div className="performance-chip-list">
+                      {chordPerformance.qualityStats.map((stat) => (
+                        <span key={`${stat.category}-${stat.id}`}>
+                          {formatPerformanceChip(stat)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="performance-section">
+                    <span className="control-label">Root trouble spots</span>
+                    {chordPerformance.rootStats.some(
+                      (stat) => stat.missed > 0
+                    ) ? (
+                      <div className="performance-chip-list">
+                        {chordPerformance.rootStats
+                          .filter((stat) => stat.missed > 0)
+                          .map((stat) => (
+                            <span key={`${stat.category}-${stat.id}`}>
+                              {formatPerformanceChip(stat)}
+                            </span>
+                          ))}
+                      </div>
+                    ) : (
+                      <p>No root-specific misses yet.</p>
+                    )}
+                  </div>
+                </div>
+              ) : null}
             </section>
           ) : null}
         </section>
@@ -1487,6 +1570,14 @@ function buildChordAnswerClassName(
 
 function formatNoteTestId(note: NoteName): string {
   return note.replace("#", "sharp").replace("b", "flat");
+}
+
+function formatPerformanceStat(stat: ChordTonePerformanceStat): string {
+  return `${stat.accuracy}% accuracy · ${stat.missed}/${stat.attempted} missed`;
+}
+
+function formatPerformanceChip(stat: ChordTonePerformanceStat): string {
+  return `${stat.label}: ${stat.accuracy}% (${stat.correct}/${stat.attempted})`;
 }
 
 function formatSessionDate(completedAt: string): string {
