@@ -16,16 +16,28 @@ import type {
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { PracticeHub } from "./PracticeHub";
 import { PracticePromptPanel } from "./PracticePromptPanel";
+import {
+  PracticeReviewPanel,
+  type LessonReviewOutcome,
+  type PracticeReviewItem,
+  type PracticeReviewMetric,
+  type PracticeReviewSection
+} from "./PracticeReviewPanel";
 import { PracticeSessionSettings } from "./PracticeSessionSettings";
 import {
   ProgressDashboard,
   type PracticeWeakSpot,
   type RecentPracticeSession
 } from "./ProgressDashboard";
-import { getLesson, type LessonPracticeDrill } from "../lib/lessons";
+import {
+  getLesson,
+  type Lesson,
+  type LessonPracticeDrill
+} from "../lib/lessons";
 import {
   LESSON_PROGRESS_STORAGE_KEY,
-  markLessonComplete,
+  doesLessonPracticeMeetCriteria,
+  markLessonPracticed,
   markLessonStarted,
   parseLessonProgress,
   serializeLessonProgress
@@ -134,6 +146,13 @@ interface ModeSummary {
   description: string;
   badge: string;
   tones: string[];
+}
+
+interface PracticeReviewContent {
+  metrics: PracticeReviewMetric[];
+  missedPrompts: PracticeReviewItem[];
+  weakSpots: PracticeReviewItem[];
+  breakdowns: PracticeReviewSection[];
 }
 
 const fretboard = getFretboard({ frets: 12 });
@@ -522,6 +541,40 @@ export function FretboardExplorer() {
       scaleDegreePerformance.weakSpots
     ]
   );
+  const activeLesson = useMemo(
+    () => (activeLessonSlug ? getLesson(activeLessonSlug) ?? null : null),
+    [activeLessonSlug]
+  );
+  const activeLessonOutcome = useMemo(
+    () =>
+      activeLesson && activeDrillSummary.isComplete
+        ? buildLessonReviewOutcome(activeLesson, activeDrillSummary)
+        : null,
+    [activeLesson, activeDrillSummary]
+  );
+  const reviewContent = useMemo(
+    () =>
+      buildPracticeReviewContent(
+        practiceDrill,
+        activeDrillSummary,
+        missedPrompts,
+        missedChordPrompts,
+        missedScaleDegreePrompts,
+        notePerformance,
+        chordPerformance,
+        scaleDegreePerformance
+      ),
+    [
+      activeDrillSummary,
+      chordPerformance,
+      missedChordPrompts,
+      missedPrompts,
+      missedScaleDegreePrompts,
+      notePerformance,
+      practiceDrill,
+      scaleDegreePerformance
+    ]
+  );
 
   useEffect(() => {
     setSessionHistory(
@@ -616,7 +669,7 @@ export function FretboardExplorer() {
 
       return nextHistory;
     });
-    markActiveLessonComplete("note");
+    recordActiveLessonSession("note", nextSession);
   }, [
     activeLessonSlug,
     attempts,
@@ -643,7 +696,7 @@ export function FretboardExplorer() {
 
       return nextHistory;
     });
-    markActiveLessonComplete("chordTone");
+    recordActiveLessonSession("chordTone", nextSession);
   }, [
     activeLessonSlug,
     chordAttempts,
@@ -676,7 +729,7 @@ export function FretboardExplorer() {
 
       return nextHistory;
     });
-    markActiveLessonComplete("scaleDegree");
+    recordActiveLessonSession("scaleDegree", nextSession);
   }, [
     activeLessonSlug,
     completedScaleDegreeSession,
@@ -690,7 +743,10 @@ export function FretboardExplorer() {
     setSelectedPosition(null);
   }
 
-  function markActiveLessonComplete(completedDrill: PracticeDrill): void {
+  function recordActiveLessonSession(
+    completedDrill: PracticeDrill,
+    session: NoteRecognitionSession | ChordToneSession | ScaleDegreeSession
+  ): void {
     if (!activeLessonSlug) {
       return;
     }
@@ -701,7 +757,12 @@ export function FretboardExplorer() {
       return;
     }
 
-    markStoredLessonComplete(activeLesson.slug, activeLesson.practice.drill);
+    markStoredLessonPracticed(
+      activeLesson.slug,
+      activeLesson.practice.drill,
+      session,
+      activeLesson.practice.criteria
+    );
   }
 
   function handlePositionClick(position: FretPosition): void {
@@ -972,6 +1033,39 @@ export function FretboardExplorer() {
     } else {
       resetNoteRecognitionDrill();
     }
+  }
+
+  function handlePracticeMisses(): void {
+    if (activeDrillSummary.missed === 0) {
+      return;
+    }
+
+    if (practiceDrill === "chordTone") {
+      setChordSessionSettings((previousSettings) => ({
+        ...previousSettings,
+        promptOrder: "fixed",
+        reviewMode: "missed"
+      }));
+      resetChordToneDrill();
+      return;
+    }
+
+    if (practiceDrill === "scaleDegree") {
+      setScaleDegreeSessionSettings((previousSettings) => ({
+        ...previousSettings,
+        promptOrder: "fixed",
+        reviewMode: "missed"
+      }));
+      resetScaleDegreeDrill();
+      return;
+    }
+
+    setNoteSessionSettings((previousSettings) => ({
+      ...previousSettings,
+      promptOrder: "fixed",
+      reviewMode: "missed"
+    }));
+    resetNoteRecognitionDrill();
   }
 
   return (
@@ -1397,268 +1491,17 @@ export function FretboardExplorer() {
           />
 
           {mode === "practice" && activeDrillSummary.isComplete ? (
-            <section
-              className="completion-panel"
-              data-testid="session-summary"
-              aria-labelledby="session-summary-title"
-            >
-              <div className="completion-heading">
-                <div>
-                  <p className="eyebrow">Session Summary</p>
-                  <h3 id="session-summary-title">
-                    {getCompletionTitle(practiceDrill)}
-                  </h3>
-                </div>
-                <button onClick={handleRestartDrill} type="button">
-                  Practice again
-                </button>
-              </div>
-
-              <div className="summary-metrics" aria-label="Session metrics">
-                <div>
-                  <span className="control-label">Correct</span>
-                  <strong>
-                    {activeDrillSummary.correct}/{activeDrillSummary.attempted}
-                  </strong>
-                </div>
-                <div>
-                  <span className="control-label">Missed</span>
-                  <strong>{activeDrillSummary.missed}</strong>
-                </div>
-                <div>
-                  <span className="control-label">Accuracy</span>
-                  <strong>{activeDrillSummary.accuracy}%</strong>
-                </div>
-              </div>
-
-              <div className="missed-prompts">
-                <span className="control-label">Missed prompts</span>
-                {practiceDrill === "note" && missedPrompts.length > 0 ? (
-                  <ul>
-                    {missedPrompts.map((missedPrompt) => (
-                      <li
-                        key={`${missedPrompt.targetNote}-${missedPrompt.targetString}-${missedPrompt.selectedString}-${missedPrompt.selectedFret}`}
-                      >
-                        <strong>{formatPromptTarget(missedPrompt)}</strong>
-                        <span>
-                          You chose {missedPrompt.selectedNote} on the{" "}
-                          {getStringDisplayName(missedPrompt.selectedString)}{" "}
-                          string, fret {missedPrompt.selectedFret}.
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : practiceDrill === "chordTone" &&
-                  missedChordPrompts.length > 0 ? (
-                  <ul>
-                    {missedChordPrompts.map((missedPrompt) => (
-                      <li
-                        key={`${missedPrompt.rootNote}-${missedPrompt.quality}-${missedPrompt.targetTone}-${missedPrompt.selectedNote}`}
-                      >
-                        <strong>{formatChordPromptTarget(missedPrompt)}</strong>
-                        <span>
-                          You chose {missedPrompt.selectedNote}; correct answer
-                          was {missedPrompt.targetNote}.{" "}
-                          {formatChordSpelling(missedPrompt)}.
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : practiceDrill === "scaleDegree" &&
-                  missedScaleDegreePrompts.length > 0 ? (
-                  <ul>
-                    {missedScaleDegreePrompts.map((missedPrompt) => (
-                      <li
-                        key={`${missedPrompt.rootNote}-${missedPrompt.quality}-${missedPrompt.targetDegree}-${missedPrompt.targetString}-${missedPrompt.selectedString}-${missedPrompt.selectedFret}`}
-                      >
-                        <strong>
-                          {formatScaleDegreePromptTarget(missedPrompt)}
-                        </strong>
-                        <span>
-                          You chose {missedPrompt.selectedNote} on the{" "}
-                          {getStringDisplayName(missedPrompt.selectedString)}{" "}
-                          string, fret {missedPrompt.selectedFret}; correct
-                          note was {missedPrompt.targetNote}.
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No missed prompts. Clean run.</p>
-                )}
-              </div>
-
-              {practiceDrill === "note" && notePerformance.attempted > 0 ? (
-                <div className="performance-panel">
-                  <div className="performance-section">
-                    <span className="control-label">Weak spots</span>
-                    {notePerformance.weakSpots.length > 0 ? (
-                      <div className="performance-card-list">
-                        {notePerformance.weakSpots.map((stat) => (
-                          <div
-                            className="performance-card"
-                            key={`${stat.category}-${stat.id}`}
-                          >
-                            <strong>{stat.label}</strong>
-                            <span>{formatPerformanceStat(stat)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p>No weak spots yet. Every tracked category is clean.</p>
-                    )}
-                  </div>
-
-                  <div className="performance-section">
-                    <span className="control-label">Target note breakdown</span>
-                    <div className="performance-chip-list">
-                      {notePerformance.noteStats.map((stat) => (
-                        <span key={`${stat.category}-${stat.id}`}>
-                          {formatPerformanceChip(stat)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="performance-section">
-                    <span className="control-label">String breakdown</span>
-                    <div className="performance-chip-list">
-                      {notePerformance.stringStats.map((stat) => (
-                        <span key={`${stat.category}-${stat.id}`}>
-                          {formatPerformanceChip(stat)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : practiceDrill === "chordTone" &&
-                chordPerformance.attempted > 0 ? (
-                <div className="performance-panel">
-                  <div className="performance-section">
-                    <span className="control-label">Weak spots</span>
-                    {chordPerformance.weakSpots.length > 0 ? (
-                      <div className="performance-card-list">
-                        {chordPerformance.weakSpots.map((stat) => (
-                          <div
-                            className="performance-card"
-                            key={`${stat.category}-${stat.id}`}
-                          >
-                            <strong>{stat.label}</strong>
-                            <span>{formatPerformanceStat(stat)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p>No weak spots yet. Every tracked category is clean.</p>
-                    )}
-                  </div>
-
-                  <div className="performance-section">
-                    <span className="control-label">Tone breakdown</span>
-                    <div className="performance-chip-list">
-                      {chordPerformance.toneStats.map((stat) => (
-                        <span key={`${stat.category}-${stat.id}`}>
-                          {formatPerformanceChip(stat)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="performance-section">
-                    <span className="control-label">Quality breakdown</span>
-                    <div className="performance-chip-list">
-                      {chordPerformance.qualityStats.map((stat) => (
-                        <span key={`${stat.category}-${stat.id}`}>
-                          {formatPerformanceChip(stat)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="performance-section">
-                    <span className="control-label">Root trouble spots</span>
-                    {chordPerformance.rootStats.some(
-                      (stat) => stat.missed > 0
-                    ) ? (
-                      <div className="performance-chip-list">
-                        {chordPerformance.rootStats
-                          .filter((stat) => stat.missed > 0)
-                          .map((stat) => (
-                            <span key={`${stat.category}-${stat.id}`}>
-                              {formatPerformanceChip(stat)}
-                            </span>
-                          ))}
-                      </div>
-                    ) : (
-                      <p>No root-specific misses yet.</p>
-                    )}
-                  </div>
-                </div>
-              ) : practiceDrill === "scaleDegree" &&
-                scaleDegreePerformance.attempted > 0 ? (
-                <div className="performance-panel">
-                  <div className="performance-section">
-                    <span className="control-label">Weak spots</span>
-                    {scaleDegreePerformance.weakSpots.length > 0 ? (
-                      <div className="performance-card-list">
-                        {scaleDegreePerformance.weakSpots.map((stat) => (
-                          <div
-                            className="performance-card"
-                            key={`${stat.category}-${stat.id}`}
-                          >
-                            <strong>{stat.label}</strong>
-                            <span>{formatPerformanceStat(stat)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p>No weak spots yet. Every tracked category is clean.</p>
-                    )}
-                  </div>
-
-                  <div className="performance-section">
-                    <span className="control-label">Degree breakdown</span>
-                    <div className="performance-chip-list">
-                      {scaleDegreePerformance.degreeStats.map((stat) => (
-                        <span key={`${stat.category}-${stat.id}`}>
-                          {formatPerformanceChip(stat)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="performance-section">
-                    <span className="control-label">Quality breakdown</span>
-                    <div className="performance-chip-list">
-                      {scaleDegreePerformance.qualityStats.map((stat) => (
-                        <span key={`${stat.category}-${stat.id}`}>
-                          {formatPerformanceChip(stat)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="performance-section">
-                    <span className="control-label">String trouble spots</span>
-                    {scaleDegreePerformance.stringStats.some(
-                      (stat) => stat.missed > 0
-                    ) ? (
-                      <div className="performance-chip-list">
-                        {scaleDegreePerformance.stringStats
-                          .filter((stat) => stat.missed > 0)
-                          .map((stat) => (
-                            <span key={`${stat.category}-${stat.id}`}>
-                              {formatPerformanceChip(stat)}
-                            </span>
-                          ))}
-                      </div>
-                    ) : (
-                      <p>No string-specific misses yet.</p>
-                    )}
-                  </div>
-                </div>
-              ) : null}
-            </section>
+            <PracticeReviewPanel
+              title={getCompletionTitle(practiceDrill)}
+              metrics={reviewContent.metrics}
+              missedPrompts={reviewContent.missedPrompts}
+              weakSpots={reviewContent.weakSpots}
+              breakdowns={reviewContent.breakdowns}
+              lessonOutcome={activeLessonOutcome}
+              canPracticeMisses={activeDrillSummary.missed > 0}
+              onPracticeAgain={handleRestartDrill}
+              onPracticeMisses={handlePracticeMisses}
+            />
           ) : null}
         </section>
       </section>
@@ -2212,12 +2055,24 @@ function markStoredLessonStarted(
   );
 }
 
-function markStoredLessonComplete(
+function markStoredLessonPracticed(
   slug: string,
-  drill: LessonPracticeDrill
+  drill: LessonPracticeDrill,
+  session: NoteRecognitionSession | ChordToneSession | ScaleDegreeSession,
+  criteria: Lesson["practice"]["criteria"]
 ): void {
   writeStoredLessonProgress(
-    markLessonComplete(readStoredLessonProgress(), slug, drill)
+    markLessonPracticed(
+      readStoredLessonProgress(),
+      slug,
+      drill,
+      {
+        attemptedAt: session.completedAt,
+        accuracy: session.accuracy,
+        promptCount: session.promptCount
+      },
+      criteria
+    )
   );
 }
 
@@ -2231,6 +2086,185 @@ function getCompletionTitle(practiceDrill: PracticeDrill): string {
   }
 
   return "Note recognition complete";
+}
+
+function buildLessonReviewOutcome(
+  lesson: Lesson,
+  summary: NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary
+): LessonReviewOutcome {
+  const criteria = lesson.practice.criteria;
+  const didCompleteLesson = doesLessonPracticeMeetCriteria(
+    {
+      accuracy: summary.accuracy,
+      promptCount: summary.attempted
+    },
+    criteria
+  );
+  const criteriaLabel = formatLessonCriteria(criteria.promptCount, criteria.minAccuracy);
+
+  if (didCompleteLesson) {
+    return {
+      status: "complete",
+      title: "Lesson complete",
+      description: `${lesson.title} is complete. You met the lesson target with ${summary.accuracy}% accuracy across ${summary.attempted} prompts.`,
+      criteriaLabel
+    };
+  }
+
+  return {
+    status: "in-progress",
+    title: "Keep this lesson in progress",
+    description: `${lesson.title} needs ${criteriaLabel.toLowerCase()}. This session reached ${summary.accuracy}% accuracy across ${summary.attempted} prompts.`,
+    criteriaLabel
+  };
+}
+
+function buildPracticeReviewContent(
+  practiceDrill: PracticeDrill,
+  summary: NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary,
+  noteMisses: readonly MissedNoteRecognitionPrompt[],
+  chordMisses: readonly MissedChordTonePrompt[],
+  scaleDegreeMisses: readonly MissedScaleDegreePrompt[],
+  notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
+  chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
+  scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>
+): PracticeReviewContent {
+  const metrics = [
+    {
+      label: "Correct",
+      value: `${summary.correct}/${summary.attempted}`
+    },
+    {
+      label: "Missed",
+      value: String(summary.missed)
+    },
+    {
+      label: "Accuracy",
+      value: `${summary.accuracy}%`
+    }
+  ];
+
+  if (practiceDrill === "chordTone") {
+    return {
+      metrics,
+      missedPrompts: chordMisses.map(toChordMissedReviewItem),
+      weakSpots: chordPerformance.weakSpots.map(toPerformanceReviewItem),
+      breakdowns: [
+        {
+          title: "Tone breakdown",
+          emptyMessage: "No chord-tone attempts yet.",
+          chips: chordPerformance.toneStats.map(formatPerformanceChip)
+        },
+        {
+          title: "Quality breakdown",
+          emptyMessage: "No chord-quality attempts yet.",
+          chips: chordPerformance.qualityStats.map(formatPerformanceChip)
+        },
+        {
+          title: "Root trouble spots",
+          emptyMessage: "No root-specific misses yet.",
+          chips: chordPerformance.rootStats
+            .filter((stat) => stat.missed > 0)
+            .map(formatPerformanceChip)
+        }
+      ]
+    };
+  }
+
+  if (practiceDrill === "scaleDegree") {
+    return {
+      metrics,
+      missedPrompts: scaleDegreeMisses.map(toScaleDegreeMissedReviewItem),
+      weakSpots: scaleDegreePerformance.weakSpots.map(toPerformanceReviewItem),
+      breakdowns: [
+        {
+          title: "Degree breakdown",
+          emptyMessage: "No scale-degree attempts yet.",
+          chips: scaleDegreePerformance.degreeStats.map(formatPerformanceChip)
+        },
+        {
+          title: "Quality breakdown",
+          emptyMessage: "No scale-quality attempts yet.",
+          chips: scaleDegreePerformance.qualityStats.map(formatPerformanceChip)
+        },
+        {
+          title: "String trouble spots",
+          emptyMessage: "No string-specific misses yet.",
+          chips: scaleDegreePerformance.stringStats
+            .filter((stat) => stat.missed > 0)
+            .map(formatPerformanceChip)
+        }
+      ]
+    };
+  }
+
+  return {
+    metrics,
+    missedPrompts: noteMisses.map(toNoteMissedReviewItem),
+    weakSpots: notePerformance.weakSpots.map(toPerformanceReviewItem),
+    breakdowns: [
+      {
+        title: "Target note breakdown",
+        emptyMessage: "No note-target attempts yet.",
+        chips: notePerformance.noteStats.map(formatPerformanceChip)
+      },
+      {
+        title: "String breakdown",
+        emptyMessage: "No string attempts yet.",
+        chips: notePerformance.stringStats.map(formatPerformanceChip)
+      }
+    ]
+  };
+}
+
+function toNoteMissedReviewItem(
+  missedPrompt: MissedNoteRecognitionPrompt
+): PracticeReviewItem {
+  return {
+    id: `${missedPrompt.targetNote}-${missedPrompt.targetString}-${missedPrompt.selectedString}-${missedPrompt.selectedFret}`,
+    title: formatPromptTarget(missedPrompt),
+    detail: `You chose ${missedPrompt.selectedNote} on the ${getStringDisplayName(
+      missedPrompt.selectedString
+    )} string, fret ${missedPrompt.selectedFret}.`
+  };
+}
+
+function toChordMissedReviewItem(
+  missedPrompt: MissedChordTonePrompt
+): PracticeReviewItem {
+  return {
+    id: `${missedPrompt.rootNote}-${missedPrompt.quality}-${missedPrompt.targetTone}-${missedPrompt.selectedNote}`,
+    title: formatChordPromptTarget(missedPrompt),
+    detail: `You chose ${missedPrompt.selectedNote}; correct answer was ${
+      missedPrompt.targetNote
+    }. ${formatChordSpelling(missedPrompt)}.`
+  };
+}
+
+function toScaleDegreeMissedReviewItem(
+  missedPrompt: MissedScaleDegreePrompt
+): PracticeReviewItem {
+  return {
+    id: `${missedPrompt.rootNote}-${missedPrompt.quality}-${missedPrompt.targetDegree}-${missedPrompt.targetString}-${missedPrompt.selectedString}-${missedPrompt.selectedFret}`,
+    title: formatScaleDegreePromptTarget(missedPrompt),
+    detail: `You chose ${missedPrompt.selectedNote} on the ${getStringDisplayName(
+      missedPrompt.selectedString
+    )} string, fret ${missedPrompt.selectedFret}; correct note was ${
+      missedPrompt.targetNote
+    }.`
+  };
+}
+
+function toPerformanceReviewItem(stat: PerformanceStat): PracticeReviewItem {
+  return {
+    id: `${stat.category}-${stat.id}`,
+    title: stat.label,
+    detail: formatPerformanceStat(stat)
+  };
+}
+
+function formatLessonCriteria(promptCount: number, minAccuracy: number): string {
+  return `${promptCount} prompts at ${minAccuracy}%+`;
 }
 
 function getPracticePromptStatus(

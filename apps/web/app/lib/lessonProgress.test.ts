@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  doesLessonPracticeMeetCriteria,
   findLessonProgress,
   getLessonProgressStatus,
   markLessonComplete,
+  markLessonPracticed,
   markLessonStarted,
   parseLessonProgress,
   serializeLessonProgress
@@ -18,7 +20,10 @@ describe("lessonProgress", () => {
             drill: "chordTone",
             status: "complete",
             startedAt: "2026-07-07T12:00:00.000Z",
-            completedAt: "2026-07-07T12:05:00.000Z"
+            completedAt: "2026-07-07T12:05:00.000Z",
+            lastAttemptedAt: "2026-07-07T12:05:00.000Z",
+            lastAccuracy: 90,
+            lastPromptCount: 10
           }
         ])
       )
@@ -28,7 +33,10 @@ describe("lessonProgress", () => {
         drill: "chordTone",
         status: "complete",
         startedAt: "2026-07-07T12:00:00.000Z",
-        completedAt: "2026-07-07T12:05:00.000Z"
+        completedAt: "2026-07-07T12:05:00.000Z",
+        lastAttemptedAt: "2026-07-07T12:05:00.000Z",
+        lastAccuracy: 90,
+        lastPromptCount: 10
       }
     ]);
   });
@@ -135,5 +143,106 @@ describe("lessonProgress", () => {
     );
     expect(getLessonProgressStatus(progress, "triads")).toBe("not-started");
     expect(serializeLessonProgress(progress)).toBe(JSON.stringify(progress));
+  });
+
+  it("checks whether lesson practice meets completion criteria", () => {
+    const criteria = {
+      promptCount: 10,
+      minAccuracy: 80
+    };
+
+    expect(
+      doesLessonPracticeMeetCriteria(
+        {
+          promptCount: 10,
+          accuracy: 80
+        },
+        criteria
+      )
+    ).toBe(true);
+    expect(
+      doesLessonPracticeMeetCriteria(
+        {
+          promptCount: 6,
+          accuracy: 100
+        },
+        criteria
+      )
+    ).toBe(false);
+    expect(
+      doesLessonPracticeMeetCriteria(
+        {
+          promptCount: 10,
+          accuracy: 70
+        },
+        criteria
+      )
+    ).toBe(false);
+  });
+
+  it("keeps a practiced lesson in progress when criteria are not met", () => {
+    expect(
+      markLessonPracticed(
+        [],
+        "fretboard-map",
+        "note",
+        {
+          attemptedAt: "2026-07-07T12:05:00.000Z",
+          accuracy: 70,
+          promptCount: 10
+        },
+        {
+          promptCount: 10,
+          minAccuracy: 80
+        }
+      )
+    ).toEqual([
+      {
+        slug: "fretboard-map",
+        drill: "note",
+        status: "in-progress",
+        startedAt: "2026-07-07T12:05:00.000Z",
+        lastAttemptedAt: "2026-07-07T12:05:00.000Z",
+        lastAccuracy: 70,
+        lastPromptCount: 10
+      }
+    ]);
+  });
+
+  it("marks a practiced lesson complete when criteria are met", () => {
+    const progress = markLessonStarted(
+      [],
+      "triad-inversions",
+      "chordTone",
+      "2026-07-07T12:00:00.000Z"
+    );
+
+    expect(
+      markLessonPracticed(
+        progress,
+        "triad-inversions",
+        "chordTone",
+        {
+          attemptedAt: "2026-07-07T12:05:00.000Z",
+          accuracy: 92,
+          promptCount: 12
+        },
+        {
+          promptCount: 12,
+          minAccuracy: 80
+        }
+      )
+    ).toEqual([
+      {
+        slug: "triad-inversions",
+        drill: "chordTone",
+        status: "complete",
+        startedAt: "2026-07-07T12:00:00.000Z",
+        completedAt: "2026-07-07T12:05:00.000Z",
+        lastAttemptedAt: "2026-07-07T12:05:00.000Z",
+        lastAccuracy: 92,
+        lastPromptCount: 12
+      }
+    ]);
   });
 });

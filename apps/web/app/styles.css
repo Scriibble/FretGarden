@@ -814,7 +814,15 @@ button {
   justify-content: space-between;
 }
 
-.completion-heading button {
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.completion-heading button,
+.review-actions button {
   border: 1px solid #173f43;
   border-radius: 7px;
   background: #173f43;
@@ -822,6 +830,63 @@ button {
   cursor: pointer;
   min-height: 2.45rem;
   padding: 0.55rem 0.8rem;
+}
+
+.review-actions button:first-child:not(:last-child) {
+  background: #ffffff;
+  border-color: #9bbab2;
+  color: #173f43;
+}
+
+.review-actions button:hover {
+  background: #225b60;
+  border-color: #225b60;
+  color: #ffffff;
+}
+
+.lesson-outcome {
+  align-items: center;
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.lesson-outcome div {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lesson-outcome strong {
+  color: #173f43;
+  font-size: 1.1rem;
+}
+
+.lesson-outcome p {
+  color: #52615c;
+  line-height: 1.45;
+}
+
+.lesson-outcome > span {
+  border: 1px solid #d8dfda;
+  border-radius: 999px;
+  color: #173f43;
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.4rem 0.65rem;
+}
+
+.lesson-outcome-complete {
+  background: #e5f2ef;
+  border-color: #9bbab2;
+}
+
+.lesson-outcome-in-progress {
+  background: #fff8ed;
+  border-color: #d9a65e;
 }
 
 .summary-metrics {
@@ -994,6 +1059,26 @@ button {
   line-height: 1.55;
 }
 
+.lesson-requirements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.lesson-requirements span {
+  border: 1px solid #cfd8d3;
+  border-radius: 999px;
+  color: #27332f;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.3rem 0.55rem;
+}
+
+.lesson-attempt-note {
+  margin-top: 0.45rem;
+}
+
 .lesson-cta {
   border: 1px solid #173f43;
   border-radius: 7px;
@@ -1099,9 +1184,14 @@ button {
   .fretboard-heading,
   .prompt-panel-header,
   .completion-heading,
+  .lesson-outcome,
   .lesson-practice-card {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .review-actions {
+    justify-content: flex-start;
   }
 
   .hub-heading-actions {

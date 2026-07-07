@@ -9,6 +9,12 @@ export interface LessonPracticeLink {
   label: string;
   href: string;
   drill: LessonPracticeDrill;
+  criteria: LessonPracticeCriteria;
+}
+
+export interface LessonPracticeCriteria {
+  promptCount: number;
+  minAccuracy: number;
 }
 
 export interface Lesson {
@@ -46,7 +52,11 @@ export const lessons = [
     practice: {
       label: "Practice note recognition",
       href: "/?drill=note&lesson=fretboard-map#practice",
-      drill: "note"
+      drill: "note",
+      criteria: {
+        promptCount: 10,
+        minAccuracy: 80
+      }
     }
   },
   {
@@ -74,7 +84,11 @@ export const lessons = [
     practice: {
       label: "Practice string-specific notes",
       href: "/?drill=note&lesson=repeating-notes#practice",
-      drill: "note"
+      drill: "note",
+      criteria: {
+        promptCount: 10,
+        minAccuracy: 80
+      }
     }
   },
   {
@@ -102,7 +116,11 @@ export const lessons = [
     practice: {
       label: "Practice chord tones",
       href: "/?drill=chordTone&lesson=triads#practice",
-      drill: "chordTone"
+      drill: "chordTone",
+      criteria: {
+        promptCount: 12,
+        minAccuracy: 80
+      }
     }
   },
   {
@@ -130,7 +148,139 @@ export const lessons = [
     practice: {
       label: "Practice scale degrees",
       href: "/?drill=scaleDegree&lesson=scale-degrees#practice",
-      drill: "scaleDegree"
+      drill: "scaleDegree",
+      criteria: {
+        promptCount: 12,
+        minAccuracy: 80
+      }
+    }
+  },
+  {
+    slug: "intervals",
+    eyebrow: "Intervals",
+    title: "Intervals as fretboard distance",
+    summary:
+      "Connect 2nds, 3rds, 4ths, 5ths, 6ths, and 7ths to the way notes sit around a root.",
+    sections: [
+      {
+        heading: "Intervals are relationships",
+        body: [
+          "An interval names the distance from one note to another, not a single fixed note.",
+          "A 3rd above C is E, while a 3rd above G is B. The relationship stays the same as the root changes."
+        ]
+      },
+      {
+        heading: "Scale degrees make intervals visible",
+        body: [
+          "Scale degree language is a practical way to train intervals on guitar.",
+          "When you find the 3rd, 5th, or 7th of a scale on a specific string, you are also training interval distance from the root."
+        ]
+      }
+    ],
+    practice: {
+      label: "Practice interval landmarks",
+      href: "/?drill=scaleDegree&lesson=intervals#practice",
+      drill: "scaleDegree",
+      criteria: {
+        promptCount: 12,
+        minAccuracy: 80
+      }
+    }
+  },
+  {
+    slug: "octave-shapes",
+    eyebrow: "Octaves",
+    title: "CAGED octave shapes unlock the neck",
+    summary:
+      "Use octave relationships to find the same note in nearby fretboard regions.",
+    sections: [
+      {
+        heading: "Octaves share a note name",
+        body: [
+          "Two notes an octave apart have the same letter name at a higher or lower register.",
+          "That is why one target note can appear several times across the first twelve frets."
+        ]
+      },
+      {
+        heading: "Shapes become navigation tools",
+        body: [
+          "Common CAGED-adjacent octave shapes help connect the low strings to the middle and high strings.",
+          "The goal is not only to memorize a shape, but to use it to confirm note names quickly."
+        ]
+      }
+    ],
+    practice: {
+      label: "Practice octave note targets",
+      href: "/?drill=note&lesson=octave-shapes#practice",
+      drill: "note",
+      criteria: {
+        promptCount: 10,
+        minAccuracy: 80
+      }
+    }
+  },
+  {
+    slug: "triad-inversions",
+    eyebrow: "Triad Inversions",
+    title: "Triad inversions keep the same notes",
+    summary:
+      "Learn how root, 3rd, and 5th can be reordered while the chord identity remains intact.",
+    sections: [
+      {
+        heading: "Inversions change the bass note",
+        body: [
+          "A root-position triad puts the root lowest, first inversion puts the 3rd lowest, and second inversion puts the 5th lowest.",
+          "The chord tones stay the same even when their order changes."
+        ]
+      },
+      {
+        heading: "Function beats shape memorization",
+        body: [
+          "When you can name the root, 3rd, and 5th, an inversion becomes easier to understand and move.",
+          "This makes small chord shapes feel less like isolated grips and more like movable harmony."
+        ]
+      }
+    ],
+    practice: {
+      label: "Practice inversion chord tones",
+      href: "/?drill=chordTone&lesson=triad-inversions#practice",
+      drill: "chordTone",
+      criteria: {
+        promptCount: 12,
+        minAccuracy: 80
+      }
+    }
+  },
+  {
+    slug: "major-scale-landmarks",
+    eyebrow: "Major Scale",
+    title: "Major scale landmarks",
+    summary:
+      "Use the root, 3rd, 5th, and 7th as anchors for hearing and finding major-key sounds.",
+    sections: [
+      {
+        heading: "Some degrees carry more context",
+        body: [
+          "The root centers the key, the 3rd reveals major color, the 5th stabilizes the sound, and the 7th pulls toward the root.",
+          "These landmarks make the full scale easier to remember because they give the pattern musical jobs."
+        ]
+      },
+      {
+        heading: "Practice them on purpose",
+        body: [
+          "Finding scale degrees on requested strings turns abstract theory into fretboard reflex.",
+          "Start with landmarks before expecting the whole scale to feel automatic."
+        ]
+      }
+    ],
+    practice: {
+      label: "Practice major scale landmarks",
+      href: "/?drill=scaleDegree&lesson=major-scale-landmarks#practice",
+      drill: "scaleDegree",
+      criteria: {
+        promptCount: 12,
+        minAccuracy: 80
+      }
     }
   }
 ] as const satisfies readonly Lesson[];

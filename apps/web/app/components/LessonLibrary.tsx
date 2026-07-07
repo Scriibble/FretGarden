@@ -27,6 +27,8 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
     <section className="lesson-grid" aria-label="Lesson library">
       {lessons.map((lesson) => {
         const status = getLessonProgressStatus(progress, lesson.slug);
+        const lessonProgress =
+          progress.find((record) => record.slug === lesson.slug) ?? null;
 
         return (
           <article
@@ -42,6 +44,19 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
               </div>
               <h2>{lesson.title}</h2>
               <p>{lesson.summary}</p>
+              <div className="lesson-requirements">
+                <span>
+                  {lesson.practice.criteria.promptCount} prompts at{" "}
+                  {lesson.practice.criteria.minAccuracy}%+
+                </span>
+                {lessonProgress?.lastAccuracy !== undefined &&
+                lessonProgress.lastPromptCount !== undefined ? (
+                  <span>
+                    Last try: {lessonProgress.lastAccuracy}% over{" "}
+                    {lessonProgress.lastPromptCount} prompts
+                  </span>
+                ) : null}
+              </div>
             </div>
             <div className="lesson-card-actions">
               <Link className="lesson-cta" href={`/lessons/${lesson.slug}`}>

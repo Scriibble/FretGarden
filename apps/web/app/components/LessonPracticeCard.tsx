@@ -17,6 +17,8 @@ interface LessonPracticeCardProps {
 export function LessonPracticeCard({ lesson }: LessonPracticeCardProps) {
   const [progress, setProgress] = useState<LessonProgressRecord[]>([]);
   const status = getLessonProgressStatus(progress, lesson.slug);
+  const lessonProgress =
+    progress.find((record) => record.slug === lesson.slug) ?? null;
 
   useEffect(() => {
     setProgress(
@@ -35,9 +37,16 @@ export function LessonPracticeCard({ lesson }: LessonPracticeCardProps) {
           </span>
         </div>
         <p>
-          Jump back to the fretboard and use the matching drill to make the
-          concept concrete.
+          Complete {lesson.practice.criteria.promptCount} prompts at{" "}
+          {lesson.practice.criteria.minAccuracy}%+ to finish this lesson.
         </p>
+        {lessonProgress?.lastAccuracy !== undefined &&
+        lessonProgress.lastPromptCount !== undefined ? (
+          <p className="lesson-attempt-note">
+            Last try: {lessonProgress.lastAccuracy}% over{" "}
+            {lessonProgress.lastPromptCount} prompts.
+          </p>
+        ) : null}
       </div>
       <Link className="lesson-cta" href={lesson.practice.href}>
         {getPracticeCtaLabel(status)}

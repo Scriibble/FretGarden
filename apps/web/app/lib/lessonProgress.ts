@@ -1,4 +1,4 @@
-import type { LessonPracticeDrill } from "./lessons";
+import type { LessonPracticeCriteria, LessonPracticeDrill } from "./lessons";
 
 export const LESSON_PROGRESS_STORAGE_KEY = "pocket-practice:lesson-progress";
 
@@ -10,6 +10,15 @@ export interface LessonProgressRecord {
   status: LessonProgressStatus;
   startedAt: string;
   completedAt?: string;
+  lastAttemptedAt?: string;
+  lastAccuracy?: number;
+  lastPromptCount?: number;
+}
+
+export interface LessonPracticeAttemptResult {
+  attemptedAt: string;
+  accuracy: number;
+  promptCount: number;
 }
 
 export function parseLessonProgress(
@@ -75,6 +84,46 @@ export function markLessonComplete(
   });
 }
 
+export function markLessonPracticed(
+  progress: readonly LessonProgressRecord[],
+  slug: string,
+  drill: LessonPracticeDrill,
+  result: LessonPracticeAttemptResult,
+  criteria: LessonPracticeCriteria
+): LessonProgressRecord[] {
+  const existingRecord = findLessonProgress(progress, slug);
+  const isPassing = doesLessonPracticeMeetCriteria(result, criteria);
+  const nextStatus =
+    isPassing || existingRecord?.status === "complete"
+      ? "complete"
+      : "in-progress";
+  const nextRecord: LessonProgressRecord = {
+    slug,
+    drill,
+    status: nextStatus,
+    startedAt: existingRecord?.startedAt ?? result.attemptedAt,
+    lastAttemptedAt: result.attemptedAt,
+    lastAccuracy: result.accuracy,
+    lastPromptCount: result.promptCount
+  };
+
+  if (nextStatus === "complete") {
+    nextRecord.completedAt = existingRecord?.completedAt ?? result.attemptedAt;
+  }
+
+  return upsertLessonProgress(progress, nextRecord);
+}
+
+export function doesLessonPracticeMeetCriteria(
+  result: Pick<LessonPracticeAttemptResult, "accuracy" | "promptCount">,
+  criteria: LessonPracticeCriteria
+): boolean {
+  return (
+    result.promptCount >= criteria.promptCount &&
+    result.accuracy >= criteria.minAccuracy
+  );
+}
+
 export function findLessonProgress(
   progress: readonly LessonProgressRecord[],
   slug: string
@@ -119,7 +168,13 @@ function isLessonProgressRecord(value: unknown): value is LessonProgressRecord {
     (candidate.status === "in-progress" || candidate.status === "complete") &&
     typeof candidate.startedAt === "string" &&
     (candidate.completedAt === undefined ||
-      typeof candidate.completedAt === "string")
+      typeof candidate.completedAt === "string") &&
+    (candidate.lastAttemptedAt === undefined ||
+      typeof candidate.lastAttemptedAt === "string") &&
+    (candidate.lastAccuracy === undefined ||
+      typeof candidate.lastAccuracy === "number") &&
+    (candidate.lastPromptCount === undefined ||
+      typeof candidate.lastPromptCount === "number")
   );
 }
 
