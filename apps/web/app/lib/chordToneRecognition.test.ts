@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   CHORD_TONE_PROMPTS,
   buildChordToneAttempt,
+  getChordToneAnswerOptions,
   getCurrentChordTonePrompt,
   getMissedChordTonePrompts,
   getTargetChordToneNote,
-  isChordToneAnswerPosition,
-  isChordToneCorrectPosition,
+  isChordToneCorrectNote,
   summarizeChordToneRecognition
 } from "./chordToneRecognition";
 
@@ -39,83 +39,61 @@ describe("chordToneRecognition", () => {
     ).toBe("E");
   });
 
-  it("builds a correct attempt when the selected pitch matches the requested chord tone", () => {
+  it("offers the chord notes as deterministic answer options", () => {
+    expect(
+      getChordToneAnswerOptions({
+        rootNote: "A",
+        quality: "minor",
+        targetTone: 5
+      })
+    ).toEqual(["A", "C", "E"]);
+  });
+
+  it("builds a correct attempt when the selected note matches the requested chord tone", () => {
     expect(
       buildChordToneAttempt(0, {
         rootNote: "C",
         quality: "major",
         targetTone: 1
-      }, {
-        string: 5,
-        fret: 3,
-        note: "C",
-        pitchClass: 0
-      })
+      }, "C")
     ).toEqual({
       promptIndex: 0,
       rootNote: "C",
       quality: "major",
       targetTone: 1,
       selectedNote: "C",
-      selectedString: 5,
-      selectedFret: 3,
+      targetNote: "C",
       isCorrect: true
     });
   });
 
-  it("builds a missed attempt when the selected pitch is another chord tone", () => {
+  it("builds a missed attempt when the selected note is another chord tone", () => {
     expect(
       buildChordToneAttempt(1, {
         rootNote: "G",
         quality: "major",
         targetTone: 3
-      }, {
-        string: 6,
-        fret: 3,
-        note: "G",
-        pitchClass: 7
-      }).isCorrect
-    ).toBe(false);
-  });
-
-  it("rejects open strings as chord-tone answers", () => {
-    expect(isChordToneAnswerPosition({ fret: 0 })).toBe(false);
-    expect(isChordToneAnswerPosition({ fret: 1 })).toBe(true);
-    expect(() =>
-      buildChordToneAttempt(0, {
-        rootNote: "E",
-        quality: "minor",
-        targetTone: 1
-      }, {
-        string: 6,
-        fret: 0,
-        note: "E",
-        pitchClass: 4
+      }, "G")
+    ).toEqual(
+      expect.objectContaining({
+        selectedNote: "G",
+        targetNote: "B",
+        isCorrect: false
       })
-    ).toThrow("Open strings are not valid chord-tone answers.");
+    );
   });
 
-  it("checks correct positions against the requested chord tone", () => {
+  it("checks selected notes against the requested chord tone", () => {
     expect(
-      isChordToneCorrectPosition(
+      isChordToneCorrectNote(
         { rootNote: "F", quality: "major", targetTone: 5 },
-        {
-          string: 2,
-          fret: 1,
-          note: "C",
-          pitchClass: 0
-        }
+        "C"
       )
     ).toBe(true);
     expect(
-      isChordToneCorrectPosition(
+      isChordToneCorrectNote(
         { rootNote: "F", quality: "major", targetTone: 5 },
-        {
-          string: 1,
-          fret: 1,
-          note: "F",
-          pitchClass: 5
-        }
+        "F"
       )
     ).toBe(false);
   });
@@ -126,22 +104,12 @@ describe("chordToneRecognition", () => {
         rootNote: "C",
         quality: "major",
         targetTone: 1
-      }, {
-        string: 5,
-        fret: 3,
-        note: "C",
-        pitchClass: 0
-      }),
+      }, "C"),
       buildChordToneAttempt(1, {
         rootNote: "G",
         quality: "major",
         targetTone: 3
-      }, {
-        string: 6,
-        fret: 3,
-        note: "G",
-        pitchClass: 7
-      })
+      }, "G")
     ];
 
     expect(summarizeChordToneRecognition(attempts, 2)).toEqual({
@@ -159,22 +127,12 @@ describe("chordToneRecognition", () => {
         rootNote: "C",
         quality: "major",
         targetTone: 1
-      }, {
-        string: 5,
-        fret: 3,
-        note: "C",
-        pitchClass: 0
-      }),
+      }, "C"),
       buildChordToneAttempt(1, {
         rootNote: "G",
         quality: "major",
         targetTone: 3
-      }, {
-        string: 6,
-        fret: 3,
-        note: "G",
-        pitchClass: 7
-      })
+      }, "G")
     ];
 
     expect(getMissedChordTonePrompts(attempts)).toEqual([
@@ -183,8 +141,7 @@ describe("chordToneRecognition", () => {
         quality: "major",
         targetTone: 3,
         selectedNote: "G",
-        selectedString: 6,
-        selectedFret: 3
+        targetNote: "B"
       }
     ]);
   });

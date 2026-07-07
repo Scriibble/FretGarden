@@ -140,6 +140,16 @@ button {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.chord-answer-panel {
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.chord-answer-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .segmented-control button,
 .note-grid button,
 .drill-actions button {
@@ -164,6 +174,23 @@ button {
   background: #173f43;
   border-color: #173f43;
   color: #ffffff;
+}
+
+.note-grid button.is-correct {
+  background: #2f6b73;
+  border-color: #2f6b73;
+  color: #ffffff;
+}
+
+.note-grid button.is-miss {
+  background: #c77b18;
+  border-color: #c77b18;
+  color: #ffffff;
+}
+
+.note-grid button:disabled {
+  cursor: default;
+  opacity: 0.9;
 }
 
 .summary-panel {

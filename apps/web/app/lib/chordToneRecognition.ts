@@ -1,7 +1,3 @@
-import type {
-  FretPosition,
-  GuitarStringNumber
-} from "@pocket-practice/fretboard-engine";
 import {
   getChord,
   getPitchClass,
@@ -20,15 +16,13 @@ export interface ChordTonePrompt {
 export interface ChordToneAttempt extends ChordTonePrompt {
   promptIndex: number;
   selectedNote: NoteName;
-  selectedString: GuitarStringNumber;
-  selectedFret: number;
+  targetNote: NoteName;
   isCorrect: boolean;
 }
 
 export interface MissedChordTonePrompt extends ChordTonePrompt {
   selectedNote: NoteName;
-  selectedString: GuitarStringNumber;
-  selectedFret: number;
+  targetNote: NoteName;
 }
 
 export interface ChordToneSummary {
@@ -51,21 +45,18 @@ export const CHORD_TONE_PROMPTS = [
 export function buildChordToneAttempt(
   promptIndex: number,
   prompt: ChordTonePrompt,
-  position: FretPosition
+  selectedNote: NoteName
 ): ChordToneAttempt {
-  if (!isChordToneAnswerPosition(position)) {
-    throw new Error("Open strings are not valid chord-tone answers.");
-  }
+  const targetNote = getTargetChordToneNote(prompt);
 
   return {
     promptIndex,
     rootNote: prompt.rootNote,
     quality: prompt.quality,
     targetTone: prompt.targetTone,
-    selectedNote: position.note,
-    selectedString: position.string,
-    selectedFret: position.fret,
-    isCorrect: isChordToneCorrectPosition(prompt, position)
+    selectedNote,
+    targetNote,
+    isCorrect: isChordToneCorrectNote(prompt, selectedNote)
   };
 }
 
@@ -95,8 +86,7 @@ export function getMissedChordTonePrompts(
       quality: attempt.quality,
       targetTone: attempt.targetTone,
       selectedNote: attempt.selectedNote,
-      selectedString: attempt.selectedString,
-      selectedFret: attempt.selectedFret
+      targetNote: attempt.targetNote
     }));
 }
 
@@ -114,18 +104,15 @@ export function getTargetChordToneNote(prompt: ChordTonePrompt): NoteName {
   return chord.notes[chordToneIndex] as NoteName;
 }
 
-export function isChordToneAnswerPosition(
-  position: Pick<FretPosition, "fret">
-): boolean {
-  return position.fret > 0;
+export function getChordToneAnswerOptions(prompt: ChordTonePrompt): NoteName[] {
+  return [...getChord(prompt.rootNote, prompt.quality).notes] as NoteName[];
 }
 
-export function isChordToneCorrectPosition(
+export function isChordToneCorrectNote(
   prompt: ChordTonePrompt,
-  position: FretPosition
+  selectedNote: NoteName
 ): boolean {
   return (
-    isChordToneAnswerPosition(position) &&
-    getPitchClass(position.note) === getPitchClass(getTargetChordToneNote(prompt))
+    getPitchClass(selectedNote) === getPitchClass(getTargetChordToneNote(prompt))
   );
 }

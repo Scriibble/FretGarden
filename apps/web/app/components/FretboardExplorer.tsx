@@ -17,11 +17,10 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   CHORD_TONE_PROMPTS,
   buildChordToneAttempt,
+  getChordToneAnswerOptions,
   getCurrentChordTonePrompt,
   getMissedChordTonePrompts,
   getTargetChordToneNote,
-  isChordToneAnswerPosition,
-  isChordToneCorrectPosition,
   summarizeChordToneRecognition,
   type ChordTone,
   type ChordToneAttempt,
@@ -243,7 +242,11 @@ export function FretboardExplorer() {
   }
 
   function handlePositionClick(position: FretPosition): void {
-    if (mode === "practice" && !isPracticeAnswerPosition(position)) {
+    if (
+      mode === "practice" &&
+      practiceDrill === "note" &&
+      !isNoteRecognitionAnswerPosition(position)
+    ) {
       return;
     }
 
@@ -254,24 +257,6 @@ export function FretboardExplorer() {
     }
 
     if (practiceDrill === "chordTone") {
-      if (chordDrillSummary.isComplete || currentChordAttempt !== null) {
-        return;
-      }
-
-      const nextAttempt = buildChordToneAttempt(
-        chordPromptIndex,
-        currentChordPrompt,
-        position
-      );
-
-      setChordAttempts((previousAttempts) =>
-        previousAttempts.some(
-          (attempt) => attempt.promptIndex === chordPromptIndex
-        )
-          ? previousAttempts
-          : [...previousAttempts, nextAttempt]
-      );
-
       return;
     }
 
@@ -287,6 +272,24 @@ export function FretboardExplorer() {
 
     setAttempts((previousAttempts) =>
       previousAttempts.some((attempt) => attempt.promptIndex === promptIndex)
+        ? previousAttempts
+        : [...previousAttempts, nextAttempt]
+    );
+  }
+
+  function handleChordToneAnswer(selectedNote: NoteName): void {
+    if (chordDrillSummary.isComplete || currentChordAttempt !== null) {
+      return;
+    }
+
+    const nextAttempt = buildChordToneAttempt(
+      chordPromptIndex,
+      currentChordPrompt,
+      selectedNote
+    );
+
+    setChordAttempts((previousAttempts) =>
+      previousAttempts.some((attempt) => attempt.promptIndex === chordPromptIndex)
         ? previousAttempts
         : [...previousAttempts, nextAttempt]
     );
@@ -448,6 +451,42 @@ export function FretboardExplorer() {
             </div>
           </div>
 
+          {mode === "practice" && practiceDrill === "chordTone" ? (
+            <div className="control-group chord-answer-panel">
+              <span className="control-label">Answer</span>
+              <div className="note-grid chord-answer-grid">
+                {getChordToneAnswerOptions(currentChordPrompt).map((note) => {
+                  const isSelected = currentChordAttempt?.selectedNote === note;
+                  const isCorrectAnswer =
+                    currentChordAttempt !== null &&
+                    currentChordAttempt.targetNote === note;
+                  const isMissedSelection =
+                    isSelected && currentChordAttempt?.isCorrect === false;
+
+                  return (
+                    <button
+                      className={buildChordAnswerClassName(
+                        isSelected,
+                        isCorrectAnswer,
+                        isMissedSelection
+                      )}
+                      data-testid={`chord-answer-${formatNoteTestId(note)}`}
+                      disabled={
+                        currentChordAttempt !== null ||
+                        chordDrillSummary.isComplete
+                      }
+                      key={note}
+                      onClick={() => handleChordToneAnswer(note)}
+                      type="button"
+                    >
+                      {note}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+
           {mode === "practice" ? (
             <div className="drill-panel">
               <div className="drill-score">
@@ -558,7 +597,8 @@ export function FretboardExplorer() {
                     const active = activePositions.get(positionKey(position));
                     const isDisabled =
                       mode === "practice" &&
-                      !isPracticeAnswerPosition(position);
+                      practiceDrill === "note" &&
+                      !isNoteRecognitionAnswerPosition(position);
                     const isTargetString =
                       mode === "practice" &&
                       practiceDrill === "note" &&
@@ -569,7 +609,12 @@ export function FretboardExplorer() {
 
                     return (
                       <button
-                        aria-label={buildPositionLabel(position, active, mode)}
+                        aria-label={buildPositionLabel(
+                          position,
+                          active,
+                          mode,
+                          practiceDrill
+                        )}
                         aria-pressed={isSelected}
                         className={buildFretClassName(
                           active,
@@ -584,7 +629,9 @@ export function FretboardExplorer() {
                         role="gridcell"
                         type="button"
                       >
-                        <span>{buildCellLabel(mode, position, active)}</span>
+                        <span>
+                          {buildCellLabel(mode, practiceDrill, position, active)}
+                        </span>
                       </button>
                     );
                   })}
@@ -618,7 +665,9 @@ export function FretboardExplorer() {
                       ? "Correct"
                       : activeDrillAttempt
                         ? "Review the highlighted answer"
-                        : "Choose a fret"}
+                        : practiceDrill === "chordTone"
+                          ? "Choose a note"
+                          : "Choose a fret"}
                 </strong>
               </>
             ) : (
@@ -698,13 +747,12 @@ export function FretboardExplorer() {
                   <ul>
                     {missedChordPrompts.map((missedPrompt) => (
                       <li
-                        key={`${missedPrompt.rootNote}-${missedPrompt.quality}-${missedPrompt.targetTone}-${missedPrompt.selectedString}-${missedPrompt.selectedFret}`}
+                        key={`${missedPrompt.rootNote}-${missedPrompt.quality}-${missedPrompt.targetTone}-${missedPrompt.selectedNote}`}
                       >
                         <strong>{formatChordPromptTarget(missedPrompt)}</strong>
                         <span>
-                          You chose {missedPrompt.selectedNote} on the{" "}
-                          {getStringDisplayName(missedPrompt.selectedString)}{" "}
-                          string, fret {missedPrompt.selectedFret}.
+                          You chose {missedPrompt.selectedNote}; correct answer
+                          was {missedPrompt.targetNote}.
                         </span>
                       </li>
                     ))}
@@ -740,16 +788,9 @@ function buildActivePositions(
         return activePositions;
       }
 
-      mapChordToFretboard(chordPrompt.rootNote, chordPrompt.quality, {
+      findNotesOnFretboard(currentChordAttempt.targetNote, {
         frets: fretboard.frets
-      }).positions.forEach((position) => {
-        if (
-          position.chordTone !== chordPrompt.targetTone ||
-          !isChordToneCorrectPosition(chordPrompt, position)
-        ) {
-          return;
-        }
-
+      }).forEach((position) => {
         activePositions.set(positionKey(position), {
           label: position.note,
           variant: "answer",
@@ -759,18 +800,17 @@ function buildActivePositions(
         });
       });
 
-      activePositions.set(
-        `${currentChordAttempt.selectedString}-${currentChordAttempt.selectedFret}`,
-        {
-          label: currentChordAttempt.selectedNote,
-          variant: currentChordAttempt.isCorrect ? "root" : "miss",
-          descriptor: currentChordAttempt.isCorrect
-            ? `Correct ${getChordToneName(chordPrompt.targetTone)} answer`
-            : `Your answer: ${currentChordAttempt.selectedNote} on the ${getStringDisplayName(
-                currentChordAttempt.selectedString
-              )} string`
-        }
-      );
+      if (!currentChordAttempt.isCorrect) {
+        findNotesOnFretboard(currentChordAttempt.selectedNote, {
+          frets: fretboard.frets
+        }).forEach((position) => {
+          activePositions.set(positionKey(position), {
+            label: position.note,
+            variant: "miss",
+            descriptor: `Your answer: ${currentChordAttempt.selectedNote}`
+          });
+        });
+      }
 
       return activePositions;
     }
@@ -896,15 +936,18 @@ function buildModeSummary(
       }
 
       return {
-        title: `Find the ${targetToneName} of ${chordName}`,
+        title: `What is the ${targetToneName} of ${chordName}?`,
         description:
           currentChordAttempt === null
-            ? `Click any fretted ${targetNote}, the ${targetToneName} of ${chordName}. Notes stay hidden until you answer.`
+            ? `Choose the note that functions as the ${targetToneName} of ${chordName}. The fretboard will reveal the answer after you choose.`
             : currentChordAttempt.isCorrect
-              ? `Nice. String ${currentChordAttempt.selectedString}, fret ${currentChordAttempt.selectedFret} is ${targetNote}, the ${targetToneName} of ${chordName}.`
-              : `You chose ${currentChordAttempt.selectedNote}. The correct ${targetToneName} of ${chordName} is ${targetNote}, now highlighted across the fretboard.`,
+              ? `Correct. ${targetNote} is the ${targetToneName} of ${chordName}, now highlighted across the fretboard.`
+              : `You chose ${currentChordAttempt.selectedNote}. ${targetNote} is the ${targetToneName} of ${chordName}, now highlighted across the fretboard.`,
         badge: `${chordDrillSummary.attempted + 1}/${CHORD_TONE_PROMPTS.length}`,
-        tones: [chordName, targetToneName, targetNote]
+        tones:
+          currentChordAttempt === null
+            ? [chordName, targetToneName]
+            : [chordName, targetToneName, targetNote]
       };
     }
 
@@ -1036,10 +1079,14 @@ function buildStringLabelClassName(
 function buildPositionLabel(
   position: FretPosition,
   active: ActivePosition | undefined,
-  mode: DisplayMode
+  mode: DisplayMode,
+  practiceDrill: PracticeDrill
 ): string {
   if (mode === "practice") {
-    if (!isPracticeAnswerPosition(position)) {
+    if (
+      practiceDrill === "note" &&
+      !isNoteRecognitionAnswerPosition(position)
+    ) {
       return `String ${position.string}, open string, unavailable in this drill`;
     }
 
@@ -1057,6 +1104,7 @@ function buildPositionLabel(
 
 function buildCellLabel(
   mode: DisplayMode,
+  practiceDrill: PracticeDrill,
   position: FretPosition,
   active: ActivePosition | undefined
 ): string {
@@ -1064,7 +1112,11 @@ function buildCellLabel(
     return active.label;
   }
 
-  if (mode === "practice" && !isPracticeAnswerPosition(position)) {
+  if (
+    mode === "practice" &&
+    practiceDrill === "note" &&
+    !isNoteRecognitionAnswerPosition(position)
+  ) {
     return "open";
   }
 
@@ -1099,14 +1151,14 @@ function buildChordPracticeDetail(
   const targetNote = getTargetChordToneNote(prompt);
 
   if (currentAttempt === null) {
-    return `Find the ${targetToneName} of ${chordName}.`;
+    return `What note is the ${targetToneName} of ${chordName}?`;
   }
 
   if (currentAttempt.isCorrect) {
-    return `Correct: string ${currentAttempt.selectedString}, fret ${currentAttempt.selectedFret} is ${targetNote}, the ${targetToneName} of ${chordName}.`;
+    return `Correct: ${targetNote} is the ${targetToneName} of ${chordName}.`;
   }
 
-  return `Not quite: string ${currentAttempt.selectedString}, fret ${currentAttempt.selectedFret} is ${currentAttempt.selectedNote}.`;
+  return `Not quite: you chose ${currentAttempt.selectedNote}. ${targetNote} is the ${targetToneName} of ${chordName}.`;
 }
 
 function positionKey(position: FretPosition): string {
@@ -1142,11 +1194,22 @@ function getChordToneName(chordTone: ChordTone): string {
   return chordTone === 3 ? "3rd" : "5th";
 }
 
-function isPracticeAnswerPosition(position: Pick<FretPosition, "fret">): boolean {
-  return (
-    isNoteRecognitionAnswerPosition(position) &&
-    isChordToneAnswerPosition(position)
-  );
+function buildChordAnswerClassName(
+  isSelected: boolean,
+  isCorrectAnswer: boolean,
+  isMissedSelection: boolean
+): string {
+  return [
+    isSelected ? "is-selected" : "",
+    isCorrectAnswer ? "is-correct" : "",
+    isMissedSelection ? "is-miss" : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function formatNoteTestId(note: NoteName): string {
+  return note.replace("#", "sharp").replace("b", "flat");
 }
 
 function formatSessionDate(completedAt: string): string {
