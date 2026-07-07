@@ -103,6 +103,86 @@ button {
   grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
 }
 
+.practice-hub {
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  background: #ffffff;
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.hub-heading {
+  align-items: flex-end;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.hub-heading p:last-child {
+  color: #52615c;
+  line-height: 1.45;
+  max-width: 520px;
+}
+
+.hub-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hub-card {
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.hub-card h3 {
+  margin-top: 0.25rem;
+}
+
+.hub-card p {
+  color: #52615c;
+  line-height: 1.45;
+  margin-top: 0.45rem;
+}
+
+.hub-card button {
+  border: 1px solid #173f43;
+  border-radius: 7px;
+  background: #173f43;
+  color: #ffffff;
+  cursor: pointer;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.8rem;
+}
+
+.hub-card button:hover {
+  background: #225b60;
+  border-color: #225b60;
+}
+
+.hub-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.hub-metrics span {
+  border: 1px solid #cfd8d3;
+  border-radius: 999px;
+  color: #27332f;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+}
+
+.recommendation-card {
+  background: #f8faf8;
+  border-color: #c5d8d4;
+}
+
 .controls-panel {
   display: grid;
   gap: 1rem;
@@ -208,7 +288,7 @@ button {
 
 .segmented-control button,
 .note-grid button,
-.drill-actions button {
+.prompt-actions button {
   border: 1px solid #d8dfda;
   border-radius: 7px;
   background: #f8faf8;
@@ -220,7 +300,7 @@ button {
 
 .segmented-control button:hover,
 .note-grid button:hover,
-.drill-actions button:hover:not(:disabled),
+.prompt-actions button:hover:not(:disabled),
 .fret-cell:hover {
   border-color: #2f6b73;
 }
@@ -306,24 +386,6 @@ button {
   display: block;
   height: 100%;
   transition: width 180ms ease;
-}
-
-.drill-actions {
-  display: grid;
-  gap: 0.45rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.drill-actions button:disabled {
-  color: #8b9691;
-  cursor: not-allowed;
-  opacity: 0.72;
-}
-
-.drill-actions button:first-child:not(:disabled) {
-  background: #173f43;
-  border-color: #173f43;
-  color: #ffffff;
 }
 
 .last-session-panel {
@@ -555,26 +617,62 @@ button {
   box-shadow: 0 0 0 3px rgba(216, 68, 92, 0.22);
 }
 
-.detail-strip {
-  align-items: center;
+.prompt-panel {
   background: #f8faf8;
   border: 1px solid #d8dfda;
   border-radius: 8px;
-  display: flex;
+  display: grid;
   gap: 1rem;
-  justify-content: space-between;
   padding: 1rem;
 }
 
-.detail-strip p {
-  color: #27332f;
-  line-height: 1.45;
+.prompt-panel-header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.prompt-panel-header strong {
+  color: #173f43;
+  display: block;
+  font-size: 1.2rem;
+  line-height: 1.25;
   margin-top: 0.25rem;
 }
 
-.detail-strip strong {
+.prompt-panel p {
+  color: #27332f;
+  line-height: 1.45;
+}
+
+.prompt-panel-status {
   color: #d8445c;
+  font-weight: 800;
   text-align: right;
+  white-space: nowrap;
+}
+
+.prompt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.prompt-actions button {
+  min-width: 9rem;
+}
+
+.prompt-actions button:disabled {
+  color: #8b9691;
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.prompt-actions button:first-child:not(:disabled) {
+  background: #173f43;
+  border-color: #173f43;
+  color: #ffffff;
 }
 
 .completion-panel {
@@ -698,10 +796,15 @@ button {
 @media (max-width: 900px) {
   .app-header,
   .fretboard-heading,
-  .detail-strip,
+  .prompt-panel-header,
   .completion-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .prompt-panel-status {
+    text-align: left;
+    white-space: normal;
   }
 
   .status-panel {
@@ -709,6 +812,15 @@ button {
   }
 
   .practice-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hub-grid {
     grid-template-columns: 1fr;
   }
 
@@ -743,6 +855,15 @@ button {
   .fretboard-panel,
   .controls-panel {
     padding: 0.75rem;
+  }
+
+  .prompt-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .prompt-actions button {
+    min-width: 0;
   }
 
   .summary-metrics {

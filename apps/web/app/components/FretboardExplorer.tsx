@@ -13,7 +13,7 @@ import type {
   ScaleQuality,
   TriadQuality
 } from "@pocket-practice/music-theory-engine";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   CHORD_TONE_HISTORY_LIMIT,
   CHORD_TONE_SESSION_PRESETS,
@@ -30,6 +30,7 @@ import {
   summarizeChordToneRecognition,
   type ChordTone,
   type ChordToneAttempt,
+  type MissedChordTonePrompt,
   type ChordTonePrompt,
   type ChordTonePromptOrder,
   type ChordTonePerformanceStat,
@@ -58,6 +59,7 @@ import {
   summarizeNoteRecognition,
   type NoteRecognitionNoteFocus,
   type NoteRecognitionAttempt,
+  type MissedNoteRecognitionPrompt,
   type NoteRecognitionPerformanceStat,
   type NoteRecognitionPromptOrder,
   type NoteRecognitionPrompt,
@@ -76,6 +78,14 @@ type ActiveVariant = "note" | "root" | "scale" | "chord" | "answer" | "miss";
 type PerformanceStat =
   | ChordTonePerformanceStat
   | NoteRecognitionPerformanceStat;
+type PracticePreset = ChordToneSessionPreset | NoteRecognitionSessionPreset;
+
+interface PracticeHubRecommendation {
+  drill: PracticeDrill;
+  title: string;
+  description: string;
+  preset: PracticePreset;
+}
 
 interface ActivePosition {
   label: string;
@@ -239,6 +249,7 @@ export function FretboardExplorer() {
   const [selectedPosition, setSelectedPosition] = useState<FretPosition | null>(
     null
   );
+  const practiceLayoutRef = useRef<HTMLElement | null>(null);
 
   const notePerformanceSessions = useMemo(() => {
     if (completedSession === null) {
@@ -254,21 +265,17 @@ export function FretboardExplorer() {
     () => buildNoteRecognitionPerformanceSummary(notePerformanceSessions),
     [notePerformanceSessions]
   );
-  const latestNoteMissedPrompts = useMemo(
-    () => sessionHistory[0]?.missedPrompts ?? [],
-    [sessionHistory]
+  const noteReviewPrompts = useMemo(
+    () => collectNoteReviewPrompts(notePerformanceSessions),
+    [notePerformanceSessions]
   );
   const notePromptQueue = useMemo(
     () =>
       buildNoteRecognitionPromptSession(
         noteSessionSettings,
-        latestNoteMissedPrompts
+        noteReviewPrompts
       ),
-    [noteSessionSettings, noteSessionNonce, latestNoteMissedPrompts]
-  );
-  const latestChordMissedPrompts = useMemo(
-    () => chordSessionHistory[0]?.missedPrompts ?? [],
-    [chordSessionHistory]
+    [noteSessionSettings, noteSessionNonce, noteReviewPrompts]
   );
   const chordPerformanceSessions = useMemo(() => {
     if (completedChordSession === null) {
@@ -286,13 +293,17 @@ export function FretboardExplorer() {
     () => buildChordTonePerformanceSummary(chordPerformanceSessions),
     [chordPerformanceSessions]
   );
+  const chordReviewPrompts = useMemo(
+    () => collectChordReviewPrompts(chordPerformanceSessions),
+    [chordPerformanceSessions]
+  );
   const chordPromptQueue = useMemo(
     () =>
       buildChordTonePromptSession(
         chordSessionSettings,
-        latestChordMissedPrompts
+        chordReviewPrompts
       ),
-    [chordSessionSettings, chordSessionNonce, latestChordMissedPrompts]
+    [chordSessionSettings, chordSessionNonce, chordReviewPrompts]
   );
   const currentPrompt = getCurrentPrompt(promptIndex, notePromptQueue);
   const currentAttempt =
@@ -393,14 +404,28 @@ export function FretboardExplorer() {
     practiceDrill === "note"
       ? (sessionHistory[0] ?? null)
       : (chordSessionHistory[0] ?? null);
-  const chordMissedReviewCount = latestChordMissedPrompts.length;
-  const noteMissedReviewCount = latestNoteMissedPrompts.length;
+  const chordMissedReviewCount = chordReviewPrompts.length;
+  const noteMissedReviewCount = noteReviewPrompts.length;
   const notePresetOptions = customNotePreset
     ? [...NOTE_RECOGNITION_SESSION_PRESETS, customNotePreset]
     : NOTE_RECOGNITION_SESSION_PRESETS;
   const chordPresetOptions = customChordPreset
     ? [...CHORD_TONE_SESSION_PRESETS, customChordPreset]
     : CHORD_TONE_SESSION_PRESETS;
+  const recommendedNotePreset = getRecommendedNotePreset(
+    notePerformance,
+    notePresetOptions
+  );
+  const recommendedChordPreset = getRecommendedChordPreset(
+    chordPerformance,
+    chordPresetOptions
+  );
+  const practiceRecommendation = buildPracticeHubRecommendation(
+    notePerformance,
+    chordPerformance,
+    recommendedNotePreset,
+    recommendedChordPreset
+  );
 
   useEffect(() => {
     setSessionHistory(
@@ -557,6 +582,13 @@ export function FretboardExplorer() {
     resetChordToneDrill();
   }
 
+  function handleStartChordPreset(preset: ChordToneSessionPreset): void {
+    setMode("practice");
+    setPracticeDrill("chordTone");
+    handleChordPresetSelect(preset);
+    scrollPracticeSessionIntoView();
+  }
+
   function handleSaveChordPreset(): void {
     const nextPreset = {
       id: "custom",
@@ -581,6 +613,24 @@ export function FretboardExplorer() {
   function handleNotePresetSelect(preset: NoteRecognitionSessionPreset): void {
     setNoteSessionSettings(preset.settings);
     resetNoteRecognitionDrill();
+  }
+
+  function handleStartNotePreset(preset: NoteRecognitionSessionPreset): void {
+    setMode("practice");
+    setPracticeDrill("note");
+    handleNotePresetSelect(preset);
+    scrollPracticeSessionIntoView();
+  }
+
+  function handleStartRecommendation(
+    recommendation: PracticeHubRecommendation
+  ): void {
+    if (recommendation.drill === "chordTone") {
+      handleStartChordPreset(recommendation.preset as ChordToneSessionPreset);
+      return;
+    }
+
+    handleStartNotePreset(recommendation.preset as NoteRecognitionSessionPreset);
   }
 
   function handleSaveNotePreset(): void {
@@ -608,6 +658,15 @@ export function FretboardExplorer() {
     setCompletedChordSession(null);
     setSelectedPosition(null);
     setChordSessionNonce((previousNonce) => previousNonce + 1);
+  }
+
+  function scrollPracticeSessionIntoView(): void {
+    window.setTimeout(() => {
+      practiceLayoutRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 0);
   }
 
   function handleNextPrompt(): void {
@@ -651,7 +710,85 @@ export function FretboardExplorer() {
         </div>
       </header>
 
-      <section className="practice-layout" aria-label="Fretboard explorer">
+      <section className="practice-hub" aria-label="Practice hub">
+        <div className="hub-heading">
+          <div>
+            <p className="eyebrow">Practice Hub</p>
+            <h2>Choose today&apos;s session</h2>
+          </div>
+          <p>
+            Start from a preset, review weak spots, or jump back into the active
+            fretboard.
+          </p>
+        </div>
+
+        <div className="hub-grid">
+          <article className="hub-card">
+            <div>
+              <span className="control-label">Note Recognition</span>
+              <h3>Find notes by string</h3>
+              <p>
+                Train the fretboard map with string-specific note prompts.
+              </p>
+            </div>
+            <div className="hub-metrics">
+              <span>{formatHubAccuracy(sessionHistory[0] ?? null)}</span>
+              <span>{notePerformance.weakSpots[0]?.label ?? "No weak spots"}</span>
+            </div>
+            <button
+              data-testid="hub-start-note"
+              onClick={() => handleStartNotePreset(recommendedNotePreset)}
+              type="button"
+            >
+              Start {recommendedNotePreset.label}
+            </button>
+          </article>
+
+          <article className="hub-card">
+            <div>
+              <span className="control-label">Chord Tones</span>
+              <h3>Spell roots, 3rds, and 5ths</h3>
+              <p>
+                Build triad fluency with concept-first chord-tone prompts.
+              </p>
+            </div>
+            <div className="hub-metrics">
+              <span>{formatHubAccuracy(chordSessionHistory[0] ?? null)}</span>
+              <span>
+                {chordPerformance.weakSpots[0]?.label ?? "No weak spots"}
+              </span>
+            </div>
+            <button
+              data-testid="hub-start-chord"
+              onClick={() => handleStartChordPreset(recommendedChordPreset)}
+              type="button"
+            >
+              Start {recommendedChordPreset.label}
+            </button>
+          </article>
+
+          <article className="hub-card recommendation-card">
+            <div>
+              <span className="control-label">Smart recommendation</span>
+              <h3>{practiceRecommendation.title}</h3>
+              <p>{practiceRecommendation.description}</p>
+            </div>
+            <button
+              data-testid="hub-start-recommendation"
+              onClick={() => handleStartRecommendation(practiceRecommendation)}
+              type="button"
+            >
+              Start recommended session
+            </button>
+          </article>
+        </div>
+      </section>
+
+      <section
+        className="practice-layout"
+        aria-label="Fretboard explorer"
+        ref={practiceLayoutRef}
+      >
         <aside className="controls-panel" aria-label="Fretboard controls">
           <div className="control-group">
             <span className="control-label">Mode</span>
@@ -1076,10 +1213,22 @@ export function FretboardExplorer() {
 
           <div className="summary-panel">
             <span>{summary.badge}</span>
-            <strong>{summary.title}</strong>
-            <p>{summary.description}</p>
+            <strong>{mode === "practice" ? "Practice session" : summary.title}</strong>
+            <p>
+              {mode === "practice"
+                ? "Read the active prompt beneath the fretboard, then answer from the board or answer controls."
+                : summary.description}
+            </p>
             <div className="tone-list" aria-label="Current tones">
-              {summary.tones.map((tone) => (
+              {(mode === "practice"
+                ? [
+                    practiceDrill === "note"
+                      ? "Note recognition"
+                      : "Chord tones",
+                    `${activeDrillSummary.attempted}/${activePromptCount} complete`
+                  ]
+                : summary.tones
+              ).map((tone) => (
                 <span key={tone}>{tone}</span>
               ))}
             </div>
@@ -1140,26 +1289,6 @@ export function FretboardExplorer() {
                   }}
                 />
               </div>
-              <div className="drill-actions">
-                <button
-                  data-testid="drill-next"
-                  disabled={
-                    activeDrillAttempt === null ||
-                    activeDrillSummary.isComplete
-                  }
-                  onClick={handleNextPrompt}
-                  type="button"
-                >
-                  Next prompt
-                </button>
-                <button
-                  data-testid="drill-restart"
-                  onClick={handleRestartDrill}
-                  type="button"
-                >
-                  Restart
-                </button>
-              </div>
             </div>
           ) : null}
 
@@ -1187,7 +1316,9 @@ export function FretboardExplorer() {
           <div className="fretboard-heading">
             <div>
               <p className="eyebrow">Interactive Map</p>
-              <h2 id="fretboard-title">{summary.title}</h2>
+              <h2 id="fretboard-title">
+                {mode === "practice" ? "Interactive Fretboard" : summary.title}
+              </h2>
             </div>
             <div className="legend" aria-label="Fretboard legend">
               <span>
@@ -1274,50 +1405,71 @@ export function FretboardExplorer() {
             </div>
           </div>
 
-          <div className="detail-strip" aria-live="polite">
+          <div className="prompt-panel" aria-live="polite">
             {mode === "practice" ? (
               <>
-                <div>
-                  <span className="control-label">
+                <div className="prompt-panel-header">
+                  <div>
+                    <span className="control-label">
+                      {activeDrillSummary.isComplete
+                        ? "Session complete"
+                        : "Prompt"}
+                    </span>
+                    <strong>{summary.title}</strong>
+                  </div>
+                  <span className="prompt-panel-status">
                     {activeDrillSummary.isComplete
-                      ? "Session complete"
-                      : "Prompt"}
+                      ? `${activeDrillSummary.accuracy}% accuracy`
+                      : activeDrillAttempt?.isCorrect
+                        ? "Correct"
+                        : activeDrillAttempt
+                          ? "Review the highlighted answer"
+                          : practiceDrill === "chordTone"
+                            ? "Choose a note"
+                            : "Choose a fret"}
                   </span>
-                  <p>
-                    {practiceDrill === "note"
-                      ? buildPracticeDetail(currentPrompt, currentAttempt)
-                      : buildChordPracticeDetail(
-                          currentChordPrompt,
-                          currentChordAttempt
-                        )}
-                  </p>
                 </div>
-                <strong>
-                  {activeDrillSummary.isComplete
-                    ? `${activeDrillSummary.accuracy}% accuracy`
-                    : activeDrillAttempt?.isCorrect
-                      ? "Correct"
-                      : activeDrillAttempt
-                        ? "Review the highlighted answer"
-                        : practiceDrill === "chordTone"
-                          ? "Choose a note"
-                          : "Choose a fret"}
-                </strong>
+                <p>{summary.description}</p>
+                <div className="prompt-actions">
+                  <button
+                    data-testid="drill-next"
+                    disabled={
+                      activeDrillAttempt === null ||
+                      activeDrillSummary.isComplete
+                    }
+                    onClick={handleNextPrompt}
+                    type="button"
+                  >
+                    Next prompt
+                  </button>
+                  <button
+                    data-testid="drill-restart"
+                    onClick={handleRestartDrill}
+                    type="button"
+                  >
+                    Reset
+                  </button>
+                </div>
               </>
             ) : (
               <>
-                <div>
-                  <span className="control-label">Selected position</span>
-                  {selectedPosition ? (
-                    <p>
-                      String {selectedPosition.string}, fret{" "}
-                      {selectedPosition.fret}: {selectedPosition.note}
-                    </p>
-                  ) : (
-                    <p>Choose any fret to inspect its note and role.</p>
-                  )}
+                <div className="prompt-panel-header">
+                  <div>
+                    <span className="control-label">Selected position</span>
+                    {selectedPosition ? (
+                      <strong>
+                        String {selectedPosition.string}, fret{" "}
+                        {selectedPosition.fret}: {selectedPosition.note}
+                      </strong>
+                    ) : (
+                      <strong>Choose any fret</strong>
+                    )}
+                  </div>
+                  <span className="prompt-panel-status">
+                    {selectedActive?.descriptor ?? "No active role"}
+                  </span>
                 </div>
-                <strong>{selectedActive?.descriptor ?? "No active role"}</strong>
+                <p>Choose any fret to inspect its note and role.</p>
               </>
             )}
           </div>
@@ -1869,46 +2021,6 @@ function buildCellLabel(
   return mode === "practice" ? "" : position.note;
 }
 
-function buildPracticeDetail(
-  prompt: NoteRecognitionPrompt,
-  currentAttempt: NoteRecognitionAttempt | null
-): string {
-  const targetStringName = getStringDisplayName(prompt.targetString);
-
-  if (currentAttempt === null) {
-    return `Find the ${prompt.targetNote} note on the ${targetStringName} string.`;
-  }
-
-  if (currentAttempt.isCorrect) {
-    return `Correct: string ${currentAttempt.selectedString}, fret ${currentAttempt.selectedFret} is ${prompt.targetNote} on the ${targetStringName} string.`;
-  }
-
-  return `Not quite: string ${currentAttempt.selectedString}, fret ${currentAttempt.selectedFret} is ${currentAttempt.selectedNote} on the ${getStringDisplayName(
-    currentAttempt.selectedString
-  )} string.`;
-}
-
-function buildChordPracticeDetail(
-  prompt: ChordTonePrompt,
-  currentAttempt: ChordToneAttempt | null
-): string {
-  const chordName = formatChordName(prompt.rootNote, prompt.quality);
-  const targetToneName = getChordToneName(prompt.targetTone);
-  const targetNote = getTargetChordToneNote(prompt);
-
-  if (currentAttempt === null) {
-    return `What note is the ${targetToneName} of ${chordName}?`;
-  }
-
-  if (currentAttempt.isCorrect) {
-    return `Correct: ${formatChordSpelling(prompt)}, so ${targetNote} is the ${targetToneName}.`;
-  }
-
-  return `Not quite: you chose ${currentAttempt.selectedNote}. ${formatChordSpelling(
-    prompt
-  )}, so ${targetNote} is the ${targetToneName}.`;
-}
-
 function positionKey(position: FretPosition): string {
   return `${position.string}-${position.fret}`;
 }
@@ -1976,6 +2088,116 @@ function formatPerformanceStat(stat: PerformanceStat): string {
 
 function formatPerformanceChip(stat: PerformanceStat): string {
   return `${stat.label}: ${stat.accuracy}% (${stat.correct}/${stat.attempted})`;
+}
+
+function formatHubAccuracy(
+  session: ChordToneSession | NoteRecognitionSession | null
+): string {
+  return session ? `${session.accuracy}% last session` : "No sessions yet";
+}
+
+function getRecommendedNotePreset(
+  performance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
+  presets: readonly NoteRecognitionSessionPreset[]
+): NoteRecognitionSessionPreset {
+  return findPreset(
+    presets,
+    performance.weakSpots.length > 0 ? "weak-spots" : "quick-warmup"
+  );
+}
+
+function getRecommendedChordPreset(
+  performance: ReturnType<typeof buildChordTonePerformanceSummary>,
+  presets: readonly ChordToneSessionPreset[]
+): ChordToneSessionPreset {
+  if (performance.weakSpots.length > 0) {
+    const weakestSpot = performance.weakSpots[0];
+
+    if (weakestSpot?.category === "tone" && weakestSpot.id === "3") {
+      return findPreset(presets, "thirds-focus");
+    }
+
+    return findPreset(presets, "weak-spots");
+  }
+
+  return findPreset(presets, "quick-warmup");
+}
+
+function buildPracticeHubRecommendation(
+  notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
+  chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
+  notePreset: NoteRecognitionSessionPreset,
+  chordPreset: ChordToneSessionPreset
+): PracticeHubRecommendation {
+  const weakestNoteSpot = notePerformance.weakSpots[0] ?? null;
+  const weakestChordSpot = chordPerformance.weakSpots[0] ?? null;
+
+  if (
+    weakestChordSpot &&
+    (!weakestNoteSpot || weakestChordSpot.accuracy <= weakestNoteSpot.accuracy)
+  ) {
+    return {
+      drill: "chordTone",
+      title: `Review ${weakestChordSpot.label}`,
+      description: `${weakestChordSpot.label} are at ${weakestChordSpot.accuracy}% across tracked chord sessions. Start ${chordPreset.label.toLowerCase()} to tighten that up.`,
+      preset: chordPreset
+    };
+  }
+
+  if (weakestNoteSpot) {
+    return {
+      drill: "note",
+      title: `Review ${weakestNoteSpot.label}`,
+      description: `${weakestNoteSpot.label} are at ${weakestNoteSpot.accuracy}% across tracked note sessions. Start ${notePreset.label.toLowerCase()} to reinforce it.`,
+      preset: notePreset
+    };
+  }
+
+  return {
+    drill: "note",
+    title: "Start with a quick warmup",
+    description:
+      "No weak spots yet. Begin with a short note session, then Pocket.Practice can recommend more targeted work.",
+    preset: notePreset
+  };
+}
+
+function findPreset<Preset extends PracticePreset>(
+  presets: readonly Preset[],
+  id: string
+): Preset {
+  return presets.find((preset) => preset.id === id) ?? presets[0]!;
+}
+
+function collectNoteReviewPrompts(
+  sessions: readonly NoteRecognitionSession[]
+): MissedNoteRecognitionPrompt[] {
+  const promptsByTarget = new Map<string, MissedNoteRecognitionPrompt>();
+
+  sessions.forEach((session) => {
+    session.missedPrompts.forEach((prompt) => {
+      promptsByTarget.set(`${prompt.targetNote}-${prompt.targetString}`, prompt);
+    });
+  });
+
+  return [...promptsByTarget.values()];
+}
+
+function collectChordReviewPrompts(
+  sessions: readonly ChordToneSession[]
+): MissedChordTonePrompt[] {
+  const promptsByTarget = new Map<string, MissedChordTonePrompt>();
+
+  sessions.forEach((session) => {
+    session.missedPrompts.forEach((prompt) => {
+      promptsByTarget.set(
+        `${prompt.rootNote}-${prompt.quality}-${prompt.targetTone}`,
+        prompt
+      );
+    });
+  });
+
+  return [...promptsByTarget.values()];
 }
 
 function formatSessionDate(completedAt: string): string {
