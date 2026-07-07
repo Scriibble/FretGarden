@@ -71,14 +71,50 @@ import {
   type NoteRecognitionStringFocus,
   type NoteRecognitionSummary
 } from "../lib/noteRecognition";
+import {
+  DEFAULT_SCALE_DEGREE_SESSION_SETTINGS,
+  SCALE_DEGREE_HISTORY_LIMIT,
+  SCALE_DEGREE_SESSION_PRESETS,
+  appendScaleDegreeSession,
+  buildScaleDegreeAttempt,
+  buildScaleDegreePerformanceSummary,
+  buildScaleDegreePromptSession,
+  buildScaleDegreeSession,
+  getCurrentScaleDegreePrompt,
+  getMissedScaleDegreePrompts,
+  getScaleDegreeName,
+  getTargetScaleDegreeNote,
+  isScaleDegreeAnswerPosition,
+  isScaleDegreeCorrectPosition,
+  summarizeScaleDegreeRecognition,
+  type MissedScaleDegreePrompt,
+  type ScaleDegree,
+  type ScaleDegreeAttempt,
+  type ScaleDegreeDegreeFocus,
+  type ScaleDegreePerformanceStat,
+  type ScaleDegreePrompt,
+  type ScaleDegreePromptOrder,
+  type ScaleDegreeQualityFocus,
+  type ScaleDegreeReviewMode,
+  type ScaleDegreeSession,
+  type ScaleDegreeSessionLength,
+  type ScaleDegreeSessionPreset,
+  type ScaleDegreeSessionSettings,
+  type ScaleDegreeStringFocus,
+  type ScaleDegreeSummary
+} from "../lib/scaleDegreeRecognition";
 
 type DisplayMode = "practice" | "notes" | "find" | "scale" | "chord";
-type PracticeDrill = "note" | "chordTone";
+type PracticeDrill = "note" | "chordTone" | "scaleDegree";
 type ActiveVariant = "note" | "root" | "scale" | "chord" | "answer" | "miss";
 type PerformanceStat =
   | ChordTonePerformanceStat
-  | NoteRecognitionPerformanceStat;
-type PracticePreset = ChordToneSessionPreset | NoteRecognitionSessionPreset;
+  | NoteRecognitionPerformanceStat
+  | ScaleDegreePerformanceStat;
+type PracticePreset =
+  | ChordToneSessionPreset
+  | NoteRecognitionSessionPreset
+  | ScaleDegreeSessionPreset;
 
 interface PracticeHubRecommendation {
   drill: PracticeDrill;
@@ -143,10 +179,14 @@ const modes: Array<{ id: DisplayMode; label: string }> = [
 const NOTE_RECOGNITION_HISTORY_STORAGE_KEY =
   "pocket-practice:note-recognition-history";
 const CHORD_TONE_HISTORY_STORAGE_KEY = "pocket-practice:chord-tone-history";
+const SCALE_DEGREE_HISTORY_STORAGE_KEY =
+  "pocket-practice:scale-degree-history";
 const NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:note-recognition-custom-preset";
 const CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:chord-tone-custom-preset";
+const SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY =
+  "pocket-practice:scale-degree-custom-preset";
 const noteSessionLengthOptions = [6, 10, 20] as const satisfies readonly NoteRecognitionSessionLength[];
 const noteFocusOptions = [
   { id: "all", label: "All" },
@@ -213,6 +253,54 @@ const chordReviewModeOptions = [
   id: ChordToneReviewMode;
   label: string;
 }>;
+const scaleDegreeSessionLengthOptions = [6, 12, 20] as const satisfies readonly ScaleDegreeSessionLength[];
+const scaleDegreeQualityFocusOptions = [
+  { id: "both", label: "Both" },
+  { id: "major", label: "Major" },
+  { id: "minor", label: "Minor" }
+] as const satisfies ReadonlyArray<{
+  id: ScaleDegreeQualityFocus;
+  label: string;
+}>;
+const scaleDegreeFocusOptions = [
+  { id: "mixed", label: "Mixed" },
+  { id: "root", label: "Root" },
+  { id: "second", label: "2nd" },
+  { id: "third", label: "3rd" },
+  { id: "fourth", label: "4th" },
+  { id: "fifth", label: "5th" },
+  { id: "sixth", label: "6th" },
+  { id: "seventh", label: "7th" }
+] as const satisfies ReadonlyArray<{
+  id: ScaleDegreeDegreeFocus;
+  label: string;
+}>;
+const scaleDegreeStringFocusOptions = [
+  { id: "all", label: "All" },
+  { id: 6, label: "Low E" },
+  { id: 5, label: "A" },
+  { id: 4, label: "D" },
+  { id: 3, label: "G" },
+  { id: 2, label: "B" },
+  { id: 1, label: "High E" }
+] as const satisfies ReadonlyArray<{
+  id: ScaleDegreeStringFocus;
+  label: string;
+}>;
+const scaleDegreePromptOrderOptions = [
+  { id: "fixed", label: "Fixed" },
+  { id: "random", label: "Random" }
+] as const satisfies ReadonlyArray<{
+  id: ScaleDegreePromptOrder;
+  label: string;
+}>;
+const scaleDegreeReviewModeOptions = [
+  { id: "full", label: "Full set" },
+  { id: "missed", label: "Missed only" }
+] as const satisfies ReadonlyArray<{
+  id: ScaleDegreeReviewMode;
+  label: string;
+}>;
 
 export function FretboardExplorer() {
   const [mode, setMode] = useState<DisplayMode>("practice");
@@ -236,15 +324,29 @@ export function FretboardExplorer() {
   const [chordSessionNonce, setChordSessionNonce] = useState(0);
   const [customChordPreset, setCustomChordPreset] =
     useState<ChordToneSessionPreset | null>(null);
+  const [scalePromptIndex, setScalePromptIndex] = useState(0);
+  const [scaleAttempts, setScaleAttempts] = useState<ScaleDegreeAttempt[]>([]);
+  const [scaleDegreeSessionSettings, setScaleDegreeSessionSettings] =
+    useState<ScaleDegreeSessionSettings>(
+      DEFAULT_SCALE_DEGREE_SESSION_SETTINGS
+    );
+  const [scaleDegreeSessionNonce, setScaleDegreeSessionNonce] = useState(0);
+  const [customScaleDegreePreset, setCustomScaleDegreePreset] =
+    useState<ScaleDegreeSessionPreset | null>(null);
   const [completedSession, setCompletedSession] =
     useState<NoteRecognitionSession | null>(null);
   const [completedChordSession, setCompletedChordSession] =
     useState<ChordToneSession | null>(null);
+  const [completedScaleDegreeSession, setCompletedScaleDegreeSession] =
+    useState<ScaleDegreeSession | null>(null);
   const [sessionHistory, setSessionHistory] = useState<
     NoteRecognitionSession[]
   >([]);
   const [chordSessionHistory, setChordSessionHistory] = useState<
     ChordToneSession[]
+  >([]);
+  const [scaleDegreeSessionHistory, setScaleDegreeSessionHistory] = useState<
+    ScaleDegreeSession[]
   >([]);
   const [selectedPosition, setSelectedPosition] = useState<FretPosition | null>(
     null
@@ -305,6 +407,38 @@ export function FretboardExplorer() {
       ),
     [chordSessionSettings, chordSessionNonce, chordReviewPrompts]
   );
+  const scaleDegreePerformanceSessions = useMemo(() => {
+    if (completedScaleDegreeSession === null) {
+      return scaleDegreeSessionHistory;
+    }
+
+    return [
+      completedScaleDegreeSession,
+      ...scaleDegreeSessionHistory.filter(
+        (session) => session.id !== completedScaleDegreeSession.id
+      )
+    ];
+  }, [scaleDegreeSessionHistory, completedScaleDegreeSession]);
+  const scaleDegreePerformance = useMemo(
+    () => buildScaleDegreePerformanceSummary(scaleDegreePerformanceSessions),
+    [scaleDegreePerformanceSessions]
+  );
+  const scaleDegreeReviewPrompts = useMemo(
+    () => collectScaleDegreeReviewPrompts(scaleDegreePerformanceSessions),
+    [scaleDegreePerformanceSessions]
+  );
+  const scaleDegreePromptQueue = useMemo(
+    () =>
+      buildScaleDegreePromptSession(
+        scaleDegreeSessionSettings,
+        scaleDegreeReviewPrompts
+      ),
+    [
+      scaleDegreeSessionSettings,
+      scaleDegreeSessionNonce,
+      scaleDegreeReviewPrompts
+    ]
+  );
   const currentPrompt = getCurrentPrompt(promptIndex, notePromptQueue);
   const currentAttempt =
     attempts.find((attempt) => attempt.promptIndex === promptIndex) ?? null;
@@ -315,6 +449,13 @@ export function FretboardExplorer() {
   const currentChordAttempt =
     chordAttempts.find((attempt) => attempt.promptIndex === chordPromptIndex) ??
     null;
+  const currentScaleDegreePrompt = getCurrentScaleDegreePrompt(
+    scalePromptIndex,
+    scaleDegreePromptQueue
+  );
+  const currentScaleDegreeAttempt =
+    scaleAttempts.find((attempt) => attempt.promptIndex === scalePromptIndex) ??
+    null;
   const drillSummary = useMemo(
     () => summarizeNoteRecognition(attempts, notePromptQueue.length),
     [attempts, notePromptQueue.length]
@@ -323,6 +464,14 @@ export function FretboardExplorer() {
     () => summarizeChordToneRecognition(chordAttempts, chordPromptQueue.length),
     [chordAttempts, chordPromptQueue.length]
   );
+  const scaleDegreeDrillSummary = useMemo(
+    () =>
+      summarizeScaleDegreeRecognition(
+        scaleAttempts,
+        scaleDegreePromptQueue.length
+      ),
+    [scaleAttempts, scaleDegreePromptQueue.length]
+  );
   const missedPrompts = useMemo(
     () => getMissedNoteRecognitionPrompts(attempts),
     [attempts]
@@ -330,6 +479,10 @@ export function FretboardExplorer() {
   const missedChordPrompts = useMemo(
     () => getMissedChordTonePrompts(chordAttempts),
     [chordAttempts]
+  );
+  const missedScaleDegreePrompts = useMemo(
+    () => getMissedScaleDegreePrompts(scaleAttempts),
+    [scaleAttempts]
   );
   const activePositions = useMemo(
     () =>
@@ -342,7 +495,9 @@ export function FretboardExplorer() {
         currentPrompt,
         currentAttempt,
         currentChordPrompt,
-        currentChordAttempt
+        currentChordAttempt,
+        currentScaleDegreePrompt,
+        currentScaleDegreeAttempt
       ),
     [
       mode,
@@ -353,7 +508,9 @@ export function FretboardExplorer() {
       currentPrompt,
       currentAttempt,
       currentChordPrompt,
-      currentChordAttempt
+      currentChordAttempt,
+      currentScaleDegreePrompt,
+      currentScaleDegreeAttempt
     ]
   );
   const summary = useMemo(
@@ -370,8 +527,12 @@ export function FretboardExplorer() {
         currentChordPrompt,
         currentChordAttempt,
         chordDrillSummary,
+        currentScaleDegreePrompt,
+        currentScaleDegreeAttempt,
+        scaleDegreeDrillSummary,
         notePromptQueue.length,
-        chordPromptQueue.length
+        chordPromptQueue.length,
+        scaleDegreePromptQueue.length
       ),
     [
       mode,
@@ -385,33 +546,53 @@ export function FretboardExplorer() {
       currentChordPrompt,
       currentChordAttempt,
       chordDrillSummary,
+      currentScaleDegreePrompt,
+      currentScaleDegreeAttempt,
+      scaleDegreeDrillSummary,
       notePromptQueue.length,
-      chordPromptQueue.length
+      chordPromptQueue.length,
+      scaleDegreePromptQueue.length
     ]
   );
   const selectedActive = selectedPosition
     ? activePositions.get(positionKey(selectedPosition))
     : undefined;
-  const activeDrillSummary =
-    practiceDrill === "note" ? drillSummary : chordDrillSummary;
-  const activeDrillAttempt =
-    practiceDrill === "note" ? currentAttempt : currentChordAttempt;
-  const activePromptCount =
-    practiceDrill === "note"
-      ? notePromptQueue.length
-      : chordPromptQueue.length;
-  const latestSession =
-    practiceDrill === "note"
-      ? (sessionHistory[0] ?? null)
-      : (chordSessionHistory[0] ?? null);
+  const activeDrillSummary = getActiveDrillSummary(
+    practiceDrill,
+    drillSummary,
+    chordDrillSummary,
+    scaleDegreeDrillSummary
+  );
+  const activeDrillAttempt = getActiveDrillAttempt(
+    practiceDrill,
+    currentAttempt,
+    currentChordAttempt,
+    currentScaleDegreeAttempt
+  );
+  const activePromptCount = getActivePromptCount(
+    practiceDrill,
+    notePromptQueue.length,
+    chordPromptQueue.length,
+    scaleDegreePromptQueue.length
+  );
+  const latestSession = getLatestSession(
+    practiceDrill,
+    sessionHistory,
+    chordSessionHistory,
+    scaleDegreeSessionHistory
+  );
   const chordMissedReviewCount = chordReviewPrompts.length;
   const noteMissedReviewCount = noteReviewPrompts.length;
+  const scaleDegreeMissedReviewCount = scaleDegreeReviewPrompts.length;
   const notePresetOptions = customNotePreset
     ? [...NOTE_RECOGNITION_SESSION_PRESETS, customNotePreset]
     : NOTE_RECOGNITION_SESSION_PRESETS;
   const chordPresetOptions = customChordPreset
     ? [...CHORD_TONE_SESSION_PRESETS, customChordPreset]
     : CHORD_TONE_SESSION_PRESETS;
+  const scaleDegreePresetOptions = customScaleDegreePreset
+    ? [...SCALE_DEGREE_SESSION_PRESETS, customScaleDegreePreset]
+    : SCALE_DEGREE_SESSION_PRESETS;
   const recommendedNotePreset = getRecommendedNotePreset(
     notePerformance,
     notePresetOptions
@@ -420,11 +601,17 @@ export function FretboardExplorer() {
     chordPerformance,
     chordPresetOptions
   );
+  const recommendedScaleDegreePreset = getRecommendedScaleDegreePreset(
+    scaleDegreePerformance,
+    scaleDegreePresetOptions
+  );
   const practiceRecommendation = buildPracticeHubRecommendation(
     notePerformance,
     chordPerformance,
+    scaleDegreePerformance,
     recommendedNotePreset,
-    recommendedChordPreset
+    recommendedChordPreset,
+    recommendedScaleDegreePreset
   );
 
   useEffect(() => {
@@ -440,6 +627,12 @@ export function FretboardExplorer() {
         CHORD_TONE_HISTORY_LIMIT
       )
     );
+    setScaleDegreeSessionHistory(
+      readStoredSessionHistory<ScaleDegreeSession>(
+        SCALE_DEGREE_HISTORY_STORAGE_KEY,
+        SCALE_DEGREE_HISTORY_LIMIT
+      )
+    );
     setCustomNotePreset(
       readStoredPreset<NoteRecognitionSessionPreset>(
         NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY
@@ -448,6 +641,11 @@ export function FretboardExplorer() {
     setCustomChordPreset(
       readStoredPreset<ChordToneSessionPreset>(
         CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY
+      )
+    );
+    setCustomScaleDegreePreset(
+      readStoredPreset<ScaleDegreeSessionPreset>(
+        SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY
       )
     );
   }, []);
@@ -508,6 +706,37 @@ export function FretboardExplorer() {
     completedChordSession
   ]);
 
+  useEffect(() => {
+    if (
+      !scaleDegreeDrillSummary.isComplete ||
+      completedScaleDegreeSession !== null
+    ) {
+      return;
+    }
+
+    const nextSession = buildScaleDegreeSession(
+      scaleAttempts,
+      undefined,
+      scaleDegreePromptQueue.length
+    );
+
+    setCompletedScaleDegreeSession(nextSession);
+    setScaleDegreeSessionHistory((previousHistory) => {
+      const nextHistory = appendScaleDegreeSession(
+        previousHistory,
+        nextSession
+      );
+      writeStoredSessionHistory(SCALE_DEGREE_HISTORY_STORAGE_KEY, nextHistory);
+
+      return nextHistory;
+    });
+  }, [
+    completedScaleDegreeSession,
+    scaleAttempts,
+    scaleDegreeDrillSummary.isComplete,
+    scaleDegreePromptQueue.length
+  ]);
+
   function handleModeChange(nextMode: DisplayMode): void {
     setMode(nextMode);
     setSelectedPosition(null);
@@ -522,6 +751,14 @@ export function FretboardExplorer() {
       return;
     }
 
+    if (
+      mode === "practice" &&
+      practiceDrill === "scaleDegree" &&
+      !isScaleDegreeAnswerPosition(position)
+    ) {
+      return;
+    }
+
     setSelectedPosition(position);
 
     if (mode !== "practice") {
@@ -529,6 +766,30 @@ export function FretboardExplorer() {
     }
 
     if (practiceDrill === "chordTone") {
+      return;
+    }
+
+    if (practiceDrill === "scaleDegree") {
+      if (
+        scaleDegreeDrillSummary.isComplete ||
+        currentScaleDegreeAttempt !== null
+      ) {
+        return;
+      }
+
+      const nextAttempt = buildScaleDegreeAttempt(
+        scalePromptIndex,
+        currentScaleDegreePrompt,
+        position
+      );
+
+      setScaleAttempts((previousAttempts) =>
+        previousAttempts.some(
+          (attempt) => attempt.promptIndex === scalePromptIndex
+        )
+          ? previousAttempts
+          : [...previousAttempts, nextAttempt]
+      );
       return;
     }
 
@@ -600,6 +861,43 @@ export function FretboardExplorer() {
     writeStoredPreset(CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
   }
 
+  function handleScaleDegreeSessionSettingsChange(
+    nextSettings: Partial<ScaleDegreeSessionSettings>
+  ): void {
+    setScaleDegreeSessionSettings((previousSettings) => ({
+      ...previousSettings,
+      ...nextSettings
+    }));
+    resetScaleDegreeDrill();
+  }
+
+  function handleScaleDegreePresetSelect(
+    preset: ScaleDegreeSessionPreset
+  ): void {
+    setScaleDegreeSessionSettings(preset.settings);
+    resetScaleDegreeDrill();
+  }
+
+  function handleStartScaleDegreePreset(
+    preset: ScaleDegreeSessionPreset
+  ): void {
+    setMode("practice");
+    setPracticeDrill("scaleDegree");
+    handleScaleDegreePresetSelect(preset);
+    scrollPracticeSessionIntoView();
+  }
+
+  function handleSaveScaleDegreePreset(): void {
+    const nextPreset = {
+      id: "custom",
+      label: "Custom",
+      settings: scaleDegreeSessionSettings
+    } satisfies ScaleDegreeSessionPreset;
+
+    setCustomScaleDegreePreset(nextPreset);
+    writeStoredPreset(SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY, nextPreset);
+  }
+
   function handleNoteSessionSettingsChange(
     nextSettings: Partial<NoteRecognitionSessionSettings>
   ): void {
@@ -627,6 +925,13 @@ export function FretboardExplorer() {
   ): void {
     if (recommendation.drill === "chordTone") {
       handleStartChordPreset(recommendation.preset as ChordToneSessionPreset);
+      return;
+    }
+
+    if (recommendation.drill === "scaleDegree") {
+      handleStartScaleDegreePreset(
+        recommendation.preset as ScaleDegreeSessionPreset
+      );
       return;
     }
 
@@ -660,6 +965,14 @@ export function FretboardExplorer() {
     setChordSessionNonce((previousNonce) => previousNonce + 1);
   }
 
+  function resetScaleDegreeDrill(): void {
+    setScalePromptIndex(0);
+    setScaleAttempts([]);
+    setCompletedScaleDegreeSession(null);
+    setSelectedPosition(null);
+    setScaleDegreeSessionNonce((previousNonce) => previousNonce + 1);
+  }
+
   function scrollPracticeSessionIntoView(): void {
     window.setTimeout(() => {
       practiceLayoutRef.current?.scrollIntoView({
@@ -681,12 +994,19 @@ export function FretboardExplorer() {
       return;
     }
 
+    if (practiceDrill === "scaleDegree") {
+      setScalePromptIndex((previousPromptIndex) => previousPromptIndex + 1);
+      return;
+    }
+
     setPromptIndex((previousPromptIndex) => previousPromptIndex + 1);
   }
 
   function handleRestartDrill(): void {
     if (practiceDrill === "chordTone") {
       resetChordToneDrill();
+    } else if (practiceDrill === "scaleDegree") {
+      resetScaleDegreeDrill();
     } else {
       resetNoteRecognitionDrill();
     }
@@ -767,6 +1087,35 @@ export function FretboardExplorer() {
             </button>
           </article>
 
+          <article className="hub-card">
+            <div>
+              <span className="control-label">Scale Degrees</span>
+              <h3>Find degrees by string</h3>
+              <p>
+                Connect major and minor scale degrees to real fretboard
+                locations.
+              </p>
+            </div>
+            <div className="hub-metrics">
+              <span>
+                {formatHubAccuracy(scaleDegreeSessionHistory[0] ?? null)}
+              </span>
+              <span>
+                {scaleDegreePerformance.weakSpots[0]?.label ??
+                  "No weak spots"}
+              </span>
+            </div>
+            <button
+              data-testid="hub-start-scale-degree"
+              onClick={() =>
+                handleStartScaleDegreePreset(recommendedScaleDegreePreset)
+              }
+              type="button"
+            >
+              Start {recommendedScaleDegreePreset.label}
+            </button>
+          </article>
+
           <article className="hub-card recommendation-card">
             <div>
               <span className="control-label">Smart recommendation</span>
@@ -810,10 +1159,11 @@ export function FretboardExplorer() {
           {mode === "practice" ? (
             <div className="control-group">
               <span className="control-label">Drill</span>
-              <div className="segmented-control compact">
+              <div className="segmented-control option-grid three">
                 {([
                   { id: "note", label: "Note drill" },
-                  { id: "chordTone", label: "Chord drill" }
+                  { id: "chordTone", label: "Chord drill" },
+                  { id: "scaleDegree", label: "Scale drill" }
                 ] as const).map((option) => (
                   <button
                     className={option.id === practiceDrill ? "is-selected" : ""}
@@ -1156,6 +1506,196 @@ export function FretboardExplorer() {
             </div>
           ) : null}
 
+          {mode === "practice" && practiceDrill === "scaleDegree" ? (
+            <div className="session-setup-panel">
+              <span className="control-label">Session setup</span>
+
+              <div className="setup-field">
+                <span>Preset</span>
+                <div className="preset-grid">
+                  {scaleDegreePresetOptions.map((preset) => (
+                    <button
+                      data-testid={`scale-preset-${preset.id}`}
+                      key={preset.id}
+                      onClick={() => handleScaleDegreePresetSelect(preset)}
+                      type="button"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                  <button
+                    data-testid="scale-preset-save"
+                    onClick={handleSaveScaleDegreePreset}
+                    type="button"
+                  >
+                    Save current
+                  </button>
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Length</span>
+                <div className="segmented-control option-grid three">
+                  {scaleDegreeSessionLengthOptions.map((sessionLength) => (
+                    <button
+                      className={
+                        scaleDegreeSessionSettings.sessionLength ===
+                        sessionLength
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`scale-length-${sessionLength}`}
+                      key={sessionLength}
+                      onClick={() =>
+                        handleScaleDegreeSessionSettingsChange({
+                          sessionLength
+                        })
+                      }
+                      type="button"
+                    >
+                      {sessionLength}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Quality</span>
+                <div className="segmented-control option-grid three">
+                  {scaleDegreeQualityFocusOptions.map((option) => (
+                    <button
+                      className={
+                        scaleDegreeSessionSettings.qualityFocus === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`scale-quality-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleScaleDegreeSessionSettingsChange({
+                          qualityFocus: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Degree</span>
+                <div className="segmented-control option-grid degree-options">
+                  {scaleDegreeFocusOptions.map((option) => (
+                    <button
+                      className={
+                        scaleDegreeSessionSettings.degreeFocus === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`scale-degree-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleScaleDegreeSessionSettingsChange({
+                          degreeFocus: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>String</span>
+                <div className="segmented-control option-grid string-options">
+                  {scaleDegreeStringFocusOptions.map((option) => (
+                    <button
+                      className={
+                        scaleDegreeSessionSettings.stringFocus === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`scale-string-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleScaleDegreeSessionSettingsChange({
+                          stringFocus: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Order</span>
+                <div className="segmented-control compact">
+                  {scaleDegreePromptOrderOptions.map((option) => (
+                    <button
+                      className={
+                        scaleDegreeSessionSettings.promptOrder === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`scale-order-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleScaleDegreeSessionSettingsChange({
+                          promptOrder: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Review</span>
+                <div className="segmented-control compact">
+                  {scaleDegreeReviewModeOptions.map((option) => (
+                    <button
+                      className={
+                        scaleDegreeSessionSettings.reviewMode === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`scale-review-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleScaleDegreeSessionSettingsChange({
+                          reviewMode: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                {scaleDegreeSessionSettings.reviewMode === "missed" &&
+                scaleDegreeMissedReviewCount === 0 ? (
+                  <small>No missed scale prompts yet, using the full set.</small>
+                ) : scaleDegreeSessionSettings.reviewMode === "missed" ? (
+                  <small>
+                    Reviewing {scaleDegreeMissedReviewCount} missed scale
+                    prompt
+                    {scaleDegreeMissedReviewCount === 1 ? "" : "s"}.
+                  </small>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+
           {mode !== "practice" ? (
             <div className="control-group">
               <span className="control-label">Root note</span>
@@ -1222,9 +1762,7 @@ export function FretboardExplorer() {
             <div className="tone-list" aria-label="Current tones">
               {(mode === "practice"
                 ? [
-                    practiceDrill === "note"
-                      ? "Note recognition"
-                      : "Chord tones",
+                    getPracticeDrillLabel(practiceDrill),
                     `${activeDrillSummary.attempted}/${activePromptCount} complete`
                   ]
                 : summary.tones
@@ -1350,7 +1888,8 @@ export function FretboardExplorer() {
                       mode,
                       practiceDrill,
                       stringTuning.string,
-                      currentPrompt
+                      currentPrompt,
+                      currentScaleDegreePrompt
                     )}
                   >
                     <strong>{stringTuning.openNote}</strong>
@@ -1362,12 +1901,17 @@ export function FretboardExplorer() {
                     const active = activePositions.get(positionKey(position));
                     const isDisabled =
                       mode === "practice" &&
-                      practiceDrill === "note" &&
-                      !isNoteRecognitionAnswerPosition(position);
+                      ((practiceDrill === "note" &&
+                        !isNoteRecognitionAnswerPosition(position)) ||
+                        (practiceDrill === "scaleDegree" &&
+                          !isScaleDegreeAnswerPosition(position)));
                     const isTargetString =
                       mode === "practice" &&
-                      practiceDrill === "note" &&
-                      position.string === currentPrompt.targetString;
+                      ((practiceDrill === "note" &&
+                        position.string === currentPrompt.targetString) ||
+                        (practiceDrill === "scaleDegree" &&
+                          position.string ===
+                            currentScaleDegreePrompt.targetString));
                     const isSelected =
                       selectedPosition !== null &&
                       positionKey(selectedPosition) === positionKey(position);
@@ -1484,9 +2028,7 @@ export function FretboardExplorer() {
                 <div>
                   <p className="eyebrow">Session Summary</p>
                   <h3 id="session-summary-title">
-                    {practiceDrill === "note"
-                      ? "Note recognition complete"
-                      : "Chord tone drill complete"}
+                    {getCompletionTitle(practiceDrill)}
                   </h3>
                 </div>
                 <button onClick={handleRestartDrill} type="button">
@@ -1540,6 +2082,25 @@ export function FretboardExplorer() {
                           You chose {missedPrompt.selectedNote}; correct answer
                           was {missedPrompt.targetNote}.{" "}
                           {formatChordSpelling(missedPrompt)}.
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : practiceDrill === "scaleDegree" &&
+                  missedScaleDegreePrompts.length > 0 ? (
+                  <ul>
+                    {missedScaleDegreePrompts.map((missedPrompt) => (
+                      <li
+                        key={`${missedPrompt.rootNote}-${missedPrompt.quality}-${missedPrompt.targetDegree}-${missedPrompt.targetString}-${missedPrompt.selectedString}-${missedPrompt.selectedFret}`}
+                      >
+                        <strong>
+                          {formatScaleDegreePromptTarget(missedPrompt)}
+                        </strong>
+                        <span>
+                          You chose {missedPrompt.selectedNote} on the{" "}
+                          {getStringDisplayName(missedPrompt.selectedString)}{" "}
+                          string, fret {missedPrompt.selectedFret}; correct
+                          note was {missedPrompt.targetNote}.
                         </span>
                       </li>
                     ))}
@@ -1655,6 +2216,69 @@ export function FretboardExplorer() {
                     )}
                   </div>
                 </div>
+              ) : practiceDrill === "scaleDegree" &&
+                scaleDegreePerformance.attempted > 0 ? (
+                <div className="performance-panel">
+                  <div className="performance-section">
+                    <span className="control-label">Weak spots</span>
+                    {scaleDegreePerformance.weakSpots.length > 0 ? (
+                      <div className="performance-card-list">
+                        {scaleDegreePerformance.weakSpots.map((stat) => (
+                          <div
+                            className="performance-card"
+                            key={`${stat.category}-${stat.id}`}
+                          >
+                            <strong>{stat.label}</strong>
+                            <span>{formatPerformanceStat(stat)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>No weak spots yet. Every tracked category is clean.</p>
+                    )}
+                  </div>
+
+                  <div className="performance-section">
+                    <span className="control-label">Degree breakdown</span>
+                    <div className="performance-chip-list">
+                      {scaleDegreePerformance.degreeStats.map((stat) => (
+                        <span key={`${stat.category}-${stat.id}`}>
+                          {formatPerformanceChip(stat)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="performance-section">
+                    <span className="control-label">Quality breakdown</span>
+                    <div className="performance-chip-list">
+                      {scaleDegreePerformance.qualityStats.map((stat) => (
+                        <span key={`${stat.category}-${stat.id}`}>
+                          {formatPerformanceChip(stat)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="performance-section">
+                    <span className="control-label">String trouble spots</span>
+                    {scaleDegreePerformance.stringStats.some(
+                      (stat) => stat.missed > 0
+                    ) ? (
+                      <div className="performance-chip-list">
+                        {scaleDegreePerformance.stringStats
+                          .filter((stat) => stat.missed > 0)
+                          .map((stat) => (
+                            <span key={`${stat.category}-${stat.id}`}>
+                              {formatPerformanceChip(stat)}
+                            </span>
+                          ))}
+                      </div>
+                    ) : (
+                      <p>No string-specific misses yet.</p>
+                    )}
+                  </div>
+                </div>
               ) : null}
             </section>
           ) : null}
@@ -1673,7 +2297,9 @@ function buildActivePositions(
   drillPrompt: NoteRecognitionPrompt,
   currentAttempt: NoteRecognitionAttempt | null,
   chordPrompt: ChordTonePrompt,
-  currentChordAttempt: ChordToneAttempt | null
+  currentChordAttempt: ChordToneAttempt | null,
+  scaleDegreePrompt: ScaleDegreePrompt,
+  currentScaleDegreeAttempt: ScaleDegreeAttempt | null
 ): Map<string, ActivePosition> {
   const activePositions = new Map<string, ActivePosition>();
 
@@ -1706,6 +2332,52 @@ function buildActivePositions(
           });
         });
       }
+
+      return activePositions;
+    }
+
+    if (practiceDrill === "scaleDegree") {
+      if (currentScaleDegreeAttempt === null) {
+        return activePositions;
+      }
+
+      findNotesOnFretboard(currentScaleDegreeAttempt.targetNote, {
+        frets: fretboard.frets
+      }).forEach((position) => {
+        if (!isScaleDegreeCorrectPosition(scaleDegreePrompt, position)) {
+          return;
+        }
+
+        activePositions.set(positionKey(position), {
+          label: String(scaleDegreePrompt.targetDegree),
+          variant: "answer",
+          descriptor: `Correct ${getScaleDegreeName(
+            scaleDegreePrompt.targetDegree
+          )} of ${formatScaleName(
+            scaleDegreePrompt.rootNote,
+            scaleDegreePrompt.quality
+          )}`
+        });
+      });
+
+      activePositions.set(
+        `${currentScaleDegreeAttempt.selectedString}-${currentScaleDegreeAttempt.selectedFret}`,
+        {
+          label: currentScaleDegreeAttempt.isCorrect
+            ? String(currentScaleDegreeAttempt.targetDegree)
+            : currentScaleDegreeAttempt.selectedNote,
+          variant: currentScaleDegreeAttempt.isCorrect ? "root" : "miss",
+          descriptor: currentScaleDegreeAttempt.isCorrect
+            ? `Correct ${getScaleDegreeName(
+                scaleDegreePrompt.targetDegree
+              )} answer`
+            : `Your answer: ${
+                currentScaleDegreeAttempt.selectedNote
+              } on the ${getStringDisplayName(
+                currentScaleDegreeAttempt.selectedString
+              )} string`
+        }
+      );
 
       return activePositions;
     }
@@ -1811,8 +2483,12 @@ function buildModeSummary(
   chordPrompt: ChordTonePrompt,
   currentChordAttempt: ChordToneAttempt | null,
   chordDrillSummary: ChordToneSummary,
+  scaleDegreePrompt: ScaleDegreePrompt,
+  currentScaleDegreeAttempt: ScaleDegreeAttempt | null,
+  scaleDegreeDrillSummary: ScaleDegreeSummary,
   notePromptCount: number,
-  chordPromptCount: number
+  chordPromptCount: number,
+  scaleDegreePromptCount: number
 ): ModeSummary {
   if (mode === "practice") {
     if (practiceDrill === "chordTone") {
@@ -1846,6 +2522,46 @@ function buildModeSummary(
           currentChordAttempt === null
             ? [chordName, targetToneName]
             : [chordName, targetToneName, targetNote]
+      };
+    }
+
+    if (practiceDrill === "scaleDegree") {
+      const scaleName = formatScaleName(
+        scaleDegreePrompt.rootNote,
+        scaleDegreePrompt.quality
+      );
+      const targetDegreeName = getScaleDegreeName(
+        scaleDegreePrompt.targetDegree
+      );
+      const targetStringName = getStringDisplayName(
+        scaleDegreePrompt.targetString
+      );
+      const targetNote = getTargetScaleDegreeNote(scaleDegreePrompt);
+
+      if (scaleDegreeDrillSummary.isComplete) {
+        return {
+          title: "Scale degree drill complete",
+          description: `You found ${scaleDegreeDrillSummary.correct} of ${scaleDegreeDrillSummary.attempted} scale-degree prompts.`,
+          badge: `${scaleDegreeDrillSummary.accuracy}% accuracy`,
+          tones: [
+            `${scaleDegreeDrillSummary.correct} correct`,
+            `${scaleDegreeDrillSummary.missed} missed`
+          ]
+        };
+      }
+
+      return {
+        title: `Find the ${targetDegreeName} of ${scaleName} on the ${targetStringName} string`,
+        description:
+          currentScaleDegreeAttempt === null
+            ? `Click the fretted position for the ${targetDegreeName} of ${scaleName} on the ${targetStringName} string. Notes stay hidden until you answer.`
+            : currentScaleDegreeAttempt.isCorrect
+              ? `Correct. ${targetNote} is the ${targetDegreeName} of ${scaleName}.`
+              : `You chose ${currentScaleDegreeAttempt.selectedNote} on the ${getStringDisplayName(
+                  currentScaleDegreeAttempt.selectedString
+                )} string. The correct ${targetDegreeName} is ${targetNote} on the ${targetStringName} string.`,
+        badge: `${scaleDegreeDrillSummary.attempted + 1}/${scaleDegreePromptCount}`,
+        tones: [scaleName, targetDegreeName, `${targetStringName} string`]
       };
     }
 
@@ -1960,13 +2676,12 @@ function buildStringLabelClassName(
   mode: DisplayMode,
   practiceDrill: PracticeDrill,
   string: GuitarStringNumber,
-  drillPrompt: NoteRecognitionPrompt
+  drillPrompt: NoteRecognitionPrompt,
+  scaleDegreePrompt: ScaleDegreePrompt
 ): string {
   return [
     "string-label",
-    mode === "practice" &&
-    practiceDrill === "note" &&
-    string === drillPrompt.targetString
+    isPracticeTargetString(mode, practiceDrill, string, drillPrompt, scaleDegreePrompt)
       ? "is-target-string"
       : ""
   ]
@@ -1984,6 +2699,13 @@ function buildPositionLabel(
     if (
       practiceDrill === "note" &&
       !isNoteRecognitionAnswerPosition(position)
+    ) {
+      return `String ${position.string}, open string, unavailable in this drill`;
+    }
+
+    if (
+      practiceDrill === "scaleDegree" &&
+      !isScaleDegreeAnswerPosition(position)
     ) {
       return `String ${position.string}, open string, unavailable in this drill`;
     }
@@ -2018,7 +2740,37 @@ function buildCellLabel(
     return "open";
   }
 
+  if (
+    mode === "practice" &&
+    practiceDrill === "scaleDegree" &&
+    !isScaleDegreeAnswerPosition(position)
+  ) {
+    return "open";
+  }
+
   return mode === "practice" ? "" : position.note;
+}
+
+function isPracticeTargetString(
+  mode: DisplayMode,
+  practiceDrill: PracticeDrill,
+  string: GuitarStringNumber,
+  drillPrompt: NoteRecognitionPrompt,
+  scaleDegreePrompt: ScaleDegreePrompt
+): boolean {
+  if (mode !== "practice") {
+    return false;
+  }
+
+  if (practiceDrill === "note") {
+    return string === drillPrompt.targetString;
+  }
+
+  if (practiceDrill === "scaleDegree") {
+    return string === scaleDegreePrompt.targetString;
+  }
+
+  return false;
 }
 
 function positionKey(position: FretPosition): string {
@@ -2029,10 +2781,109 @@ function getStringDisplayName(string: GuitarStringNumber): string {
   return stringDisplayNames[string];
 }
 
+function getPracticeDrillLabel(practiceDrill: PracticeDrill): string {
+  if (practiceDrill === "chordTone") {
+    return "Chord tones";
+  }
+
+  if (practiceDrill === "scaleDegree") {
+    return "Scale degrees";
+  }
+
+  return "Note recognition";
+}
+
+function getCompletionTitle(practiceDrill: PracticeDrill): string {
+  if (practiceDrill === "chordTone") {
+    return "Chord tone drill complete";
+  }
+
+  if (practiceDrill === "scaleDegree") {
+    return "Scale degree drill complete";
+  }
+
+  return "Note recognition complete";
+}
+
+function getActiveDrillSummary(
+  practiceDrill: PracticeDrill,
+  noteSummary: NoteRecognitionSummary,
+  chordSummary: ChordToneSummary,
+  scaleDegreeSummary: ScaleDegreeSummary
+): NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary {
+  if (practiceDrill === "chordTone") {
+    return chordSummary;
+  }
+
+  if (practiceDrill === "scaleDegree") {
+    return scaleDegreeSummary;
+  }
+
+  return noteSummary;
+}
+
+function getActiveDrillAttempt(
+  practiceDrill: PracticeDrill,
+  noteAttempt: NoteRecognitionAttempt | null,
+  chordAttempt: ChordToneAttempt | null,
+  scaleDegreeAttempt: ScaleDegreeAttempt | null
+): NoteRecognitionAttempt | ChordToneAttempt | ScaleDegreeAttempt | null {
+  if (practiceDrill === "chordTone") {
+    return chordAttempt;
+  }
+
+  if (practiceDrill === "scaleDegree") {
+    return scaleDegreeAttempt;
+  }
+
+  return noteAttempt;
+}
+
+function getActivePromptCount(
+  practiceDrill: PracticeDrill,
+  notePromptCount: number,
+  chordPromptCount: number,
+  scaleDegreePromptCount: number
+): number {
+  if (practiceDrill === "chordTone") {
+    return chordPromptCount;
+  }
+
+  if (practiceDrill === "scaleDegree") {
+    return scaleDegreePromptCount;
+  }
+
+  return notePromptCount;
+}
+
+function getLatestSession(
+  practiceDrill: PracticeDrill,
+  noteHistory: readonly NoteRecognitionSession[],
+  chordHistory: readonly ChordToneSession[],
+  scaleDegreeHistory: readonly ScaleDegreeSession[]
+): NoteRecognitionSession | ChordToneSession | ScaleDegreeSession | null {
+  if (practiceDrill === "chordTone") {
+    return chordHistory[0] ?? null;
+  }
+
+  if (practiceDrill === "scaleDegree") {
+    return scaleDegreeHistory[0] ?? null;
+  }
+
+  return noteHistory[0] ?? null;
+}
+
 function formatPromptTarget(prompt: NoteRecognitionPrompt): string {
   return `${prompt.targetNote} on the ${getStringDisplayName(
     prompt.targetString
   )} string`;
+}
+
+function formatScaleDegreePromptTarget(prompt: ScaleDegreePrompt): string {
+  return `${getScaleDegreeName(prompt.targetDegree)} of ${formatScaleName(
+    prompt.rootNote,
+    prompt.quality
+  )} on the ${getStringDisplayName(prompt.targetString)} string`;
 }
 
 function formatChordPromptTarget(prompt: ChordTonePrompt): string {
@@ -2040,6 +2891,10 @@ function formatChordPromptTarget(prompt: ChordTonePrompt): string {
     prompt.rootNote,
     prompt.quality
   )}`;
+}
+
+function formatScaleName(rootNote: NoteName, quality: ScaleQuality): string {
+  return `${rootNote} ${quality}`;
 }
 
 function formatChordName(rootNote: NoteName, quality: TriadQuality): string {
@@ -2091,7 +2946,7 @@ function formatPerformanceChip(stat: PerformanceStat): string {
 }
 
 function formatHubAccuracy(
-  session: ChordToneSession | NoteRecognitionSession | null
+  session: ChordToneSession | NoteRecognitionSession | ScaleDegreeSession | null
 ): string {
   return session ? `${session.accuracy}% last session` : "No sessions yet";
 }
@@ -2123,33 +2978,87 @@ function getRecommendedChordPreset(
   return findPreset(presets, "quick-warmup");
 }
 
+function getRecommendedScaleDegreePreset(
+  performance: ReturnType<typeof buildScaleDegreePerformanceSummary>,
+  presets: readonly ScaleDegreeSessionPreset[]
+): ScaleDegreeSessionPreset {
+  if (performance.weakSpots.length > 0) {
+    const weakestSpot = performance.weakSpots[0];
+
+    if (weakestSpot?.category === "degree" && weakestSpot.id === "3") {
+      return findPreset(presets, "thirds-focus");
+    }
+
+    if (weakestSpot?.category === "quality" && weakestSpot.id === "minor") {
+      return findPreset(presets, "minor-scales");
+    }
+
+    return findPreset(presets, "weak-spots");
+  }
+
+  return findPreset(presets, "quick-warmup");
+}
+
 function buildPracticeHubRecommendation(
   notePerformance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
   chordPerformance: ReturnType<typeof buildChordTonePerformanceSummary>,
+  scaleDegreePerformance: ReturnType<typeof buildScaleDegreePerformanceSummary>,
   notePreset: NoteRecognitionSessionPreset,
-  chordPreset: ChordToneSessionPreset
+  chordPreset: ChordToneSessionPreset,
+  scaleDegreePreset: ScaleDegreeSessionPreset
 ): PracticeHubRecommendation {
+  const weakestSpots: Array<{
+    drill: PracticeDrill;
+    stat: PerformanceStat;
+    preset: PracticePreset;
+    sessionLabel: string;
+  }> = [];
   const weakestNoteSpot = notePerformance.weakSpots[0] ?? null;
   const weakestChordSpot = chordPerformance.weakSpots[0] ?? null;
-
-  if (
-    weakestChordSpot &&
-    (!weakestNoteSpot || weakestChordSpot.accuracy <= weakestNoteSpot.accuracy)
-  ) {
-    return {
-      drill: "chordTone",
-      title: `Review ${weakestChordSpot.label}`,
-      description: `${weakestChordSpot.label} are at ${weakestChordSpot.accuracy}% across tracked chord sessions. Start ${chordPreset.label.toLowerCase()} to tighten that up.`,
-      preset: chordPreset
-    };
-  }
+  const weakestScaleDegreeSpot = scaleDegreePerformance.weakSpots[0] ?? null;
 
   if (weakestNoteSpot) {
-    return {
+    weakestSpots.push({
       drill: "note",
-      title: `Review ${weakestNoteSpot.label}`,
-      description: `${weakestNoteSpot.label} are at ${weakestNoteSpot.accuracy}% across tracked note sessions. Start ${notePreset.label.toLowerCase()} to reinforce it.`,
-      preset: notePreset
+      stat: weakestNoteSpot,
+      preset: notePreset,
+      sessionLabel: "note"
+    });
+  }
+
+  if (weakestChordSpot) {
+    weakestSpots.push({
+      drill: "chordTone",
+      stat: weakestChordSpot,
+      preset: chordPreset,
+      sessionLabel: "chord"
+    });
+  }
+
+  if (weakestScaleDegreeSpot) {
+    weakestSpots.push({
+      drill: "scaleDegree",
+      stat: weakestScaleDegreeSpot,
+      preset: scaleDegreePreset,
+      sessionLabel: "scale"
+    });
+  }
+
+  weakestSpots.sort(
+    (left, right) =>
+      left.stat.accuracy - right.stat.accuracy ||
+      right.stat.missed - left.stat.missed ||
+      left.stat.label.localeCompare(right.stat.label)
+  );
+
+  const weakestSpot = weakestSpots[0] ?? null;
+
+  if (weakestSpot) {
+    return {
+      drill: weakestSpot.drill,
+      title: `Review ${weakestSpot.stat.label}`,
+      description: `${weakestSpot.stat.label} are at ${weakestSpot.stat.accuracy}% across tracked ${weakestSpot.sessionLabel} sessions. Start ${weakestSpot.preset.label.toLowerCase()} to reinforce it.`,
+      preset: weakestSpot.preset
     };
   }
 
@@ -2192,6 +3101,23 @@ function collectChordReviewPrompts(
     session.missedPrompts.forEach((prompt) => {
       promptsByTarget.set(
         `${prompt.rootNote}-${prompt.quality}-${prompt.targetTone}`,
+        prompt
+      );
+    });
+  });
+
+  return [...promptsByTarget.values()];
+}
+
+function collectScaleDegreeReviewPrompts(
+  sessions: readonly ScaleDegreeSession[]
+): MissedScaleDegreePrompt[] {
+  const promptsByTarget = new Map<string, MissedScaleDegreePrompt>();
+
+  sessions.forEach((session) => {
+    session.missedPrompts.forEach((prompt) => {
+      promptsByTarget.set(
+        `${prompt.rootNote}-${prompt.quality}-${prompt.targetDegree}-${prompt.targetString}`,
         prompt
       );
     });

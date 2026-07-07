@@ -128,7 +128,7 @@ button {
 .hub-grid {
   display: grid;
   gap: 0.75rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
 .hub-card {
@@ -226,6 +226,10 @@ button {
 
 .segmented-control.option-grid.string-options {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.segmented-control.option-grid.degree-options {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .note-grid {
@@ -848,7 +852,8 @@ button {
   }
 
   .segmented-control.option-grid.three,
-  .segmented-control.option-grid.four {
+  .segmented-control.option-grid.four,
+  .segmented-control.option-grid.degree-options {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
