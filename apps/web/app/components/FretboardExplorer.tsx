@@ -14,6 +14,9 @@ import type {
   TriadQuality
 } from "@pocket-practice/music-theory-engine";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { PracticeHub } from "./PracticeHub";
+import { PracticePromptPanel } from "./PracticePromptPanel";
+import { PracticeSessionSettings } from "./PracticeSessionSettings";
 import {
   CHORD_TONE_HISTORY_LIMIT,
   CHORD_TONE_SESSION_PRESETS,
@@ -32,15 +35,10 @@ import {
   type ChordToneAttempt,
   type MissedChordTonePrompt,
   type ChordTonePrompt,
-  type ChordTonePromptOrder,
   type ChordTonePerformanceStat,
-  type ChordToneQualityFocus,
-  type ChordToneReviewMode,
   type ChordToneSession,
-  type ChordToneSessionLength,
   type ChordToneSessionPreset,
   type ChordToneSessionSettings,
-  type ChordToneToneFocus,
   type ChordToneSummary
 } from "../lib/chordToneRecognition";
 import {
@@ -57,18 +55,13 @@ import {
   isNoteRecognitionAnswerPosition,
   isNoteRecognitionCorrectPosition,
   summarizeNoteRecognition,
-  type NoteRecognitionNoteFocus,
   type NoteRecognitionAttempt,
   type MissedNoteRecognitionPrompt,
   type NoteRecognitionPerformanceStat,
-  type NoteRecognitionPromptOrder,
   type NoteRecognitionPrompt,
-  type NoteRecognitionReviewMode,
   type NoteRecognitionSession,
-  type NoteRecognitionSessionLength,
   type NoteRecognitionSessionPreset,
   type NoteRecognitionSessionSettings,
-  type NoteRecognitionStringFocus,
   type NoteRecognitionSummary
 } from "../lib/noteRecognition";
 import {
@@ -90,17 +83,11 @@ import {
   type MissedScaleDegreePrompt,
   type ScaleDegree,
   type ScaleDegreeAttempt,
-  type ScaleDegreeDegreeFocus,
   type ScaleDegreePerformanceStat,
   type ScaleDegreePrompt,
-  type ScaleDegreePromptOrder,
-  type ScaleDegreeQualityFocus,
-  type ScaleDegreeReviewMode,
   type ScaleDegreeSession,
-  type ScaleDegreeSessionLength,
   type ScaleDegreeSessionPreset,
   type ScaleDegreeSessionSettings,
-  type ScaleDegreeStringFocus,
   type ScaleDegreeSummary
 } from "../lib/scaleDegreeRecognition";
 
@@ -187,120 +174,6 @@ const CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:chord-tone-custom-preset";
 const SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:scale-degree-custom-preset";
-const noteSessionLengthOptions = [6, 10, 20] as const satisfies readonly NoteRecognitionSessionLength[];
-const noteFocusOptions = [
-  { id: "all", label: "All" },
-  ...notes.map((note) => ({ id: note, label: note }))
-] as const satisfies ReadonlyArray<{
-  id: NoteRecognitionNoteFocus;
-  label: string;
-}>;
-const noteStringFocusOptions = [
-  { id: "all", label: "All" },
-  { id: 6, label: "Low E" },
-  { id: 5, label: "A" },
-  { id: 4, label: "D" },
-  { id: 3, label: "G" },
-  { id: 2, label: "B" },
-  { id: 1, label: "High E" }
-] as const satisfies ReadonlyArray<{
-  id: NoteRecognitionStringFocus;
-  label: string;
-}>;
-const notePromptOrderOptions = [
-  { id: "fixed", label: "Fixed" },
-  { id: "random", label: "Random" }
-] as const satisfies ReadonlyArray<{
-  id: NoteRecognitionPromptOrder;
-  label: string;
-}>;
-const noteReviewModeOptions = [
-  { id: "full", label: "Full set" },
-  { id: "missed", label: "Missed only" }
-] as const satisfies ReadonlyArray<{
-  id: NoteRecognitionReviewMode;
-  label: string;
-}>;
-const chordSessionLengthOptions = [6, 12, 20] as const satisfies readonly ChordToneSessionLength[];
-const chordQualityFocusOptions = [
-  { id: "both", label: "Both" },
-  { id: "major", label: "Major" },
-  { id: "minor", label: "Minor" }
-] as const satisfies ReadonlyArray<{
-  id: ChordToneQualityFocus;
-  label: string;
-}>;
-const chordToneFocusOptions = [
-  { id: "mixed", label: "Mixed" },
-  { id: "root", label: "Root" },
-  { id: "third", label: "3rd" },
-  { id: "fifth", label: "5th" }
-] as const satisfies ReadonlyArray<{
-  id: ChordToneToneFocus;
-  label: string;
-}>;
-const chordPromptOrderOptions = [
-  { id: "fixed", label: "Fixed" },
-  { id: "random", label: "Random" }
-] as const satisfies ReadonlyArray<{
-  id: ChordTonePromptOrder;
-  label: string;
-}>;
-const chordReviewModeOptions = [
-  { id: "full", label: "Full set" },
-  { id: "missed", label: "Missed only" }
-] as const satisfies ReadonlyArray<{
-  id: ChordToneReviewMode;
-  label: string;
-}>;
-const scaleDegreeSessionLengthOptions = [6, 12, 20] as const satisfies readonly ScaleDegreeSessionLength[];
-const scaleDegreeQualityFocusOptions = [
-  { id: "both", label: "Both" },
-  { id: "major", label: "Major" },
-  { id: "minor", label: "Minor" }
-] as const satisfies ReadonlyArray<{
-  id: ScaleDegreeQualityFocus;
-  label: string;
-}>;
-const scaleDegreeFocusOptions = [
-  { id: "mixed", label: "Mixed" },
-  { id: "root", label: "Root" },
-  { id: "second", label: "2nd" },
-  { id: "third", label: "3rd" },
-  { id: "fourth", label: "4th" },
-  { id: "fifth", label: "5th" },
-  { id: "sixth", label: "6th" },
-  { id: "seventh", label: "7th" }
-] as const satisfies ReadonlyArray<{
-  id: ScaleDegreeDegreeFocus;
-  label: string;
-}>;
-const scaleDegreeStringFocusOptions = [
-  { id: "all", label: "All" },
-  { id: 6, label: "Low E" },
-  { id: 5, label: "A" },
-  { id: 4, label: "D" },
-  { id: 3, label: "G" },
-  { id: 2, label: "B" },
-  { id: 1, label: "High E" }
-] as const satisfies ReadonlyArray<{
-  id: ScaleDegreeStringFocus;
-  label: string;
-}>;
-const scaleDegreePromptOrderOptions = [
-  { id: "fixed", label: "Fixed" },
-  { id: "random", label: "Random" }
-] as const satisfies ReadonlyArray<{
-  id: ScaleDegreePromptOrder;
-  label: string;
-}>;
-const scaleDegreeReviewModeOptions = [
-  { id: "full", label: "Full set" },
-  { id: "missed", label: "Missed only" }
-] as const satisfies ReadonlyArray<{
-  id: ScaleDegreeReviewMode;
-  label: string;
-}>;
 
 export function FretboardExplorer() {
   const [mode, setMode] = useState<DisplayMode>("practice");
@@ -1030,110 +903,38 @@ export function FretboardExplorer() {
         </div>
       </header>
 
-      <section className="practice-hub" aria-label="Practice hub">
-        <div className="hub-heading">
-          <div>
-            <p className="eyebrow">Practice Hub</p>
-            <h2>Choose today&apos;s session</h2>
-          </div>
-          <p>
-            Start from a preset, review weak spots, or jump back into the active
-            fretboard.
-          </p>
-        </div>
-
-        <div className="hub-grid">
-          <article className="hub-card">
-            <div>
-              <span className="control-label">Note Recognition</span>
-              <h3>Find notes by string</h3>
-              <p>
-                Train the fretboard map with string-specific note prompts.
-              </p>
-            </div>
-            <div className="hub-metrics">
-              <span>{formatHubAccuracy(sessionHistory[0] ?? null)}</span>
-              <span>{notePerformance.weakSpots[0]?.label ?? "No weak spots"}</span>
-            </div>
-            <button
-              data-testid="hub-start-note"
-              onClick={() => handleStartNotePreset(recommendedNotePreset)}
-              type="button"
-            >
-              Start {recommendedNotePreset.label}
-            </button>
-          </article>
-
-          <article className="hub-card">
-            <div>
-              <span className="control-label">Chord Tones</span>
-              <h3>Spell roots, 3rds, and 5ths</h3>
-              <p>
-                Build triad fluency with concept-first chord-tone prompts.
-              </p>
-            </div>
-            <div className="hub-metrics">
-              <span>{formatHubAccuracy(chordSessionHistory[0] ?? null)}</span>
-              <span>
-                {chordPerformance.weakSpots[0]?.label ?? "No weak spots"}
-              </span>
-            </div>
-            <button
-              data-testid="hub-start-chord"
-              onClick={() => handleStartChordPreset(recommendedChordPreset)}
-              type="button"
-            >
-              Start {recommendedChordPreset.label}
-            </button>
-          </article>
-
-          <article className="hub-card">
-            <div>
-              <span className="control-label">Scale Degrees</span>
-              <h3>Find degrees by string</h3>
-              <p>
-                Connect major and minor scale degrees to real fretboard
-                locations.
-              </p>
-            </div>
-            <div className="hub-metrics">
-              <span>
-                {formatHubAccuracy(scaleDegreeSessionHistory[0] ?? null)}
-              </span>
-              <span>
-                {scaleDegreePerformance.weakSpots[0]?.label ??
-                  "No weak spots"}
-              </span>
-            </div>
-            <button
-              data-testid="hub-start-scale-degree"
-              onClick={() =>
-                handleStartScaleDegreePreset(recommendedScaleDegreePreset)
-              }
-              type="button"
-            >
-              Start {recommendedScaleDegreePreset.label}
-            </button>
-          </article>
-
-          <article className="hub-card recommendation-card">
-            <div>
-              <span className="control-label">Smart recommendation</span>
-              <h3>{practiceRecommendation.title}</h3>
-              <p>{practiceRecommendation.description}</p>
-            </div>
-            <button
-              data-testid="hub-start-recommendation"
-              onClick={() => handleStartRecommendation(practiceRecommendation)}
-              type="button"
-            >
-              Start recommended session
-            </button>
-          </article>
-        </div>
-      </section>
+      <PracticeHub
+        noteLastSessionLabel={formatHubAccuracy(sessionHistory[0] ?? null)}
+        noteWeakSpotLabel={notePerformance.weakSpots[0]?.label ?? "No weak spots"}
+        notePresetLabel={recommendedNotePreset.label}
+        onStartNote={() => handleStartNotePreset(recommendedNotePreset)}
+        chordLastSessionLabel={formatHubAccuracy(
+          chordSessionHistory[0] ?? null
+        )}
+        chordWeakSpotLabel={
+          chordPerformance.weakSpots[0]?.label ?? "No weak spots"
+        }
+        chordPresetLabel={recommendedChordPreset.label}
+        onStartChord={() => handleStartChordPreset(recommendedChordPreset)}
+        scaleLastSessionLabel={formatHubAccuracy(
+          scaleDegreeSessionHistory[0] ?? null
+        )}
+        scaleWeakSpotLabel={
+          scaleDegreePerformance.weakSpots[0]?.label ?? "No weak spots"
+        }
+        scalePresetLabel={recommendedScaleDegreePreset.label}
+        onStartScale={() =>
+          handleStartScaleDegreePreset(recommendedScaleDegreePreset)
+        }
+        recommendationTitle={practiceRecommendation.title}
+        recommendationDescription={practiceRecommendation.description}
+        onStartRecommendation={() =>
+          handleStartRecommendation(practiceRecommendation)
+        }
+      />
 
       <section
+        id="practice"
         className="practice-layout"
         aria-label="Fretboard explorer"
         ref={practiceLayoutRef}
@@ -1182,518 +983,34 @@ export function FretboardExplorer() {
             </div>
           ) : null}
 
-          {mode === "practice" && practiceDrill === "note" ? (
-            <div className="session-setup-panel">
-              <span className="control-label">Session setup</span>
-
-              <div className="setup-field">
-                <span>Preset</span>
-                <div className="preset-grid">
-                  {notePresetOptions.map((preset) => (
-                    <button
-                      data-testid={`note-preset-${preset.id}`}
-                      key={preset.id}
-                      onClick={() => handleNotePresetSelect(preset)}
-                      type="button"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                  <button
-                    data-testid="note-preset-save"
-                    onClick={handleSaveNotePreset}
-                    type="button"
-                  >
-                    Save current
-                  </button>
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Length</span>
-                <div className="segmented-control option-grid three">
-                  {noteSessionLengthOptions.map((sessionLength) => (
-                    <button
-                      className={
-                        noteSessionSettings.sessionLength === sessionLength
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`note-length-${sessionLength}`}
-                      key={sessionLength}
-                      onClick={() =>
-                        handleNoteSessionSettingsChange({ sessionLength })
-                      }
-                      type="button"
-                    >
-                      {sessionLength}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Target note</span>
-                <div className="note-grid">
-                  {noteFocusOptions.map((option) => (
-                    <button
-                      className={
-                        noteSessionSettings.noteFocus === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`note-focus-${formatNoteFocusTestId(
-                        option.id
-                      )}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleNoteSessionSettingsChange({
-                          noteFocus: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>String</span>
-                <div className="segmented-control option-grid string-options">
-                  {noteStringFocusOptions.map((option) => (
-                    <button
-                      className={
-                        noteSessionSettings.stringFocus === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`note-string-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleNoteSessionSettingsChange({
-                          stringFocus: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Order</span>
-                <div className="segmented-control compact">
-                  {notePromptOrderOptions.map((option) => (
-                    <button
-                      className={
-                        noteSessionSettings.promptOrder === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`note-order-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleNoteSessionSettingsChange({
-                          promptOrder: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Review</span>
-                <div className="segmented-control compact">
-                  {noteReviewModeOptions.map((option) => (
-                    <button
-                      className={
-                        noteSessionSettings.reviewMode === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`note-review-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleNoteSessionSettingsChange({
-                          reviewMode: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                {noteSessionSettings.reviewMode === "missed" &&
-                noteMissedReviewCount === 0 ? (
-                  <small>No missed note prompts yet, using the full set.</small>
-                ) : noteSessionSettings.reviewMode === "missed" ? (
-                  <small>
-                    Reviewing {noteMissedReviewCount} missed note prompt
-                    {noteMissedReviewCount === 1 ? "" : "s"}.
-                  </small>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-
-          {mode === "practice" && practiceDrill === "chordTone" ? (
-            <div className="session-setup-panel">
-              <span className="control-label">Session setup</span>
-
-              <div className="setup-field">
-                <span>Preset</span>
-                <div className="preset-grid">
-                  {chordPresetOptions.map((preset) => (
-                    <button
-                      data-testid={`chord-preset-${preset.id}`}
-                      key={preset.id}
-                      onClick={() => handleChordPresetSelect(preset)}
-                      type="button"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                  <button
-                    data-testid="chord-preset-save"
-                    onClick={handleSaveChordPreset}
-                    type="button"
-                  >
-                    Save current
-                  </button>
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Length</span>
-                <div className="segmented-control option-grid three">
-                  {chordSessionLengthOptions.map((sessionLength) => (
-                    <button
-                      className={
-                        chordSessionSettings.sessionLength === sessionLength
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`chord-length-${sessionLength}`}
-                      key={sessionLength}
-                      onClick={() =>
-                        handleChordSessionSettingsChange({ sessionLength })
-                      }
-                      type="button"
-                    >
-                      {sessionLength}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Quality</span>
-                <div className="segmented-control option-grid three">
-                  {chordQualityFocusOptions.map((option) => (
-                    <button
-                      className={
-                        chordSessionSettings.qualityFocus === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`chord-quality-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleChordSessionSettingsChange({
-                          qualityFocus: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Tone</span>
-                <div className="segmented-control option-grid four">
-                  {chordToneFocusOptions.map((option) => (
-                    <button
-                      className={
-                        chordSessionSettings.toneFocus === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`chord-tone-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleChordSessionSettingsChange({
-                          toneFocus: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Order</span>
-                <div className="segmented-control compact">
-                  {chordPromptOrderOptions.map((option) => (
-                    <button
-                      className={
-                        chordSessionSettings.promptOrder === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`chord-order-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleChordSessionSettingsChange({
-                          promptOrder: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Review</span>
-                <div className="segmented-control compact">
-                  {chordReviewModeOptions.map((option) => (
-                    <button
-                      className={
-                        chordSessionSettings.reviewMode === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`chord-review-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleChordSessionSettingsChange({
-                          reviewMode: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                {chordSessionSettings.reviewMode === "missed" &&
-                chordMissedReviewCount === 0 ? (
-                  <small>No missed chord prompts yet, using the full set.</small>
-                ) : chordSessionSettings.reviewMode === "missed" ? (
-                  <small>
-                    Reviewing {chordMissedReviewCount} missed chord prompt
-                    {chordMissedReviewCount === 1 ? "" : "s"}.
-                  </small>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-
-          {mode === "practice" && practiceDrill === "scaleDegree" ? (
-            <div className="session-setup-panel">
-              <span className="control-label">Session setup</span>
-
-              <div className="setup-field">
-                <span>Preset</span>
-                <div className="preset-grid">
-                  {scaleDegreePresetOptions.map((preset) => (
-                    <button
-                      data-testid={`scale-preset-${preset.id}`}
-                      key={preset.id}
-                      onClick={() => handleScaleDegreePresetSelect(preset)}
-                      type="button"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                  <button
-                    data-testid="scale-preset-save"
-                    onClick={handleSaveScaleDegreePreset}
-                    type="button"
-                  >
-                    Save current
-                  </button>
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Length</span>
-                <div className="segmented-control option-grid three">
-                  {scaleDegreeSessionLengthOptions.map((sessionLength) => (
-                    <button
-                      className={
-                        scaleDegreeSessionSettings.sessionLength ===
-                        sessionLength
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`scale-length-${sessionLength}`}
-                      key={sessionLength}
-                      onClick={() =>
-                        handleScaleDegreeSessionSettingsChange({
-                          sessionLength
-                        })
-                      }
-                      type="button"
-                    >
-                      {sessionLength}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Quality</span>
-                <div className="segmented-control option-grid three">
-                  {scaleDegreeQualityFocusOptions.map((option) => (
-                    <button
-                      className={
-                        scaleDegreeSessionSettings.qualityFocus === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`scale-quality-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleScaleDegreeSessionSettingsChange({
-                          qualityFocus: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Degree</span>
-                <div className="segmented-control option-grid degree-options">
-                  {scaleDegreeFocusOptions.map((option) => (
-                    <button
-                      className={
-                        scaleDegreeSessionSettings.degreeFocus === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`scale-degree-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleScaleDegreeSessionSettingsChange({
-                          degreeFocus: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>String</span>
-                <div className="segmented-control option-grid string-options">
-                  {scaleDegreeStringFocusOptions.map((option) => (
-                    <button
-                      className={
-                        scaleDegreeSessionSettings.stringFocus === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`scale-string-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleScaleDegreeSessionSettingsChange({
-                          stringFocus: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Order</span>
-                <div className="segmented-control compact">
-                  {scaleDegreePromptOrderOptions.map((option) => (
-                    <button
-                      className={
-                        scaleDegreeSessionSettings.promptOrder === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`scale-order-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleScaleDegreeSessionSettingsChange({
-                          promptOrder: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="setup-field">
-                <span>Review</span>
-                <div className="segmented-control compact">
-                  {scaleDegreeReviewModeOptions.map((option) => (
-                    <button
-                      className={
-                        scaleDegreeSessionSettings.reviewMode === option.id
-                          ? "is-selected"
-                          : ""
-                      }
-                      data-testid={`scale-review-${option.id}`}
-                      key={option.id}
-                      onClick={() =>
-                        handleScaleDegreeSessionSettingsChange({
-                          reviewMode: option.id
-                        })
-                      }
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                {scaleDegreeSessionSettings.reviewMode === "missed" &&
-                scaleDegreeMissedReviewCount === 0 ? (
-                  <small>No missed scale prompts yet, using the full set.</small>
-                ) : scaleDegreeSessionSettings.reviewMode === "missed" ? (
-                  <small>
-                    Reviewing {scaleDegreeMissedReviewCount} missed scale
-                    prompt
-                    {scaleDegreeMissedReviewCount === 1 ? "" : "s"}.
-                  </small>
-                ) : null}
-              </div>
-            </div>
+          {mode === "practice" ? (
+            <PracticeSessionSettings
+              practiceDrill={practiceDrill}
+              note={{
+                presetOptions: notePresetOptions,
+                settings: noteSessionSettings,
+                missedReviewCount: noteMissedReviewCount,
+                onPresetSelect: handleNotePresetSelect,
+                onSavePreset: handleSaveNotePreset,
+                onSettingsChange: handleNoteSessionSettingsChange
+              }}
+              chord={{
+                presetOptions: chordPresetOptions,
+                settings: chordSessionSettings,
+                missedReviewCount: chordMissedReviewCount,
+                onPresetSelect: handleChordPresetSelect,
+                onSavePreset: handleSaveChordPreset,
+                onSettingsChange: handleChordSessionSettingsChange
+              }}
+              scale={{
+                presetOptions: scaleDegreePresetOptions,
+                settings: scaleDegreeSessionSettings,
+                missedReviewCount: scaleDegreeMissedReviewCount,
+                onPresetSelect: handleScaleDegreePresetSelect,
+                onSavePreset: handleSaveScaleDegreePreset,
+                onSettingsChange: handleScaleDegreeSessionSettingsChange
+              }}
+            />
           ) : null}
 
           {mode !== "practice" ? (
@@ -1949,74 +1266,36 @@ export function FretboardExplorer() {
             </div>
           </div>
 
-          <div className="prompt-panel" aria-live="polite">
-            {mode === "practice" ? (
-              <>
-                <div className="prompt-panel-header">
-                  <div>
-                    <span className="control-label">
-                      {activeDrillSummary.isComplete
-                        ? "Session complete"
-                        : "Prompt"}
-                    </span>
-                    <strong>{summary.title}</strong>
-                  </div>
-                  <span className="prompt-panel-status">
-                    {activeDrillSummary.isComplete
-                      ? `${activeDrillSummary.accuracy}% accuracy`
-                      : activeDrillAttempt?.isCorrect
-                        ? "Correct"
-                        : activeDrillAttempt
-                          ? "Review the highlighted answer"
-                          : practiceDrill === "chordTone"
-                            ? "Choose a note"
-                            : "Choose a fret"}
-                  </span>
-                </div>
-                <p>{summary.description}</p>
-                <div className="prompt-actions">
-                  <button
-                    data-testid="drill-next"
-                    disabled={
-                      activeDrillAttempt === null ||
-                      activeDrillSummary.isComplete
-                    }
-                    onClick={handleNextPrompt}
-                    type="button"
-                  >
-                    Next prompt
-                  </button>
-                  <button
-                    data-testid="drill-restart"
-                    onClick={handleRestartDrill}
-                    type="button"
-                  >
-                    Reset
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="prompt-panel-header">
-                  <div>
-                    <span className="control-label">Selected position</span>
-                    {selectedPosition ? (
-                      <strong>
-                        String {selectedPosition.string}, fret{" "}
-                        {selectedPosition.fret}: {selectedPosition.note}
-                      </strong>
-                    ) : (
-                      <strong>Choose any fret</strong>
-                    )}
-                  </div>
-                  <span className="prompt-panel-status">
-                    {selectedActive?.descriptor ?? "No active role"}
-                  </span>
-                </div>
-                <p>Choose any fret to inspect its note and role.</p>
-              </>
-            )}
-          </div>
+          <PracticePromptPanel
+            practicePrompt={
+              mode === "practice"
+                ? {
+                    label: activeDrillSummary.isComplete
+                      ? "Session complete"
+                      : "Prompt",
+                    title: summary.title,
+                    status: getPracticePromptStatus(
+                      practiceDrill,
+                      activeDrillSummary,
+                      activeDrillAttempt
+                    ),
+                    description: summary.description,
+                    canGoNext:
+                      activeDrillAttempt !== null &&
+                      !activeDrillSummary.isComplete,
+                    onNextPrompt: handleNextPrompt,
+                    onReset: handleRestartDrill
+                  }
+                : null
+            }
+            referencePrompt={{
+              title: selectedPosition
+                ? `String ${selectedPosition.string}, fret ${selectedPosition.fret}: ${selectedPosition.note}`
+                : "Choose any fret",
+              status: selectedActive?.descriptor ?? "No active role",
+              description: "Choose any fret to inspect its note and role."
+            }}
+          />
 
           {mode === "practice" && activeDrillSummary.isComplete ? (
             <section
@@ -2805,6 +2084,26 @@ function getCompletionTitle(practiceDrill: PracticeDrill): string {
   return "Note recognition complete";
 }
 
+function getPracticePromptStatus(
+  practiceDrill: PracticeDrill,
+  summary: NoteRecognitionSummary | ChordToneSummary | ScaleDegreeSummary,
+  attempt: NoteRecognitionAttempt | ChordToneAttempt | ScaleDegreeAttempt | null
+): string {
+  if (summary.isComplete) {
+    return `${summary.accuracy}% accuracy`;
+  }
+
+  if (attempt?.isCorrect) {
+    return "Correct";
+  }
+
+  if (attempt) {
+    return "Review the highlighted answer";
+  }
+
+  return practiceDrill === "chordTone" ? "Choose a note" : "Choose a fret";
+}
+
 function getActiveDrillSummary(
   practiceDrill: PracticeDrill,
   noteSummary: NoteRecognitionSummary,
@@ -2931,10 +2230,6 @@ function buildChordAnswerClassName(
 
 function formatNoteTestId(note: NoteName): string {
   return note.replace("#", "sharp").replace("b", "flat");
-}
-
-function formatNoteFocusTestId(noteFocus: NoteRecognitionNoteFocus): string {
-  return noteFocus === "all" ? noteFocus : formatNoteTestId(noteFocus);
 }
 
 function formatPerformanceStat(stat: PerformanceStat): string {

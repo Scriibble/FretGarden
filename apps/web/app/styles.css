@@ -125,6 +125,35 @@ button {
   max-width: 520px;
 }
 
+.hub-heading-actions {
+  align-items: flex-end;
+  display: grid;
+  gap: 0.55rem;
+  justify-items: end;
+}
+
+.hub-heading-actions p {
+  color: #52615c;
+  line-height: 1.45;
+  max-width: 520px;
+  text-align: right;
+}
+
+.lesson-library-link {
+  border: 1px solid #d8dfda;
+  border-radius: 7px;
+  color: #173f43;
+  display: inline-flex;
+  font-weight: 800;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.8rem;
+  text-decoration: none;
+}
+
+.lesson-library-link:hover {
+  border-color: #2f6b73;
+}
+
 .hub-grid {
   display: grid;
   gap: 0.75rem;
@@ -797,13 +826,141 @@ button {
   padding: 0.35rem 0.6rem;
 }
 
+.lesson-shell {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0 auto;
+  max-width: 1040px;
+  min-height: 100vh;
+  padding: 1.25rem;
+}
+
+.lesson-header {
+  align-items: flex-end;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.lesson-header p:last-child {
+  color: #52615c;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  margin-top: 0.65rem;
+  max-width: 720px;
+}
+
+.lesson-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.lesson-card,
+.lesson-content,
+.lesson-practice-card {
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.lesson-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.lesson-card h2,
+.lesson-practice-card h2 {
+  margin-top: 0.25rem;
+}
+
+.lesson-card p,
+.lesson-section p,
+.lesson-practice-card p {
+  color: #52615c;
+  line-height: 1.55;
+}
+
+.lesson-cta {
+  border: 1px solid #173f43;
+  border-radius: 7px;
+  background: #173f43;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.8rem;
+  text-decoration: none;
+}
+
+.lesson-cta:hover {
+  background: #225b60;
+  border-color: #225b60;
+}
+
+.lesson-page {
+  max-width: 860px;
+}
+
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.lesson-nav a {
+  border: 1px solid #d8dfda;
+  border-radius: 999px;
+  color: #173f43;
+  font-weight: 800;
+  padding: 0.45rem 0.75rem;
+  text-decoration: none;
+}
+
+.lesson-nav a:hover {
+  border-color: #2f6b73;
+}
+
+.lesson-content {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1rem;
+}
+
+.lesson-section {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.lesson-practice-card {
+  align-items: center;
+  background: #f8faf8;
+  border-color: #c5d8d4;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
 @media (max-width: 900px) {
   .app-header,
+  .lesson-header,
   .fretboard-heading,
   .prompt-panel-header,
-  .completion-heading {
+  .completion-heading,
+  .lesson-practice-card {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .hub-heading-actions {
+    justify-items: stretch;
+  }
+
+  .hub-heading-actions p {
+    text-align: left;
   }
 
   .prompt-panel-status {
