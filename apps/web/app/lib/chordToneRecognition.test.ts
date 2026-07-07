@@ -3,6 +3,7 @@ import {
   CHORD_TONE_PROMPTS,
   appendChordToneSession,
   buildChordToneAttempt,
+  buildChordTonePromptSession,
   buildChordToneSession,
   getChordToneAnswerOptions,
   getCurrentChordTonePrompt,
@@ -45,6 +46,107 @@ describe("chordToneRecognition", () => {
         targetTone: 5
       })
     ).toBe("E");
+  });
+
+  it("builds configurable fixed prompt sessions", () => {
+    expect(
+      buildChordTonePromptSession({
+        sessionLength: 6,
+        qualityFocus: "major",
+        toneFocus: "third",
+        promptOrder: "fixed",
+        reviewMode: "full"
+      })
+    ).toEqual([
+      { rootNote: "G", quality: "major", targetTone: 3 },
+      { rootNote: "Bb", quality: "major", targetTone: 3 },
+      { rootNote: "E", quality: "major", targetTone: 3 },
+      { rootNote: "G", quality: "major", targetTone: 3 },
+      { rootNote: "Bb", quality: "major", targetTone: 3 },
+      { rootNote: "E", quality: "major", targetTone: 3 }
+    ]);
+  });
+
+  it("cycles configurable prompt sessions to the requested length", () => {
+    const prompts = buildChordTonePromptSession({
+      sessionLength: 20,
+      qualityFocus: "minor",
+      toneFocus: "root",
+      promptOrder: "fixed",
+      reviewMode: "full"
+    });
+
+    expect(prompts).toHaveLength(20);
+    expect(prompts.slice(0, 3)).toEqual([
+      { rootNote: "C", quality: "minor", targetTone: 1 },
+      { rootNote: "C", quality: "minor", targetTone: 1 },
+      { rootNote: "C", quality: "minor", targetTone: 1 }
+    ]);
+  });
+
+  it("uses missed prompts when review mode has misses", () => {
+    expect(
+      buildChordTonePromptSession(
+        {
+          sessionLength: 6,
+          qualityFocus: "both",
+          toneFocus: "mixed",
+          promptOrder: "fixed",
+          reviewMode: "missed"
+        },
+        [
+          {
+            rootNote: "D",
+            quality: "minor",
+            targetTone: 5,
+            selectedNote: "D",
+            targetNote: "A"
+          }
+        ]
+      )
+    ).toEqual([
+      { rootNote: "D", quality: "minor", targetTone: 5 },
+      { rootNote: "D", quality: "minor", targetTone: 5 },
+      { rootNote: "D", quality: "minor", targetTone: 5 },
+      { rootNote: "D", quality: "minor", targetTone: 5 },
+      { rootNote: "D", quality: "minor", targetTone: 5 },
+      { rootNote: "D", quality: "minor", targetTone: 5 }
+    ]);
+  });
+
+  it("falls back to the full prompt queue when missed review has no misses", () => {
+    expect(
+      buildChordTonePromptSession({
+        sessionLength: 6,
+        qualityFocus: "both",
+        toneFocus: "mixed",
+        promptOrder: "fixed",
+        reviewMode: "missed"
+      })
+    ).toEqual(CHORD_TONE_PROMPTS.slice(0, 6));
+  });
+
+  it("can randomize prompt order with an injected random source", () => {
+    expect(
+      buildChordTonePromptSession(
+        {
+          sessionLength: 6,
+          qualityFocus: "major",
+          toneFocus: "third",
+          promptOrder: "random",
+          reviewMode: "full"
+        },
+        [],
+        () => 0
+      )
+    ).toEqual([
+      { rootNote: "Bb", quality: "major", targetTone: 3 },
+      { rootNote: "E", quality: "major", targetTone: 3 },
+      { rootNote: "G", quality: "major", targetTone: 3 },
+      { rootNote: "Bb", quality: "major", targetTone: 3 },
+      { rootNote: "E", quality: "major", targetTone: 3 },
+      { rootNote: "G", quality: "major", targetTone: 3 }
+    ]);
   });
 
   it("offers the chord notes as deterministic answer options", () => {

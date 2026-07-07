@@ -14,6 +14,11 @@ import {
 } from "./drillSession";
 
 export type ChordTone = 1 | 3 | 5;
+export type ChordToneQualityFocus = TriadQuality | "both";
+export type ChordToneToneFocus = "root" | "third" | "fifth" | "mixed";
+export type ChordTonePromptOrder = "fixed" | "random";
+export type ChordToneReviewMode = "full" | "missed";
+export type ChordToneSessionLength = 6 | 12 | 20;
 
 export interface ChordTonePrompt {
   rootNote: NoteName;
@@ -31,6 +36,14 @@ export interface ChordToneAttempt extends ChordTonePrompt {
 export interface MissedChordTonePrompt extends ChordTonePrompt {
   selectedNote: NoteName;
   targetNote: NoteName;
+}
+
+export interface ChordToneSessionSettings {
+  sessionLength: ChordToneSessionLength;
+  qualityFocus: ChordToneQualityFocus;
+  toneFocus: ChordToneToneFocus;
+  promptOrder: ChordTonePromptOrder;
+  reviewMode: ChordToneReviewMode;
 }
 
 export type ChordToneSummary = DrillSummary;
@@ -52,6 +65,13 @@ export const CHORD_TONE_PROMPTS = [
 ] as const satisfies readonly ChordTonePrompt[];
 
 export const CHORD_TONE_HISTORY_LIMIT = 5;
+export const DEFAULT_CHORD_TONE_SESSION_SETTINGS: ChordToneSessionSettings = {
+  sessionLength: 12,
+  qualityFocus: "both",
+  toneFocus: "mixed",
+  promptOrder: "fixed",
+  reviewMode: "full"
+};
 
 export function buildChordToneAttempt(
   promptIndex: number,
@@ -121,6 +141,26 @@ export function getCurrentChordTonePrompt(
   return getCurrentDrillPrompt(promptIndex, prompts) as ChordTonePrompt;
 }
 
+export function buildChordTonePromptSession(
+  settings: ChordToneSessionSettings = DEFAULT_CHORD_TONE_SESSION_SETTINGS,
+  missedPrompts: readonly MissedChordTonePrompt[] = [],
+  random: () => number = Math.random
+): ChordTonePrompt[] {
+  const reviewPrompts =
+    settings.reviewMode === "missed" && missedPrompts.length > 0
+      ? missedPrompts
+      : CHORD_TONE_PROMPTS;
+  const filteredPrompts = filterChordTonePrompts(reviewPrompts, settings);
+  const sourcePrompts =
+    filteredPrompts.length > 0 ? filteredPrompts : [...CHORD_TONE_PROMPTS];
+  const orderedPrompts =
+    settings.promptOrder === "random"
+      ? shuffleChordTonePrompts(sourcePrompts, random)
+      : sourcePrompts;
+
+  return cycleChordTonePrompts(orderedPrompts, settings.sessionLength);
+}
+
 export function getTargetChordToneNote(prompt: ChordTonePrompt): NoteName {
   const chord = getChord(prompt.rootNote, prompt.quality);
   const chordToneIndex = prompt.targetTone === 1 ? 0 : prompt.targetTone === 3 ? 1 : 2;
@@ -139,4 +179,71 @@ export function isChordToneCorrectNote(
   return (
     getPitchClass(selectedNote) === getPitchClass(getTargetChordToneNote(prompt))
   );
+}
+
+function filterChordTonePrompts(
+  prompts: readonly ChordTonePrompt[],
+  settings: ChordToneSessionSettings
+): ChordTonePrompt[] {
+  return prompts.filter(
+    (prompt) =>
+      matchesQualityFocus(prompt, settings.qualityFocus) &&
+      matchesToneFocus(prompt, settings.toneFocus)
+  );
+}
+
+function matchesQualityFocus(
+  prompt: ChordTonePrompt,
+  qualityFocus: ChordToneQualityFocus
+): boolean {
+  return qualityFocus === "both" || prompt.quality === qualityFocus;
+}
+
+function matchesToneFocus(
+  prompt: ChordTonePrompt,
+  toneFocus: ChordToneToneFocus
+): boolean {
+  if (toneFocus === "mixed") {
+    return true;
+  }
+
+  const targetTone =
+    toneFocus === "root" ? 1 : toneFocus === "third" ? 3 : 5;
+
+  return prompt.targetTone === targetTone;
+}
+
+function shuffleChordTonePrompts(
+  prompts: readonly ChordTonePrompt[],
+  random: () => number
+): ChordTonePrompt[] {
+  const shuffledPrompts = [...prompts];
+
+  for (let index = shuffledPrompts.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    const prompt = shuffledPrompts[index]!;
+
+    shuffledPrompts[index] = shuffledPrompts[swapIndex]!;
+    shuffledPrompts[swapIndex] = prompt;
+  }
+
+  return shuffledPrompts;
+}
+
+function cycleChordTonePrompts(
+  prompts: readonly ChordTonePrompt[],
+  sessionLength: ChordToneSessionLength
+): ChordTonePrompt[] {
+  return Array.from(
+    { length: sessionLength },
+    (_, index) => toChordTonePrompt(prompts[index % prompts.length]!)
+  );
+}
+
+function toChordTonePrompt(prompt: ChordTonePrompt): ChordTonePrompt {
+  return {
+    rootNote: prompt.rootNote,
+    quality: prompt.quality,
+    targetTone: prompt.targetTone
+  };
 }

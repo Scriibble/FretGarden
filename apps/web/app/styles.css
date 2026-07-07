@@ -136,8 +136,40 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.segmented-control.option-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.segmented-control.option-grid.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .note-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.session-setup-panel {
+  border: 1px solid #d8dfda;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.setup-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.setup-field > span {
+  color: #52615c;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.setup-field small {
+  color: #66736d;
+  line-height: 1.35;
 }
 
 .chord-answer-panel {
@@ -626,6 +658,11 @@ button {
 
   .segmented-control,
   .note-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .segmented-control.option-grid.three,
+  .segmented-control.option-grid.four {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

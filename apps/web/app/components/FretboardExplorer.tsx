@@ -16,9 +16,10 @@ import type {
 import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   CHORD_TONE_HISTORY_LIMIT,
-  CHORD_TONE_PROMPTS,
+  DEFAULT_CHORD_TONE_SESSION_SETTINGS,
   appendChordToneSession,
   buildChordToneAttempt,
+  buildChordTonePromptSession,
   buildChordToneSession,
   getChordToneAnswerOptions,
   getCurrentChordTonePrompt,
@@ -28,7 +29,13 @@ import {
   type ChordTone,
   type ChordToneAttempt,
   type ChordTonePrompt,
+  type ChordTonePromptOrder,
+  type ChordToneQualityFocus,
+  type ChordToneReviewMode,
   type ChordToneSession,
+  type ChordToneSessionLength,
+  type ChordToneSessionSettings,
+  type ChordToneToneFocus,
   type ChordToneSummary
 } from "../lib/chordToneRecognition";
 import {
@@ -108,6 +115,38 @@ const modes: Array<{ id: DisplayMode; label: string }> = [
 const NOTE_RECOGNITION_HISTORY_STORAGE_KEY =
   "pocket-practice:note-recognition-history";
 const CHORD_TONE_HISTORY_STORAGE_KEY = "pocket-practice:chord-tone-history";
+const chordSessionLengthOptions = [6, 12, 20] as const satisfies readonly ChordToneSessionLength[];
+const chordQualityFocusOptions = [
+  { id: "both", label: "Both" },
+  { id: "major", label: "Major" },
+  { id: "minor", label: "Minor" }
+] as const satisfies ReadonlyArray<{
+  id: ChordToneQualityFocus;
+  label: string;
+}>;
+const chordToneFocusOptions = [
+  { id: "mixed", label: "Mixed" },
+  { id: "root", label: "Root" },
+  { id: "third", label: "3rd" },
+  { id: "fifth", label: "5th" }
+] as const satisfies ReadonlyArray<{
+  id: ChordToneToneFocus;
+  label: string;
+}>;
+const chordPromptOrderOptions = [
+  { id: "fixed", label: "Fixed" },
+  { id: "random", label: "Random" }
+] as const satisfies ReadonlyArray<{
+  id: ChordTonePromptOrder;
+  label: string;
+}>;
+const chordReviewModeOptions = [
+  { id: "full", label: "Full set" },
+  { id: "missed", label: "Missed only" }
+] as const satisfies ReadonlyArray<{
+  id: ChordToneReviewMode;
+  label: string;
+}>;
 
 export function FretboardExplorer() {
   const [mode, setMode] = useState<DisplayMode>("practice");
@@ -119,6 +158,9 @@ export function FretboardExplorer() {
   const [attempts, setAttempts] = useState<NoteRecognitionAttempt[]>([]);
   const [chordPromptIndex, setChordPromptIndex] = useState(0);
   const [chordAttempts, setChordAttempts] = useState<ChordToneAttempt[]>([]);
+  const [chordSessionSettings, setChordSessionSettings] =
+    useState<ChordToneSessionSettings>(DEFAULT_CHORD_TONE_SESSION_SETTINGS);
+  const [chordSessionNonce, setChordSessionNonce] = useState(0);
   const [completedSession, setCompletedSession] =
     useState<NoteRecognitionSession | null>(null);
   const [completedChordSession, setCompletedChordSession] =
@@ -133,10 +175,25 @@ export function FretboardExplorer() {
     null
   );
 
+  const latestChordMissedPrompts = useMemo(
+    () => chordSessionHistory[0]?.missedPrompts ?? [],
+    [chordSessionHistory]
+  );
+  const chordPromptQueue = useMemo(
+    () =>
+      buildChordTonePromptSession(
+        chordSessionSettings,
+        latestChordMissedPrompts
+      ),
+    [chordSessionSettings, chordSessionNonce, latestChordMissedPrompts]
+  );
   const currentPrompt = getCurrentPrompt(promptIndex);
   const currentAttempt =
     attempts.find((attempt) => attempt.promptIndex === promptIndex) ?? null;
-  const currentChordPrompt = getCurrentChordTonePrompt(chordPromptIndex);
+  const currentChordPrompt = getCurrentChordTonePrompt(
+    chordPromptIndex,
+    chordPromptQueue
+  );
   const currentChordAttempt =
     chordAttempts.find((attempt) => attempt.promptIndex === chordPromptIndex) ??
     null;
@@ -145,8 +202,8 @@ export function FretboardExplorer() {
     [attempts]
   );
   const chordDrillSummary = useMemo(
-    () => summarizeChordToneRecognition(chordAttempts),
-    [chordAttempts]
+    () => summarizeChordToneRecognition(chordAttempts, chordPromptQueue.length),
+    [chordAttempts, chordPromptQueue.length]
   );
   const missedPrompts = useMemo(
     () => getMissedNoteRecognitionPrompts(attempts),
@@ -194,7 +251,8 @@ export function FretboardExplorer() {
         drillSummary,
         currentChordPrompt,
         currentChordAttempt,
-        chordDrillSummary
+        chordDrillSummary,
+        chordPromptQueue.length
       ),
     [
       mode,
@@ -207,7 +265,8 @@ export function FretboardExplorer() {
       drillSummary,
       currentChordPrompt,
       currentChordAttempt,
-      chordDrillSummary
+      chordDrillSummary,
+      chordPromptQueue.length
     ]
   );
   const selectedActive = selectedPosition
@@ -220,11 +279,12 @@ export function FretboardExplorer() {
   const activePromptCount =
     practiceDrill === "note"
       ? NOTE_RECOGNITION_PROMPTS.length
-      : CHORD_TONE_PROMPTS.length;
+      : chordPromptQueue.length;
   const latestSession =
     practiceDrill === "note"
       ? (sessionHistory[0] ?? null)
       : (chordSessionHistory[0] ?? null);
+  const chordMissedReviewCount = latestChordMissedPrompts.length;
 
   useEffect(() => {
     setSessionHistory(
@@ -268,7 +328,11 @@ export function FretboardExplorer() {
       return;
     }
 
-    const nextSession = buildChordToneSession(chordAttempts);
+    const nextSession = buildChordToneSession(
+      chordAttempts,
+      undefined,
+      chordPromptQueue.length
+    );
 
     setCompletedChordSession(nextSession);
     setChordSessionHistory((previousHistory) => {
@@ -277,7 +341,12 @@ export function FretboardExplorer() {
 
       return nextHistory;
     });
-  }, [chordAttempts, completedChordSession, chordDrillSummary.isComplete]);
+  }, [
+    chordAttempts,
+    chordDrillSummary.isComplete,
+    chordPromptQueue.length,
+    completedChordSession
+  ]);
 
   function handleModeChange(nextMode: DisplayMode): void {
     setMode(nextMode);
@@ -338,6 +407,24 @@ export function FretboardExplorer() {
     );
   }
 
+  function handleChordSessionSettingsChange(
+    nextSettings: Partial<ChordToneSessionSettings>
+  ): void {
+    setChordSessionSettings((previousSettings) => ({
+      ...previousSettings,
+      ...nextSettings
+    }));
+    resetChordToneDrill();
+  }
+
+  function resetChordToneDrill(): void {
+    setChordPromptIndex(0);
+    setChordAttempts([]);
+    setCompletedChordSession(null);
+    setSelectedPosition(null);
+    setChordSessionNonce((previousNonce) => previousNonce + 1);
+  }
+
   function handleNextPrompt(): void {
     if (activeDrillAttempt === null || activeDrillSummary.isComplete) {
       return;
@@ -355,16 +442,13 @@ export function FretboardExplorer() {
 
   function handleRestartDrill(): void {
     if (practiceDrill === "chordTone") {
-      setChordPromptIndex(0);
-      setChordAttempts([]);
-      setCompletedChordSession(null);
+      resetChordToneDrill();
     } else {
       setPromptIndex(0);
       setAttempts([]);
       setCompletedSession(null);
+      setSelectedPosition(null);
     }
-
-    setSelectedPosition(null);
   }
 
   return (
@@ -425,6 +509,144 @@ export function FretboardExplorer() {
                     {option.label}
                   </button>
                 ))}
+              </div>
+            </div>
+          ) : null}
+
+          {mode === "practice" && practiceDrill === "chordTone" ? (
+            <div className="session-setup-panel">
+              <span className="control-label">Session setup</span>
+
+              <div className="setup-field">
+                <span>Length</span>
+                <div className="segmented-control option-grid three">
+                  {chordSessionLengthOptions.map((sessionLength) => (
+                    <button
+                      className={
+                        chordSessionSettings.sessionLength === sessionLength
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`chord-length-${sessionLength}`}
+                      key={sessionLength}
+                      onClick={() =>
+                        handleChordSessionSettingsChange({ sessionLength })
+                      }
+                      type="button"
+                    >
+                      {sessionLength}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Quality</span>
+                <div className="segmented-control option-grid three">
+                  {chordQualityFocusOptions.map((option) => (
+                    <button
+                      className={
+                        chordSessionSettings.qualityFocus === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`chord-quality-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleChordSessionSettingsChange({
+                          qualityFocus: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Tone</span>
+                <div className="segmented-control option-grid four">
+                  {chordToneFocusOptions.map((option) => (
+                    <button
+                      className={
+                        chordSessionSettings.toneFocus === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`chord-tone-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleChordSessionSettingsChange({
+                          toneFocus: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Order</span>
+                <div className="segmented-control compact">
+                  {chordPromptOrderOptions.map((option) => (
+                    <button
+                      className={
+                        chordSessionSettings.promptOrder === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`chord-order-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleChordSessionSettingsChange({
+                          promptOrder: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <span>Review</span>
+                <div className="segmented-control compact">
+                  {chordReviewModeOptions.map((option) => (
+                    <button
+                      className={
+                        chordSessionSettings.reviewMode === option.id
+                          ? "is-selected"
+                          : ""
+                      }
+                      data-testid={`chord-review-${option.id}`}
+                      key={option.id}
+                      onClick={() =>
+                        handleChordSessionSettingsChange({
+                          reviewMode: option.id
+                        })
+                      }
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                {chordSessionSettings.reviewMode === "missed" &&
+                chordMissedReviewCount === 0 ? (
+                  <small>No missed chord prompts yet, using the full set.</small>
+                ) : chordSessionSettings.reviewMode === "missed" ? (
+                  <small>
+                    Reviewing {chordMissedReviewCount} missed chord prompt
+                    {chordMissedReviewCount === 1 ? "" : "s"}.
+                  </small>
+                ) : null}
               </div>
             </div>
           ) : null}
@@ -960,7 +1182,8 @@ function buildModeSummary(
   drillSummary: NoteRecognitionSummary,
   chordPrompt: ChordTonePrompt,
   currentChordAttempt: ChordToneAttempt | null,
-  chordDrillSummary: ChordToneSummary
+  chordDrillSummary: ChordToneSummary,
+  chordPromptCount: number
 ): ModeSummary {
   if (mode === "practice") {
     if (practiceDrill === "chordTone") {
@@ -989,7 +1212,7 @@ function buildModeSummary(
             : currentChordAttempt.isCorrect
               ? `Correct. ${chordSpelling}, so ${targetNote} is the ${targetToneName}.`
               : `You chose ${currentChordAttempt.selectedNote}. ${chordSpelling}, so ${targetNote} is the ${targetToneName}.`,
-        badge: `${chordDrillSummary.attempted + 1}/${CHORD_TONE_PROMPTS.length}`,
+        badge: `${chordDrillSummary.attempted + 1}/${chordPromptCount}`,
         tones:
           currentChordAttempt === null
             ? [chordName, targetToneName]
