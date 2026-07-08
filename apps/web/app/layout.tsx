@@ -3,7 +3,7 @@ import "./styles.css";
 
 export const metadata: Metadata = {
   title: "Pocket.Practice",
-  description: "Focused fretboard practice for guitar learners."
+  description: "Focused fretboard practice for bedroom guitarists."
 };
 
 export default function RootLayout({
