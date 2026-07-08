@@ -38,19 +38,18 @@ import {
   type LessonPracticeDrill
 } from "../lib/lessons";
 import {
+  readStoredLessonProgress,
   readStoredPreset,
   readStoredSessionHistory,
+  writeStoredLessonProgress,
   writeStoredPreset,
   writeStoredSessionHistory
 } from "../lib/browserStorage";
 import {
-  LESSON_PROGRESS_STORAGE_KEY,
   buildCourseProgress,
   doesLessonPracticeMeetCriteria,
   markLessonPracticed,
   markLessonStarted,
-  parseLessonProgress,
-  serializeLessonProgress,
   type LessonProgressRecord
 } from "../lib/lessonProgress";
 import {
@@ -4726,23 +4725,4 @@ function formatSessionDate(completedAt: string): string {
     hour: "numeric",
     minute: "2-digit"
   }).format(new Date(completedAt));
-}
-
-function readStoredLessonProgress() {
-  return parseLessonProgress(
-    window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY)
-  );
-}
-
-function writeStoredLessonProgress(
-  progress: ReturnType<typeof parseLessonProgress>
-): void {
-  try {
-    window.localStorage.setItem(
-      LESSON_PROGRESS_STORAGE_KEY,
-      serializeLessonProgress(progress)
-    );
-  } catch {
-    // Lesson progress is a convenience; practice should keep working if storage is unavailable.
-  }
 }

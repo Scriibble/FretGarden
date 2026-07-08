@@ -9,6 +9,7 @@
     "dev": "pnpm --filter @pocket-practice/web dev",
     "lint": "pnpm build:packages && pnpm -r lint",
     "test": "pnpm build:packages && pnpm -r test",
+    "test:e2e": "pnpm --filter @pocket-practice/web test:e2e",
     "typecheck": "pnpm build:packages && pnpm -r typecheck"
   },
   "devDependencies": {

@@ -1,4 +1,42 @@
+import { z } from "zod";
+import {
+  LESSON_PROGRESS_STORAGE_KEY,
+  parseLessonProgress,
+  serializeLessonProgress,
+  type LessonProgressRecord
+} from "./lessonProgress";
+
 const STORAGE_VERSION = 1;
+const storedSessionSchema = z
+  .object({
+    id: z.string(),
+    completedAt: z.string(),
+    promptCount: z.number(),
+    correct: z.number(),
+    missed: z.number(),
+    accuracy: z.number(),
+    missedPrompts: z.array(z.unknown())
+  })
+  .passthrough();
+const sessionHistoryEnvelopeSchema = z
+  .object({
+    version: z.number(),
+    sessions: z.array(storedSessionSchema)
+  })
+  .passthrough();
+const storedPresetSchema = z
+  .object({
+    id: z.string(),
+    label: z.string(),
+    settings: z.record(z.unknown())
+  })
+  .passthrough();
+const presetEnvelopeSchema = z
+  .object({
+    version: z.number(),
+    preset: storedPresetSchema
+  })
+  .passthrough();
 
 export function readStoredSessionHistory<Session>(
   storageKey: string,
@@ -14,14 +52,19 @@ export function readStoredSessionHistory<Session>(
     const parsedHistory = JSON.parse(storedHistory) as unknown;
 
     if (Array.isArray(parsedHistory)) {
-      return parsedHistory.slice(0, limit) as Session[];
+      return parsedHistory
+        .flatMap((session) => {
+          const parsedSession = storedSessionSchema.safeParse(session);
+
+          return parsedSession.success ? [parsedSession.data as Session] : [];
+        })
+        .slice(0, limit);
     }
 
-    if (
-      isVersionedStorageRecord(parsedHistory) &&
-      Array.isArray(parsedHistory.sessions)
-    ) {
-      return parsedHistory.sessions.slice(0, limit) as Session[];
+    const parsedEnvelope = sessionHistoryEnvelopeSchema.safeParse(parsedHistory);
+
+    if (parsedEnvelope.success) {
+      return parsedEnvelope.data.sessions.slice(0, limit) as Session[];
     }
 
     return [];
@@ -56,18 +99,16 @@ export function readStoredPreset<Preset>(storageKey: string): Preset | null {
     }
 
     const parsedPreset = JSON.parse(storedPreset) as unknown;
+    const parsedEnvelope = presetEnvelopeSchema.safeParse(parsedPreset);
 
-    if (
-      isVersionedStorageRecord(parsedPreset) &&
-      "preset" in parsedPreset &&
-      parsedPreset.preset !== null &&
-      typeof parsedPreset.preset === "object"
-    ) {
-      return parsedPreset.preset as Preset;
+    if (parsedEnvelope.success) {
+      return parsedEnvelope.data.preset as Preset;
     }
 
-    return typeof parsedPreset === "object" && parsedPreset !== null
-      ? (parsedPreset as Preset)
+    const parsedLegacyPreset = storedPresetSchema.safeParse(parsedPreset);
+
+    return parsedLegacyPreset.success
+      ? (parsedLegacyPreset.data as Preset)
       : null;
   } catch {
     return null;
@@ -91,14 +132,21 @@ export function writeStoredPreset<Preset>(
   }
 }
 
-function isVersionedStorageRecord(
-  value: unknown
-): value is Record<string, unknown> & { version: number } {
-  if (typeof value !== "object" || value === null) {
-    return false;
+export function readStoredLessonProgress(): LessonProgressRecord[] {
+  return parseLessonProgress(
+    window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY)
+  );
+}
+
+export function writeStoredLessonProgress(
+  progress: readonly LessonProgressRecord[]
+): void {
+  try {
+    window.localStorage.setItem(
+      LESSON_PROGRESS_STORAGE_KEY,
+      serializeLessonProgress(progress)
+    );
+  } catch {
+    // Lesson progress is a convenience; practice should keep working if storage is unavailable.
   }
-
-  const candidate = value as { version?: unknown };
-
-  return typeof candidate.version === "number";
 }

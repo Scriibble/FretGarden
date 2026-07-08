@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type {
   Lesson,
   LessonPracticeCriteria,
@@ -46,6 +47,33 @@ export interface CourseProgressSummary {
   isComplete: boolean;
 }
 
+const lessonPracticeDrillSchema = z.enum([
+  "note",
+  "chordTone",
+  "scaleDegree",
+  "interval",
+  "octaveShape",
+  "triadInversion"
+]);
+
+const lessonProgressRecordSchema = z.object({
+  slug: z.string(),
+  drill: lessonPracticeDrillSchema,
+  status: z.enum(["in-progress", "complete"]),
+  startedAt: z.string(),
+  completedAt: z.string().optional(),
+  lastAttemptedAt: z.string().optional(),
+  lastAccuracy: z.number().optional(),
+  lastPromptCount: z.number().optional()
+});
+
+type ParsedLessonProgressRecord = z.infer<typeof lessonProgressRecordSchema>;
+
+const versionedLessonProgressSchema = z.object({
+  version: z.number(),
+  progress: z.array(z.unknown())
+});
+
 export function parseLessonProgress(
   storedProgress: string | null
 ): LessonProgressRecord[] {
@@ -55,20 +83,45 @@ export function parseLessonProgress(
 
   try {
     const parsedProgress = JSON.parse(storedProgress) as unknown;
+    const versionedProgress =
+      versionedLessonProgressSchema.safeParse(parsedProgress);
     const progressRecords = Array.isArray(parsedProgress)
       ? parsedProgress
-      : isVersionedLessonProgress(parsedProgress)
-        ? parsedProgress.progress
+      : versionedProgress.success
+        ? versionedProgress.data.progress
         : [];
 
-    if (!Array.isArray(progressRecords)) {
-      return [];
-    }
+    return progressRecords.flatMap((record): LessonProgressRecord[] => {
+      const parsedRecord = lessonProgressRecordSchema.safeParse(record);
 
-    return progressRecords.filter(isLessonProgressRecord);
+      return parsedRecord.success
+        ? [toLessonProgressRecord(parsedRecord.data)]
+        : [];
+    });
   } catch {
     return [];
   }
+}
+
+function toLessonProgressRecord(
+  record: ParsedLessonProgressRecord
+): LessonProgressRecord {
+  return {
+    slug: record.slug,
+    drill: record.drill,
+    status: record.status,
+    startedAt: record.startedAt,
+    ...(record.completedAt ? { completedAt: record.completedAt } : {}),
+    ...(record.lastAttemptedAt
+      ? { lastAttemptedAt: record.lastAttemptedAt }
+      : {}),
+    ...(record.lastAccuracy !== undefined
+      ? { lastAccuracy: record.lastAccuracy }
+      : {}),
+    ...(record.lastPromptCount !== undefined
+      ? { lastPromptCount: record.lastPromptCount }
+      : {})
+  };
 }
 
 export function serializeLessonProgress(
@@ -228,55 +281,6 @@ function upsertLessonProgress(
 
   return progress.map((record, index) =>
     index === existingIndex ? nextRecord : record
-  );
-}
-
-function isLessonProgressRecord(value: unknown): value is LessonProgressRecord {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const candidate = value as Partial<LessonProgressRecord>;
-
-  return (
-    typeof candidate.slug === "string" &&
-    isLessonPracticeDrill(candidate.drill) &&
-    (candidate.status === "in-progress" || candidate.status === "complete") &&
-    typeof candidate.startedAt === "string" &&
-    (candidate.completedAt === undefined ||
-      typeof candidate.completedAt === "string") &&
-    (candidate.lastAttemptedAt === undefined ||
-      typeof candidate.lastAttemptedAt === "string") &&
-    (candidate.lastAccuracy === undefined ||
-      typeof candidate.lastAccuracy === "number") &&
-    (candidate.lastPromptCount === undefined ||
-      typeof candidate.lastPromptCount === "number")
-  );
-}
-
-function isVersionedLessonProgress(
-  value: unknown
-): value is { version: number; progress: unknown } {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const candidate = value as {
-    version?: unknown;
-    progress?: unknown;
-  };
-
-  return typeof candidate.version === "number" && "progress" in candidate;
-}
-
-function isLessonPracticeDrill(value: unknown): value is LessonPracticeDrill {
-  return (
-    value === "note" ||
-    value === "chordTone" ||
-    value === "scaleDegree" ||
-    value === "interval" ||
-    value === "octaveShape" ||
-    value === "triadInversion"
   );
 }
 

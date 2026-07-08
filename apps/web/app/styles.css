@@ -230,10 +230,30 @@ button {
   max-width: 680px;
 }
 
+.hub-section {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.hub-section-heading {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.hub-section-heading p {
+  color: #52615c;
+  line-height: 1.45;
+  max-width: 680px;
+}
+
 .hub-grid {
   display: grid;
   gap: 0.75rem;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.hub-grid-core {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .hub-card {
@@ -242,6 +262,11 @@ button {
   display: grid;
   gap: 0.85rem;
   padding: 1rem;
+}
+
+.hub-card-core {
+  background: #f8faf8;
+  border-color: #9bbab2;
 }
 
 .hub-card h3 {

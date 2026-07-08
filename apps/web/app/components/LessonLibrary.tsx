@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Lesson } from "../lib/lessons";
+import { readStoredLessonProgress } from "../lib/browserStorage";
 import {
-  LESSON_PROGRESS_STORAGE_KEY,
   buildCourseProgress,
   getLessonProgressStatus,
-  parseLessonProgress,
   type CoursePathState,
   type LessonProgressRecord
 } from "../lib/lessonProgress";
@@ -26,9 +25,7 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
     : null;
 
   useEffect(() => {
-    setProgress(
-      parseLessonProgress(window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY))
-    );
+    setProgress(readStoredLessonProgress());
   }, []);
 
   return (
