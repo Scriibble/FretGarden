@@ -2,6 +2,9 @@ Pocket.Practice
 Pocket.Practice is an interactive platform for learning guitar, bass, and music theory through structured lessons, intelligent practice tools, and long-term progress tracking. The project is designed to make learning an instrument engaging for complete beginners while still providing enough depth for experienced musicians.
 Status: Active Development (Pre-Release)
 
+Note: this README describes the long-term product direction. For the current
+repository state after the restore, see `docs/CURRENT_STATUS.md`.
+
 Vision
 Learning an instrument is often fragmented across YouTube videos, tabs, PDFs, and random practice routines. Pocket.Practice aims to bring everything together into one cohesive learning experience.
 The long-term goal is to provide a curriculum that teaches:

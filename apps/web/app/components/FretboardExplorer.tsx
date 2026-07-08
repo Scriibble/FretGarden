@@ -38,6 +38,12 @@ import {
   type LessonPracticeDrill
 } from "../lib/lessons";
 import {
+  readStoredPreset,
+  readStoredSessionHistory,
+  writeStoredPreset,
+  writeStoredSessionHistory
+} from "../lib/browserStorage";
+import {
   LESSON_PROGRESS_STORAGE_KEY,
   buildCourseProgress,
   doesLessonPracticeMeetCriteria,
@@ -312,7 +318,6 @@ const OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:octave-shape-custom-preset";
 const TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:triad-inversion-custom-preset";
-const STORAGE_VERSION = 1;
 
 export function FretboardExplorer() {
   const [mode, setMode] = useState<DisplayMode>("practice");
@@ -4723,53 +4728,6 @@ function formatSessionDate(completedAt: string): string {
   }).format(new Date(completedAt));
 }
 
-function readStoredSessionHistory<Session>(
-  storageKey: string,
-  limit: number
-): Session[] {
-  try {
-    const storedHistory = window.localStorage.getItem(storageKey);
-
-    if (!storedHistory) {
-      return [];
-    }
-
-    const parsedHistory = JSON.parse(storedHistory) as unknown;
-
-    if (Array.isArray(parsedHistory)) {
-      return parsedHistory.slice(0, limit) as Session[];
-    }
-
-    if (
-      isVersionedStorageRecord(parsedHistory) &&
-      Array.isArray(parsedHistory.sessions)
-    ) {
-      return parsedHistory.sessions.slice(0, limit) as Session[];
-    }
-
-    return [];
-  } catch {
-    return [];
-  }
-}
-
-function writeStoredSessionHistory<Session>(
-  storageKey: string,
-  history: Session[]
-): void {
-  try {
-    window.localStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        version: STORAGE_VERSION,
-        sessions: history
-      })
-    );
-  } catch {
-    // Local progress is a convenience; the drill should keep working if storage is unavailable.
-  }
-}
-
 function readStoredLessonProgress() {
   return parseLessonProgress(
     window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY)
@@ -4787,57 +4745,4 @@ function writeStoredLessonProgress(
   } catch {
     // Lesson progress is a convenience; practice should keep working if storage is unavailable.
   }
-}
-
-function readStoredPreset<Preset>(storageKey: string): Preset | null {
-  try {
-    const storedPreset = window.localStorage.getItem(storageKey);
-
-    if (!storedPreset) {
-      return null;
-    }
-
-    const parsedPreset = JSON.parse(storedPreset) as unknown;
-
-    if (
-      isVersionedStorageRecord(parsedPreset) &&
-      "preset" in parsedPreset &&
-      parsedPreset.preset !== null &&
-      typeof parsedPreset.preset === "object"
-    ) {
-      return parsedPreset.preset as Preset;
-    }
-
-    return typeof parsedPreset === "object" && parsedPreset !== null
-      ? (parsedPreset as Preset)
-      : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeStoredPreset<Preset>(storageKey: string, preset: Preset): void {
-  try {
-    window.localStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        version: STORAGE_VERSION,
-        preset
-      })
-    );
-  } catch {
-    // Custom presets are a convenience; the drill should still work without storage.
-  }
-}
-
-function isVersionedStorageRecord(
-  value: unknown
-): value is Record<string, unknown> & { version: number } {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const candidate = value as { version?: unknown };
-
-  return typeof candidate.version === "number";
 }
