@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const noteDrillAnswers = [
   { string: 5, fret: 5 },
@@ -11,6 +11,36 @@ const noteDrillAnswers = [
   { string: 3, fret: 5 },
   { string: 4, fret: 7 },
   { string: 1, fret: 3 }
+];
+
+const scaleDegreeAnswers = [
+  { string: 5, fret: 3 },
+  { string: 2, fret: 12 },
+  { string: 4, fret: 2 },
+  { string: 3, fret: 12 },
+  { string: 2, fret: 12 },
+  { string: 6, fret: 6 },
+  { string: 3, fret: 2 },
+  { string: 5, fret: 7 },
+  { string: 4, fret: 6 },
+  { string: 2, fret: 9 },
+  { string: 1, fret: 10 },
+  { string: 6, fret: 10 }
+];
+
+const chordToneAnswers = [
+  "C",
+  "B",
+  "E",
+  "G",
+  "D",
+  "C",
+  "D",
+  "A",
+  "G#",
+  "C",
+  "E",
+  "Bb"
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -58,17 +88,7 @@ test("completes a note lesson drill and persists course progress", async ({
 }) => {
   await page.goto("/?drill=note&lesson=fretboard-map#practice");
 
-  for (const [index, answer] of noteDrillAnswers.entries()) {
-    await page
-      .locator(
-        `button.fret-cell[aria-label="String ${answer.string}, fret ${answer.fret}"]`
-      )
-      .click();
-
-    if (index < noteDrillAnswers.length - 1) {
-      await page.getByRole("button", { name: "Next prompt" }).click();
-    }
-  }
+  await completeFretboardAnswers(page, noteDrillAnswers);
 
   await expect(
     page.getByRole("heading", { name: "Note recognition complete" })
@@ -91,3 +111,95 @@ test("completes a note lesson drill and persists course progress", async ({
     })
   );
 });
+
+test("completes a scale-degree lesson drill and persists course progress", async ({
+  page
+}) => {
+  await page.goto("/?drill=scaleDegree&lesson=scale-degrees#practice");
+
+  await completeFretboardAnswers(page, scaleDegreeAnswers);
+
+  await expect(
+    page.getByRole("heading", { name: "Scale degree drill complete" })
+  ).toBeVisible();
+  await expect(page.getByText("Lesson complete")).toBeVisible();
+
+  const storedProgress = await page.evaluate(() =>
+    window.localStorage.getItem("pocket-practice:lesson-progress")
+  );
+  expect(storedProgress).not.toBeNull();
+
+  const parsedProgress = JSON.parse(storedProgress ?? "{}") as {
+    progress?: Array<{ slug: string; status: string; lastAccuracy?: number }>;
+  };
+  expect(parsedProgress.progress).toContainEqual(
+    expect.objectContaining({
+      lastAccuracy: 100,
+      slug: "scale-degrees",
+      status: "complete"
+    })
+  );
+});
+
+test("completes a chord-tone lesson drill and persists course progress", async ({
+  page
+}) => {
+  await page.goto("/?drill=chordTone&lesson=triads#practice");
+
+  await completeChordToneAnswers(page, chordToneAnswers);
+
+  await expect(
+    page.getByRole("heading", { name: "Chord tone drill complete" })
+  ).toBeVisible();
+  await expect(page.getByText("Lesson complete")).toBeVisible();
+
+  const storedProgress = await page.evaluate(() =>
+    window.localStorage.getItem("pocket-practice:lesson-progress")
+  );
+  expect(storedProgress).not.toBeNull();
+
+  const parsedProgress = JSON.parse(storedProgress ?? "{}") as {
+    progress?: Array<{ slug: string; status: string; lastAccuracy?: number }>;
+  };
+  expect(parsedProgress.progress).toContainEqual(
+    expect.objectContaining({
+      lastAccuracy: 100,
+      slug: "triads",
+      status: "complete"
+    })
+  );
+});
+
+async function completeFretboardAnswers(
+  page: Page,
+  answers: Array<{ fret: number; string: number }>
+): Promise<void> {
+  for (const [index, answer] of answers.entries()) {
+    await page
+      .locator(
+        `button.fret-cell[aria-label="String ${answer.string}, fret ${answer.fret}"]`
+      )
+      .click();
+
+    if (index < answers.length - 1) {
+      await page.getByRole("button", { name: "Next prompt" }).click();
+    }
+  }
+}
+
+async function completeChordToneAnswers(
+  page: Page,
+  answers: string[]
+): Promise<void> {
+  for (const [index, answer] of answers.entries()) {
+    await page.getByTestId(`chord-answer-${formatNoteTestId(answer)}`).click();
+
+    if (index < answers.length - 1) {
+      await page.getByRole("button", { name: "Next prompt" }).click();
+    }
+  }
+}
+
+function formatNoteTestId(note: string): string {
+  return note.replace("#", "sharp").replace("b", "flat");
+}

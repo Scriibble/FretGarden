@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  readStoredLessonProgress,
   readStoredPreset,
   readStoredSessionHistory,
+  writeStoredLessonProgress,
   writeStoredPreset,
   writeStoredSessionHistory
 } from "./browserStorage";
+import { LESSON_PROGRESS_STORAGE_KEY } from "./lessonProgress";
 
 interface TestSession {
   id: string;
@@ -146,6 +149,65 @@ describe("browserStorage", () => {
       preset
     });
   });
+
+  it("reads and writes lesson progress through browser storage", () => {
+    const progress = [
+      {
+        slug: "scale-degrees",
+        drill: "scaleDegree",
+        status: "complete",
+        startedAt: "2026-07-08T12:00:00.000Z",
+        completedAt: "2026-07-08T12:05:00.000Z"
+      }
+    ] as const;
+
+    writeStoredLessonProgress(progress);
+
+    expect(
+      JSON.parse(
+        window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY) ?? ""
+      )
+    ).toEqual({
+      version: 1,
+      progress
+    });
+    expect(readStoredLessonProgress()).toEqual(progress);
+  });
+
+  it("ignores malformed lesson progress in browser storage", () => {
+    window.localStorage.setItem(
+      LESSON_PROGRESS_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        progress: [
+          {
+            slug: "scale-degrees",
+            drill: "kazoo",
+            status: "complete",
+            startedAt: "2026-07-08T12:00:00.000Z"
+          }
+        ]
+      })
+    );
+
+    expect(readStoredLessonProgress()).toEqual([]);
+  });
+
+  it("does not throw when localStorage writes fail", () => {
+    vi.stubGlobal("window", {
+      localStorage: new ThrowingStorage()
+    });
+
+    expect(() => writeStoredSessionHistory("history", [])).not.toThrow();
+    expect(() =>
+      writeStoredPreset("preset", {
+        id: "custom",
+        label: "Custom",
+        settings: {}
+      } satisfies TestPreset)
+    ).not.toThrow();
+    expect(() => writeStoredLessonProgress([])).not.toThrow();
+  });
 });
 
 function buildSession(id: string): TestSession {
@@ -185,5 +247,11 @@ class MemoryStorage implements Storage {
 
   setItem(key: string, value: string): void {
     this.values.set(key, value);
+  }
+}
+
+class ThrowingStorage extends MemoryStorage {
+  override setItem(): void {
+    throw new Error("Storage unavailable");
   }
 }

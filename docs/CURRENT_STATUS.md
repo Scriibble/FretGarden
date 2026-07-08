@@ -13,9 +13,9 @@ The current MVP is broader than the earliest master-plan scope. It includes note
 - `apps/web`: Next.js app router application with React client components.
 - `packages/music-theory-engine`: framework-independent TypeScript package for notes, pitch classes, intervals, major/minor scales, and major/minor triads.
 - `packages/fretboard-engine`: framework-independent TypeScript package for standard guitar tuning, fret positions, note lookup, scale maps, and chord maps.
-- `apps/web/app/lib`: drill logic, lesson data, browser storage helpers, local lesson progress helpers, and Zod-backed localStorage validation.
+- `apps/web/app/lib`: drill logic, lesson data, browser storage helpers, practice storage snapshot loading, shared session completion persistence, local lesson progress helpers, and Zod-backed localStorage validation.
 - `apps/web/app/components`: UI components for the fretboard explorer, practice hub, settings, review, lessons, and progress dashboard.
-- `apps/web/e2e`: Playwright browser coverage for the main practice hub and lesson-to-practice flows.
+- `apps/web/e2e`: Playwright browser coverage for the main practice hub and core note/chord/scale lesson-to-practice flows.
 
 ## Persistence
 
@@ -25,10 +25,10 @@ There is no account system, backend sync, database, subscription flow, or cloud 
 
 ## Known Architecture Debt
 
-- `FretboardExplorer.tsx` still owns too much state and behavior. It should continue to be split into focused hooks and drill-specific view/controller modules.
+- `FretboardExplorer.tsx` still owns too much state and behavior. Storage hydration and session completion persistence have been extracted, but drill setup and prompt handling should continue to move into focused helpers, hooks, or drill-specific modules.
 - `zustand` is installed ahead of a clearer shared client-state need.
 - The root scripts build internal packages before typecheck/test/lint so a clean restore does not depend on pre-existing `dist` folders.
-- Unit tests and browser E2E tests are split between Vitest and Playwright so Playwright specs do not get collected by the unit runner.
+- Unit tests and browser E2E tests are split between Vitest and Playwright so Playwright specs do not get collected by the unit runner. Browser storage validation and shared session completion persistence have focused unit coverage.
 
 ## Deferred Features
 
@@ -45,8 +45,8 @@ The following are future roadmap items, not current app behavior:
 
 ## Likely Next Steps
 
-1. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup, prompt flow, and completion handling.
-2. Add focused unit coverage around the browser storage validation helpers and malformed localStorage payloads.
-3. Expand Playwright coverage for the remaining lesson-linked drills once their MVP priority is settled.
+1. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup, prompt progression, and answer handling.
+2. Extract shared prompt progression and reset handling now that note, chord-tone, and scale-degree lesson completion have browser coverage.
+3. Consider a small shared test utility for browser localStorage mocks if storage tests keep growing.
 4. Keep the first public MVP messaging centered on notes, chord tones, and scale degrees while preserving advanced drills as stretch practice.
 5. Revisit `zustand` only when shared client state becomes clearer than the current component-local state model.

@@ -42,9 +42,9 @@ Longer-term roadmap items such as bass, alternate tunings, audio, ear training, 
 
 - `apps/web`: Next.js app and browser UI.
 - `apps/web/app/components`: UI components for the fretboard explorer, practice hub, lesson cards, settings, review, and progress dashboard.
-- `apps/web/app/lib`: drill logic, lesson data, localStorage helpers, Zod validation, and lesson progress helpers.
+- `apps/web/app/lib`: drill logic, lesson data, localStorage helpers, practice storage snapshot loading, shared session completion persistence, Zod validation, and lesson progress helpers.
 - `apps/web/app/lessons`: lesson list and lesson detail routes.
-- `apps/web/e2e`: Playwright coverage for the practice hub and lesson-to-practice flow.
+- `apps/web/e2e`: Playwright coverage for the practice hub and core note/chord/scale lesson-to-practice flows.
 - `packages/music-theory-engine`: UI-independent TypeScript package for notes, pitch classes, intervals, major/minor scales, and major/minor triads.
 - `packages/fretboard-engine`: UI-independent TypeScript package for standard guitar tuning, fret positions, note lookup, scale maps, and chord maps.
 - `docs/CURRENT_STATUS.md`: current state and near-term roadmap.
@@ -54,7 +54,9 @@ Longer-term roadmap items such as bass, alternate tunings, audio, ear training, 
 
 - All progress is local-only via `window.localStorage`.
 - Stored data includes recent drill sessions, custom drill presets, and lesson progress.
-- `apps/web/app/lib/browserStorage.ts` owns browser storage helpers.
+- `apps/web/app/lib/browserStorage.ts` owns low-level browser storage helpers.
+- `apps/web/app/lib/practiceStorage.ts` owns practice-specific storage keys and the aggregate stored practice snapshot.
+- `apps/web/app/lib/practiceSessionCompletion.ts` owns shared session completion persistence for drill histories.
 - `apps/web/app/lib/lessonProgress.ts` owns lesson progress parsing, serialization, and course progress logic.
 - Stored session history, presets, and lesson progress should be validated before the app uses them.
 - There is no account system, backend sync, database, or cloud history.
@@ -86,7 +88,7 @@ Command notes:
 
 - Keep engine packages framework-independent. Do not add React, DOM, or browser storage assumptions to `packages/music-theory-engine` or `packages/fretboard-engine`.
 - Prefer adding tested pure logic in `apps/web/app/lib` before wiring it into large React components.
-- `FretboardExplorer.tsx` is still too large. When changing related behavior, prefer extracting focused helpers, hooks, or drill-specific modules instead of adding more state and branching there.
+- `FretboardExplorer.tsx` is still too large. Storage hydration and session completion persistence have been extracted; when changing related behavior, prefer extracting drill setup, prompt progression, answer handling, hooks, or drill-specific modules instead of adding more state and branching there.
 - Preserve the current local-only MVP unless the user explicitly asks for backend/account work.
 - Keep the first public MVP messaging centered on notes, chord tones, and scale degrees while leaving advanced drills accessible.
 - Do not treat the long-term README roadmap as implemented functionality.
@@ -106,9 +108,9 @@ Command notes:
 
 Near-term work:
 
-1. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup, prompt flow, and completion handling.
-2. Add focused unit coverage around browser storage validation and malformed localStorage payloads.
-3. Expand Playwright coverage for the remaining lesson-linked drills once their MVP priority is settled.
+1. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup, prompt progression, and answer handling.
+2. Extract shared prompt progression and reset handling now that note, chord-tone, and scale-degree lesson completion have browser coverage.
+3. Consider a small shared test utility for browser localStorage mocks if storage tests keep growing.
 4. Keep the first public MVP visually and conceptually centered on notes, chord tones, and scale degrees.
 5. Revisit Zustand only when shared client state becomes clearer than component-local state.
 
@@ -125,4 +127,4 @@ Deferred until product fit is clearer:
 
 ## Recent Recovery Context
 
-This repo was restored after a drive wipe. Recent local commits restored project status and local tooling, then added Zod-backed storage validation, Playwright browser regression coverage, and a Practice Hub split between the core MVP path and advanced practice. Future sessions should preserve those recovery notes and avoid assuming missing future-roadmap features exist.
+This repo was restored after a drive wipe. Recent local commits restored project status and local tooling, added Zod-backed storage validation, Playwright browser regression coverage, a Practice Hub split between the core MVP path and advanced practice, and extracted practice storage/session completion helpers. Future sessions should preserve those recovery notes and avoid assuming missing future-roadmap features exist.

@@ -41,8 +41,8 @@ import {
   readStoredLessonProgress,
   writeStoredLessonProgress,
   writeStoredPreset,
-  writeStoredSessionHistory
 } from "../lib/browserStorage";
+import { completePracticeSession } from "../lib/practiceSessionCompletion";
 import {
   CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY,
   CHORD_TONE_HISTORY_STORAGE_KEY,
@@ -218,6 +218,7 @@ type PracticeDrill =
   | "interval"
   | "octaveShape"
   | "triadInversion";
+type PracticeDrillActions<Action> = Record<PracticeDrill, Action>;
 type ActiveVariant = "note" | "root" | "scale" | "chord" | "answer" | "miss";
 type PerformanceStat =
   | ChordTonePerformanceStat
@@ -259,6 +260,13 @@ interface PracticeReviewContent {
   missedPrompts: PracticeReviewItem[];
   weakSpots: PracticeReviewItem[];
   breakdowns: PracticeReviewSection[];
+}
+
+function getPracticeDrillAction<Action>(
+  practiceDrill: PracticeDrill,
+  actions: PracticeDrillActions<Action>
+): Action {
+  return actions[practiceDrill];
 }
 
 const fretboard = getFretboard({ frets: 12 });
@@ -1058,19 +1066,7 @@ export function FretboardExplorer() {
     setPracticeDrill(requestedDrill);
     setActiveLessonSlug(requestedLesson?.slug ?? null);
 
-    if (requestedDrill === "chordTone") {
-      resetChordToneDrill();
-    } else if (requestedDrill === "scaleDegree") {
-      resetScaleDegreeDrill();
-    } else if (requestedDrill === "interval") {
-      resetIntervalLandmarkDrill();
-    } else if (requestedDrill === "octaveShape") {
-      resetOctaveShapeDrill();
-    } else if (requestedDrill === "triadInversion") {
-      resetTriadInversionDrill();
-    } else {
-      resetNoteRecognitionDrill();
-    }
+    resetPracticeDrill(requestedDrill);
 
     if (requestedLesson) {
       markStoredLessonStarted(requestedLesson.slug, requestedLesson.drill);
@@ -1081,30 +1077,20 @@ export function FretboardExplorer() {
   }, []);
 
   useEffect(() => {
-    if (!drillSummary.isComplete || completedSession !== null) {
-      return;
-    }
-
-    const nextSession = buildNoteRecognitionSession(
+    completePracticeSession({
+      appendSession: appendNoteRecognitionSession,
       attempts,
-      undefined,
-      notePromptQueue.length
-    );
-
-    setCompletedSession(nextSession);
-    setSessionHistory((previousHistory) => {
-      const nextHistory = appendNoteRecognitionSession(
-        previousHistory,
-        nextSession
-      );
-      writeStoredSessionHistory(
-        NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
-        nextHistory
-      );
-
-      return nextHistory;
+      buildSession: buildNoteRecognitionSession,
+      completedSession,
+      isComplete: drillSummary.isComplete,
+      onComplete: (nextSession) => {
+        recordActiveLessonSession("note", nextSession);
+      },
+      promptCount: notePromptQueue.length,
+      setCompletedSession,
+      setSessionHistory,
+      storageKey: NOTE_RECOGNITION_HISTORY_STORAGE_KEY
     });
-    recordActiveLessonSession("note", nextSession);
   }, [
     activeLessonSlug,
     attempts,
@@ -1114,24 +1100,20 @@ export function FretboardExplorer() {
   ]);
 
   useEffect(() => {
-    if (!chordDrillSummary.isComplete || completedChordSession !== null) {
-      return;
-    }
-
-    const nextSession = buildChordToneSession(
-      chordAttempts,
-      undefined,
-      chordPromptQueue.length
-    );
-
-    setCompletedChordSession(nextSession);
-    setChordSessionHistory((previousHistory) => {
-      const nextHistory = appendChordToneSession(previousHistory, nextSession);
-      writeStoredSessionHistory(CHORD_TONE_HISTORY_STORAGE_KEY, nextHistory);
-
-      return nextHistory;
+    completePracticeSession({
+      appendSession: appendChordToneSession,
+      attempts: chordAttempts,
+      buildSession: buildChordToneSession,
+      completedSession: completedChordSession,
+      isComplete: chordDrillSummary.isComplete,
+      onComplete: (nextSession) => {
+        recordActiveLessonSession("chordTone", nextSession);
+      },
+      promptCount: chordPromptQueue.length,
+      setCompletedSession: setCompletedChordSession,
+      setSessionHistory: setChordSessionHistory,
+      storageKey: CHORD_TONE_HISTORY_STORAGE_KEY
     });
-    recordActiveLessonSession("chordTone", nextSession);
   }, [
     activeLessonSlug,
     chordAttempts,
@@ -1141,30 +1123,20 @@ export function FretboardExplorer() {
   ]);
 
   useEffect(() => {
-    if (
-      !scaleDegreeDrillSummary.isComplete ||
-      completedScaleDegreeSession !== null
-    ) {
-      return;
-    }
-
-    const nextSession = buildScaleDegreeSession(
-      scaleAttempts,
-      undefined,
-      scaleDegreePromptQueue.length
-    );
-
-    setCompletedScaleDegreeSession(nextSession);
-    setScaleDegreeSessionHistory((previousHistory) => {
-      const nextHistory = appendScaleDegreeSession(
-        previousHistory,
-        nextSession
-      );
-      writeStoredSessionHistory(SCALE_DEGREE_HISTORY_STORAGE_KEY, nextHistory);
-
-      return nextHistory;
+    completePracticeSession({
+      appendSession: appendScaleDegreeSession,
+      attempts: scaleAttempts,
+      buildSession: buildScaleDegreeSession,
+      completedSession: completedScaleDegreeSession,
+      isComplete: scaleDegreeDrillSummary.isComplete,
+      onComplete: (nextSession) => {
+        recordActiveLessonSession("scaleDegree", nextSession);
+      },
+      promptCount: scaleDegreePromptQueue.length,
+      setCompletedSession: setCompletedScaleDegreeSession,
+      setSessionHistory: setScaleDegreeSessionHistory,
+      storageKey: SCALE_DEGREE_HISTORY_STORAGE_KEY
     });
-    recordActiveLessonSession("scaleDegree", nextSession);
   }, [
     activeLessonSlug,
     completedScaleDegreeSession,
@@ -1174,33 +1146,20 @@ export function FretboardExplorer() {
   ]);
 
   useEffect(() => {
-    if (
-      !intervalDrillSummary.isComplete ||
-      completedIntervalSession !== null
-    ) {
-      return;
-    }
-
-    const nextSession = buildIntervalLandmarkSession(
-      intervalAttempts,
-      undefined,
-      intervalPromptQueue.length
-    );
-
-    setCompletedIntervalSession(nextSession);
-    setIntervalSessionHistory((previousHistory) => {
-      const nextHistory = appendIntervalLandmarkSession(
-        previousHistory,
-        nextSession
-      );
-      writeStoredSessionHistory(
-        INTERVAL_LANDMARK_HISTORY_STORAGE_KEY,
-        nextHistory
-      );
-
-      return nextHistory;
+    completePracticeSession({
+      appendSession: appendIntervalLandmarkSession,
+      attempts: intervalAttempts,
+      buildSession: buildIntervalLandmarkSession,
+      completedSession: completedIntervalSession,
+      isComplete: intervalDrillSummary.isComplete,
+      onComplete: (nextSession) => {
+        recordActiveLessonSession("interval", nextSession);
+      },
+      promptCount: intervalPromptQueue.length,
+      setCompletedSession: setCompletedIntervalSession,
+      setSessionHistory: setIntervalSessionHistory,
+      storageKey: INTERVAL_LANDMARK_HISTORY_STORAGE_KEY
     });
-    recordActiveLessonSession("interval", nextSession);
   }, [
     activeLessonSlug,
     completedIntervalSession,
@@ -1210,27 +1169,20 @@ export function FretboardExplorer() {
   ]);
 
   useEffect(() => {
-    if (!octaveDrillSummary.isComplete || completedOctaveSession !== null) {
-      return;
-    }
-
-    const nextSession = buildOctaveShapeSession(
-      octaveAttempts,
-      undefined,
-      octavePromptQueue.length
-    );
-
-    setCompletedOctaveSession(nextSession);
-    setOctaveSessionHistory((previousHistory) => {
-      const nextHistory = appendOctaveShapeSession(
-        previousHistory,
-        nextSession
-      );
-      writeStoredSessionHistory(OCTAVE_SHAPE_HISTORY_STORAGE_KEY, nextHistory);
-
-      return nextHistory;
+    completePracticeSession({
+      appendSession: appendOctaveShapeSession,
+      attempts: octaveAttempts,
+      buildSession: buildOctaveShapeSession,
+      completedSession: completedOctaveSession,
+      isComplete: octaveDrillSummary.isComplete,
+      onComplete: (nextSession) => {
+        recordActiveLessonSession("octaveShape", nextSession);
+      },
+      promptCount: octavePromptQueue.length,
+      setCompletedSession: setCompletedOctaveSession,
+      setSessionHistory: setOctaveSessionHistory,
+      storageKey: OCTAVE_SHAPE_HISTORY_STORAGE_KEY
     });
-    recordActiveLessonSession("octaveShape", nextSession);
   }, [
     activeLessonSlug,
     completedOctaveSession,
@@ -1240,33 +1192,20 @@ export function FretboardExplorer() {
   ]);
 
   useEffect(() => {
-    if (
-      !triadInversionDrillSummary.isComplete ||
-      completedTriadInversionSession !== null
-    ) {
-      return;
-    }
-
-    const nextSession = buildTriadInversionSession(
-      triadInversionAttempts,
-      undefined,
-      triadInversionPromptQueue.length
-    );
-
-    setCompletedTriadInversionSession(nextSession);
-    setTriadInversionSessionHistory((previousHistory) => {
-      const nextHistory = appendTriadInversionSession(
-        previousHistory,
-        nextSession
-      );
-      writeStoredSessionHistory(
-        TRIAD_INVERSION_HISTORY_STORAGE_KEY,
-        nextHistory
-      );
-
-      return nextHistory;
+    completePracticeSession({
+      appendSession: appendTriadInversionSession,
+      attempts: triadInversionAttempts,
+      buildSession: buildTriadInversionSession,
+      completedSession: completedTriadInversionSession,
+      isComplete: triadInversionDrillSummary.isComplete,
+      onComplete: (nextSession) => {
+        recordActiveLessonSession("triadInversion", nextSession);
+      },
+      promptCount: triadInversionPromptQueue.length,
+      setCompletedSession: setCompletedTriadInversionSession,
+      setSessionHistory: setTriadInversionSessionHistory,
+      storageKey: TRIAD_INVERSION_HISTORY_STORAGE_KEY
     });
-    recordActiveLessonSession("triadInversion", nextSession);
   }, [
     activeLessonSlug,
     completedTriadInversionSession,
@@ -1774,6 +1713,17 @@ export function FretboardExplorer() {
     setTriadInversionSessionNonce((previousNonce) => previousNonce + 1);
   }
 
+  function resetPracticeDrill(nextPracticeDrill = practiceDrill): void {
+    getPracticeDrillAction(nextPracticeDrill, {
+      chordTone: resetChordToneDrill,
+      interval: resetIntervalLandmarkDrill,
+      note: resetNoteRecognitionDrill,
+      octaveShape: resetOctaveShapeDrill,
+      scaleDegree: resetScaleDegreeDrill,
+      triadInversion: resetTriadInversionDrill
+    })();
+  }
+
   function scrollPracticeSessionIntoView(): void {
     window.setTimeout(() => {
       practiceLayoutRef.current?.scrollIntoView({
@@ -1790,50 +1740,30 @@ export function FretboardExplorer() {
 
     setSelectedPosition(null);
 
-    if (practiceDrill === "chordTone") {
-      setChordPromptIndex((previousPromptIndex) => previousPromptIndex + 1);
-      return;
-    }
-
-    if (practiceDrill === "scaleDegree") {
-      setScalePromptIndex((previousPromptIndex) => previousPromptIndex + 1);
-      return;
-    }
-
-    if (practiceDrill === "interval") {
-      setIntervalPromptIndex((previousPromptIndex) => previousPromptIndex + 1);
-      return;
-    }
-
-    if (practiceDrill === "octaveShape") {
-      setOctavePromptIndex((previousPromptIndex) => previousPromptIndex + 1);
-      return;
-    }
-
-    if (practiceDrill === "triadInversion") {
-      setTriadInversionPromptIndex(
-        (previousPromptIndex) => previousPromptIndex + 1
-      );
-      return;
-    }
-
-    setPromptIndex((previousPromptIndex) => previousPromptIndex + 1);
+    getPracticeDrillAction(practiceDrill, {
+      chordTone: () =>
+        setChordPromptIndex((previousPromptIndex) => previousPromptIndex + 1),
+      interval: () =>
+        setIntervalPromptIndex(
+          (previousPromptIndex) => previousPromptIndex + 1
+        ),
+      note: () =>
+        setPromptIndex((previousPromptIndex) => previousPromptIndex + 1),
+      octaveShape: () =>
+        setOctavePromptIndex(
+          (previousPromptIndex) => previousPromptIndex + 1
+        ),
+      scaleDegree: () =>
+        setScalePromptIndex((previousPromptIndex) => previousPromptIndex + 1),
+      triadInversion: () =>
+        setTriadInversionPromptIndex(
+          (previousPromptIndex) => previousPromptIndex + 1
+        )
+    })();
   }
 
   function handleRestartDrill(): void {
-    if (practiceDrill === "chordTone") {
-      resetChordToneDrill();
-    } else if (practiceDrill === "scaleDegree") {
-      resetScaleDegreeDrill();
-    } else if (practiceDrill === "interval") {
-      resetIntervalLandmarkDrill();
-    } else if (practiceDrill === "octaveShape") {
-      resetOctaveShapeDrill();
-    } else if (practiceDrill === "triadInversion") {
-      resetTriadInversionDrill();
-    } else {
-      resetNoteRecognitionDrill();
-    }
+    resetPracticeDrill();
   }
 
   function handlePracticeMisses(): void {
@@ -1841,62 +1771,56 @@ export function FretboardExplorer() {
       return;
     }
 
-    if (practiceDrill === "chordTone") {
-      setChordSessionSettings((previousSettings) => ({
-        ...previousSettings,
-        promptOrder: "fixed",
-        reviewMode: "missed"
-      }));
-      resetChordToneDrill();
-      return;
-    }
-
-    if (practiceDrill === "scaleDegree") {
-      setScaleDegreeSessionSettings((previousSettings) => ({
-        ...previousSettings,
-        promptOrder: "fixed",
-        reviewMode: "missed"
-      }));
-      resetScaleDegreeDrill();
-      return;
-    }
-
-    if (practiceDrill === "interval") {
-      setIntervalSessionSettings((previousSettings) => ({
-        ...previousSettings,
-        promptOrder: "fixed",
-        reviewMode: "missed"
-      }));
-      resetIntervalLandmarkDrill();
-      return;
-    }
-
-    if (practiceDrill === "octaveShape") {
-      setOctaveSessionSettings((previousSettings) => ({
-        ...previousSettings,
-        promptOrder: "fixed",
-        reviewMode: "missed"
-      }));
-      resetOctaveShapeDrill();
-      return;
-    }
-
-    if (practiceDrill === "triadInversion") {
-      setTriadInversionSessionSettings((previousSettings) => ({
-        ...previousSettings,
-        promptOrder: "fixed",
-        reviewMode: "missed"
-      }));
-      resetTriadInversionDrill();
-      return;
-    }
-
-    setNoteSessionSettings((previousSettings) => ({
-      ...previousSettings,
-      promptOrder: "fixed",
-      reviewMode: "missed"
-    }));
-    resetNoteRecognitionDrill();
+    getPracticeDrillAction(practiceDrill, {
+      chordTone: () => {
+        setChordSessionSettings((previousSettings) => ({
+          ...previousSettings,
+          promptOrder: "fixed",
+          reviewMode: "missed"
+        }));
+        resetChordToneDrill();
+      },
+      interval: () => {
+        setIntervalSessionSettings((previousSettings) => ({
+          ...previousSettings,
+          promptOrder: "fixed",
+          reviewMode: "missed"
+        }));
+        resetIntervalLandmarkDrill();
+      },
+      note: () => {
+        setNoteSessionSettings((previousSettings) => ({
+          ...previousSettings,
+          promptOrder: "fixed",
+          reviewMode: "missed"
+        }));
+        resetNoteRecognitionDrill();
+      },
+      octaveShape: () => {
+        setOctaveSessionSettings((previousSettings) => ({
+          ...previousSettings,
+          promptOrder: "fixed",
+          reviewMode: "missed"
+        }));
+        resetOctaveShapeDrill();
+      },
+      scaleDegree: () => {
+        setScaleDegreeSessionSettings((previousSettings) => ({
+          ...previousSettings,
+          promptOrder: "fixed",
+          reviewMode: "missed"
+        }));
+        resetScaleDegreeDrill();
+      },
+      triadInversion: () => {
+        setTriadInversionSessionSettings((previousSettings) => ({
+          ...previousSettings,
+          promptOrder: "fixed",
+          reviewMode: "missed"
+        }));
+        resetTriadInversionDrill();
+      }
+    })();
   }
 
   return (
