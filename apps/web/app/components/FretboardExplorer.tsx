@@ -39,12 +39,25 @@ import {
 } from "../lib/lessons";
 import {
   readStoredLessonProgress,
-  readStoredPreset,
-  readStoredSessionHistory,
   writeStoredLessonProgress,
   writeStoredPreset,
   writeStoredSessionHistory
 } from "../lib/browserStorage";
+import {
+  CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY,
+  CHORD_TONE_HISTORY_STORAGE_KEY,
+  INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY,
+  INTERVAL_LANDMARK_HISTORY_STORAGE_KEY,
+  NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY,
+  NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
+  OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY,
+  OCTAVE_SHAPE_HISTORY_STORAGE_KEY,
+  SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY,
+  SCALE_DEGREE_HISTORY_STORAGE_KEY,
+  TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY,
+  TRIAD_INVERSION_HISTORY_STORAGE_KEY,
+  readStoredPracticeData
+} from "../lib/practiceStorage";
 import {
   buildCourseProgress,
   doesLessonPracticeMeetCriteria,
@@ -53,7 +66,6 @@ import {
   type LessonProgressRecord
 } from "../lib/lessonProgress";
 import {
-  CHORD_TONE_HISTORY_LIMIT,
   CHORD_TONE_SESSION_PRESETS,
   DEFAULT_CHORD_TONE_SESSION_SETTINGS,
   appendChordToneSession,
@@ -78,7 +90,6 @@ import {
 } from "../lib/chordToneRecognition";
 import {
   DEFAULT_INTERVAL_LANDMARK_SESSION_SETTINGS,
-  INTERVAL_LANDMARK_HISTORY_LIMIT,
   INTERVAL_LANDMARK_SESSION_PRESETS,
   appendIntervalLandmarkSession,
   buildIntervalLandmarkAttempt,
@@ -103,7 +114,6 @@ import {
 } from "../lib/intervalLandmarkRecognition";
 import {
   DEFAULT_NOTE_RECOGNITION_SESSION_SETTINGS,
-  NOTE_RECOGNITION_HISTORY_LIMIT,
   NOTE_RECOGNITION_SESSION_PRESETS,
   appendNoteRecognitionSession,
   buildNoteRecognitionPerformanceSummary,
@@ -126,7 +136,6 @@ import {
 } from "../lib/noteRecognition";
 import {
   DEFAULT_OCTAVE_SHAPE_SESSION_SETTINGS,
-  OCTAVE_SHAPE_HISTORY_LIMIT,
   OCTAVE_SHAPE_SESSION_PRESETS,
   appendOctaveShapeSession,
   buildOctaveShapeAttempt,
@@ -153,7 +162,6 @@ import {
 } from "../lib/octaveShapeRecognition";
 import {
   DEFAULT_SCALE_DEGREE_SESSION_SETTINGS,
-  SCALE_DEGREE_HISTORY_LIMIT,
   SCALE_DEGREE_SESSION_PRESETS,
   appendScaleDegreeSession,
   buildScaleDegreeAttempt,
@@ -179,7 +187,6 @@ import {
 } from "../lib/scaleDegreeRecognition";
 import {
   DEFAULT_TRIAD_INVERSION_SESSION_SETTINGS,
-  TRIAD_INVERSION_HISTORY_LIMIT,
   TRIAD_INVERSION_SESSION_PRESETS,
   appendTriadInversionSession,
   buildTriadInversionAttempt,
@@ -293,30 +300,6 @@ const modes: Array<{ id: DisplayMode; label: string }> = [
   { id: "scale", label: "Scale" },
   { id: "chord", label: "Chord" }
 ];
-
-const NOTE_RECOGNITION_HISTORY_STORAGE_KEY =
-  "pocket-practice:note-recognition-history";
-const CHORD_TONE_HISTORY_STORAGE_KEY = "pocket-practice:chord-tone-history";
-const SCALE_DEGREE_HISTORY_STORAGE_KEY =
-  "pocket-practice:scale-degree-history";
-const INTERVAL_LANDMARK_HISTORY_STORAGE_KEY =
-  "pocket-practice:interval-landmark-history";
-const OCTAVE_SHAPE_HISTORY_STORAGE_KEY =
-  "pocket-practice:octave-shape-history";
-const TRIAD_INVERSION_HISTORY_STORAGE_KEY =
-  "pocket-practice:triad-inversion-history";
-const NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY =
-  "pocket-practice:note-recognition-custom-preset";
-const CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY =
-  "pocket-practice:chord-tone-custom-preset";
-const SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY =
-  "pocket-practice:scale-degree-custom-preset";
-const INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY =
-  "pocket-practice:interval-landmark-custom-preset";
-const OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY =
-  "pocket-practice:octave-shape-custom-preset";
-const TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY =
-  "pocket-practice:triad-inversion-custom-preset";
 
 export function FretboardExplorer() {
   const [mode, setMode] = useState<DisplayMode>("practice");
@@ -1034,72 +1017,26 @@ export function FretboardExplorer() {
   );
 
   useEffect(() => {
-    setSessionHistory(
-      readStoredSessionHistory<NoteRecognitionSession>(
-        NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
-        NOTE_RECOGNITION_HISTORY_LIMIT
-      )
-    );
-    setChordSessionHistory(
-      readStoredSessionHistory<ChordToneSession>(
-        CHORD_TONE_HISTORY_STORAGE_KEY,
-        CHORD_TONE_HISTORY_LIMIT
-      )
-    );
+    const storedPracticeData = readStoredPracticeData();
+
+    setSessionHistory(storedPracticeData.noteSessionHistory);
+    setChordSessionHistory(storedPracticeData.chordSessionHistory);
     setScaleDegreeSessionHistory(
-      readStoredSessionHistory<ScaleDegreeSession>(
-        SCALE_DEGREE_HISTORY_STORAGE_KEY,
-        SCALE_DEGREE_HISTORY_LIMIT
-      )
+      storedPracticeData.scaleDegreeSessionHistory
     );
-    setIntervalSessionHistory(
-      readStoredSessionHistory<IntervalLandmarkSession>(
-        INTERVAL_LANDMARK_HISTORY_STORAGE_KEY,
-        INTERVAL_LANDMARK_HISTORY_LIMIT
-      )
-    );
-    setOctaveSessionHistory(
-      readStoredSessionHistory<OctaveShapeSession>(
-        OCTAVE_SHAPE_HISTORY_STORAGE_KEY,
-        OCTAVE_SHAPE_HISTORY_LIMIT
-      )
-    );
+    setIntervalSessionHistory(storedPracticeData.intervalSessionHistory);
+    setOctaveSessionHistory(storedPracticeData.octaveSessionHistory);
     setTriadInversionSessionHistory(
-      readStoredSessionHistory<TriadInversionSession>(
-        TRIAD_INVERSION_HISTORY_STORAGE_KEY,
-        TRIAD_INVERSION_HISTORY_LIMIT
-      )
+      storedPracticeData.triadInversionSessionHistory
     );
-    setLessonProgressRecords(readStoredLessonProgress());
-    setCustomNotePreset(
-      readStoredPreset<NoteRecognitionSessionPreset>(
-        NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY
-      )
-    );
-    setCustomChordPreset(
-      readStoredPreset<ChordToneSessionPreset>(
-        CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY
-      )
-    );
-    setCustomScaleDegreePreset(
-      readStoredPreset<ScaleDegreeSessionPreset>(
-        SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY
-      )
-    );
-    setCustomIntervalPreset(
-      readStoredPreset<IntervalLandmarkSessionPreset>(
-        INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY
-      )
-    );
-    setCustomOctavePreset(
-      readStoredPreset<OctaveShapeSessionPreset>(
-        OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY
-      )
-    );
+    setLessonProgressRecords(storedPracticeData.lessonProgressRecords);
+    setCustomNotePreset(storedPracticeData.customNotePreset);
+    setCustomChordPreset(storedPracticeData.customChordPreset);
+    setCustomScaleDegreePreset(storedPracticeData.customScaleDegreePreset);
+    setCustomIntervalPreset(storedPracticeData.customIntervalPreset);
+    setCustomOctavePreset(storedPracticeData.customOctavePreset);
     setCustomTriadInversionPreset(
-      readStoredPreset<TriadInversionSessionPreset>(
-        TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY
-      )
+      storedPracticeData.customTriadInversionPreset
     );
   }, []);
 
