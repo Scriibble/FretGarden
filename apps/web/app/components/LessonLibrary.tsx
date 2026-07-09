@@ -3,20 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Lesson } from "../lib/lessons";
-import {
-  readStoredLessonLearningProgress,
-  readStoredLessonProgress
-} from "../lib/browserStorage";
+import { readStoredLessonLearningProgress } from "../lib/browserStorage";
 import {
   buildLearningCourseProgress,
-  getLessonLearningProgressStatus,
   type LearningPathState,
   type LessonLearningProgressRecord
 } from "../lib/lessonLearningProgress";
-import {
-  getLessonProgressStatus,
-  type LessonProgressRecord
-} from "../lib/lessonProgress";
 
 interface LessonLibraryProps {
   lessons: readonly Lesson[];
@@ -26,9 +18,6 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
   const [learningProgress, setLearningProgress] = useState<
     LessonLearningProgressRecord[]
   >([]);
-  const [drillProgress, setDrillProgress] = useState<LessonProgressRecord[]>(
-    []
-  );
   const courseProgress = buildLearningCourseProgress(lessons, learningProgress);
   const currentStepNumber = courseProgress.currentLesson
     ? (courseProgress.items.find(
@@ -38,7 +27,6 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
 
   useEffect(() => {
     setLearningProgress(readStoredLessonLearningProgress());
-    setDrillProgress(readStoredLessonProgress());
   }, []);
 
   return (
@@ -127,68 +115,6 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
         </ol>
       </section>
 
-      <section className="lesson-library-section" aria-label="Lesson library">
-        <div className="section-heading">
-          <span className="control-label">Lesson Library</span>
-          <h2>Browse every lesson</h2>
-        </div>
-
-        <div className="lesson-grid">
-          {lessons.map((lesson) => {
-            const status = getLessonLearningProgressStatus(
-              learningProgress,
-              lesson.slug
-            );
-            const drillStatus = getLessonProgressStatus(
-              drillProgress,
-              lesson.slug
-            );
-            const drillRecord =
-              drillProgress.find((record) => record.slug === lesson.slug) ??
-              null;
-
-            return (
-              <article
-                className={`lesson-card lesson-card-${status}`}
-                key={lesson.slug}
-              >
-                <div>
-                  <div className="lesson-card-meta">
-                    <span className="control-label">{lesson.eyebrow}</span>
-                    <span className={`lesson-status-pill status-${status}`}>
-                      {formatLessonStatus(status)}
-                    </span>
-                  </div>
-                  <h2>{lesson.title}</h2>
-                  <p>{lesson.summary}</p>
-                  <div className="lesson-requirements">
-                    <span>Read, play, and write to complete</span>
-                    <span>Optional drill: {formatLessonStatus(drillStatus)}</span>
-                    {drillRecord?.lastAccuracy !== undefined &&
-                    drillRecord.lastPromptCount !== undefined ? (
-                      <span>
-                        Last drill: {drillRecord.lastAccuracy}% over{" "}
-                        {drillRecord.lastPromptCount} questions
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-                <div className="lesson-card-actions">
-                  <Link className="lesson-cta" href={`/lessons/${lesson.slug}`}>
-                    Read lesson
-                  </Link>
-                  <Link
-                    className="lesson-secondary-link"
-                    href={lesson.practice.href}
-                  >
-                    {getLessonPracticeLabel(drillStatus)}
-                  </Link>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </section>
     </>
   );
 }
@@ -219,18 +145,4 @@ function formatLessonStatus(status: "not-started" | "in-progress" | "complete") 
   }
 
   return "Not started";
-}
-
-function getLessonPracticeLabel(
-  status: "not-started" | "in-progress" | "complete"
-) {
-  if (status === "complete") {
-    return "Practice again";
-  }
-
-  if (status === "in-progress") {
-    return "Continue practice";
-  }
-
-  return "Practice now";
 }
