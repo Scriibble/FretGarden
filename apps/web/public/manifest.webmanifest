@@ -1,0 +1,17 @@
+{
+  "name": "FretGarden",
+  "short_name": "FretGarden",
+  "description": "Guitar fretboard practice for notes, chord tones, and scale degrees.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3eadb",
+  "theme_color": "#2f4537",
+  "icons": [
+    {
+      "src": "/brand/fretgarden-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

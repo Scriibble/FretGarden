@@ -1,0 +1,26 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FretGarden root sprout F variation B</title>
+  <desc id="desc">A bold F-shaped sprout growing from a root note marker on a fretboard.</desc>
+  <rect width="1080" height="1080" fill="#FFFAF1"/>
+  <circle cx="540" cy="540" r="452" fill="#F3EADB" stroke="#DFD0BA" stroke-width="22"/>
+  <path d="M222 376H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 498H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 620H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 742H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M324 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M432 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M540 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M648 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M756 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="540" cy="620" r="140" fill="#2F4537"/>
+  <circle cx="540" cy="620" r="76" fill="#FFFAF1"/>
+  <circle cx="540" cy="620" r="34" fill="#B86F45"/>
+  <path d="M456 522V298" stroke="#2F4537" stroke-width="58" stroke-linecap="round"/>
+  <path d="M456 328H718" stroke="#2F4537" stroke-width="58" stroke-linecap="round"/>
+  <path d="M456 454H654" stroke="#2F4537" stroke-width="58" stroke-linecap="round"/>
+  <path d="M684 302C684 228.522 740.522 172 814 172C814 245.478 757.478 302 684 302Z" fill="#78966F"/>
+  <path d="M620 430C620 368.696 667.696 321 729 321C729 382.304 681.304 430 620 430Z" fill="#D6A34F"/>
+  <circle cx="456" cy="328" r="25" fill="#D6A34F"/>
+  <circle cx="456" cy="454" r="25" fill="#B86F45"/>
+  <path d="M478 794C500 747 524 724 540 724C556 724 580 747 602 794" stroke="#78966F" stroke-width="24" stroke-linecap="round"/>
+</svg>

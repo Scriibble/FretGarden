@@ -48,18 +48,27 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => window.localStorage.clear());
 });
 
+test("shows a focused branded landing page", async ({ page }) => {
+  await expect(
+    page.getByRole("heading", { name: "Grow your fretboard fluency." })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Practice drills/ })
+  ).toHaveAttribute("href", "/practice");
+  await expect(page.getByRole("link", { name: /Lessons/ })).toHaveAttribute(
+    "href",
+    "/lessons"
+  );
+  await expect(page.getByRole("link", { name: "History" })).toHaveAttribute(
+    "href",
+    "/history"
+  );
+});
+
 test("surfaces the core MVP path while keeping advanced drills available", async ({
   page
 }) => {
-  await expect(
-    page.getByRole("heading", { name: "Core MVP path" })
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Advanced practice" })
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Try the first three learning steps" })
-  ).toBeVisible();
+  await page.goto("/practice");
 
   await expect(page.getByTestId("hub-start-note")).toBeVisible();
   await expect(page.getByTestId("hub-start-chord")).toBeVisible();
@@ -67,32 +76,24 @@ test("surfaces the core MVP path while keeping advanced drills available", async
   await expect(page.getByTestId("hub-start-interval")).toBeVisible();
   await expect(page.getByTestId("hub-start-octave")).toBeVisible();
   await expect(page.getByTestId("hub-start-triad-inversion")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Reset local demo progress" })
-  ).toBeVisible();
 });
 
 test("links a lesson into its matching practice drill", async ({ page }) => {
   await page.goto("/lessons/fretboard-map");
   await page.getByRole("link", { name: "Start reinforcement drill" }).click();
 
+  await expect(page).toHaveURL(/\/practice/);
   await expect(page).toHaveURL(/drill=note/);
   await expect(page).toHaveURL(/lesson=fretboard-map/);
-  await expect(page.getByRole("button", { name: "Note drill" })).toHaveClass(
-    /is-selected/
-  );
   await expect(
-    page.getByRole("heading", {
-      exact: true,
-      name: "How the fretboard is organized"
-    })
+    page.getByText("Find D on the A string")
   ).toBeVisible();
 });
 
 test("completes a note lesson drill and persists course progress", async ({
   page
 }) => {
-  await page.goto("/?drill=note&lesson=fretboard-map#practice");
+  await page.goto("/practice?drill=note&lesson=fretboard-map#practice");
 
   await completeFretboardAnswers(page, noteDrillAnswers);
 
@@ -121,7 +122,7 @@ test("completes a note lesson drill and persists course progress", async ({
 test("completes a scale-degree lesson drill and persists course progress", async ({
   page
 }) => {
-  await page.goto("/?drill=scaleDegree&lesson=scale-degrees#practice");
+  await page.goto("/practice?drill=scaleDegree&lesson=scale-degrees#practice");
 
   await completeFretboardAnswers(page, scaleDegreeAnswers);
 
@@ -150,7 +151,7 @@ test("completes a scale-degree lesson drill and persists course progress", async
 test("completes a chord-tone lesson drill and persists course progress", async ({
   page
 }) => {
-  await page.goto("/?drill=chordTone&lesson=triads#practice");
+  await page.goto("/practice?drill=chordTone&lesson=triads#practice");
 
   await completeChordToneAnswers(page, chordToneAnswers);
 
@@ -176,73 +177,75 @@ test("completes a chord-tone lesson drill and persists course progress", async (
   );
 });
 
-test("resets local demo progress for another tester", async ({ page }) => {
-  await page.evaluate(() => {
-    window.localStorage.setItem(
-      "pocket-practice:lesson-progress",
-      JSON.stringify({
-        version: 1,
-        progress: [
-          {
-            slug: "fretboard-map",
-            drill: "note",
-            status: "complete",
-            startedAt: "2026-07-08T12:00:00.000Z"
-          }
-        ]
-      })
-    );
-  });
-  await page.reload();
-  await expect(page.getByText("Done").first()).toBeVisible();
-
-  page.once("dialog", async (dialog) => {
-    await dialog.accept();
-  });
-  await page.getByRole("button", { name: "Reset local demo progress" }).click();
-
-  await expect(page.getByText("Done")).toHaveCount(0);
-  await expect.poll(() =>
-    page.evaluate(() =>
-      window.localStorage.getItem("pocket-practice:lesson-progress")
-    )
-  ).toBeNull();
-});
-
 test("keeps the tester demo path usable on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/practice");
 
   await expect(
-    page.getByRole("heading", { name: "Try the first three learning steps" })
+    page.getByRole("heading", { name: "Find notes by string" })
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { exact: true, name: "Open lesson" })
+    page.getByRole("link", { exact: true, name: "Open lesson library" })
   ).toBeVisible();
   await expect(page.getByTestId("hub-start-note")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Reset local demo progress" })
-  ).toBeVisible();
 });
 
 test("keeps practice settings compact until expanded", async ({ page }) => {
-  await page.goto("/?drill=note&lesson=fretboard-map#practice");
+  await page.goto("/practice?drill=note&lesson=fretboard-map#practice");
 
   const settingsPanel = page.locator(".session-setup-panel");
 
+  await expect(page.getByText("Mode", { exact: true })).toBeVisible();
+  await expect(page.getByText("Drill", { exact: true })).toBeVisible();
+  await expect(
+    page.getByTestId("session-setup-disclosure").locator("summary").first()
+  ).toBeVisible();
   await expect(settingsPanel.getByText("Quick presets")).toHaveCount(0);
   await expect(settingsPanel.getByText("Target note")).toHaveCount(0);
   await expect(settingsPanel.getByText("String")).toHaveCount(0);
-  await expect(page.getByText("More options")).toBeVisible();
+  await expect(settingsPanel.getByText("More options")).toBeHidden();
   await expect(page.getByTestId("note-order-random")).toBeHidden();
 
-  await page.getByText("More options").click();
+  await page
+    .getByTestId("session-setup-disclosure")
+    .locator("summary")
+    .first()
+    .click();
+  await expect(settingsPanel.getByText("More options")).toBeVisible();
+  await settingsPanel.getByText("More options").click();
   await expect(page.getByTestId("note-order-random")).toBeVisible();
+});
+
+test("moves recent sessions and weak spots to history", async ({ page }) => {
+  await page.goto("/practice?drill=note&lesson=fretboard-map#practice");
+
+  await page
+    .locator('button.fret-cell[aria-label="String 5, fret 4"]')
+    .click();
+  await expect(page.getByTestId("drill-next")).toBeEnabled();
+  await page.getByTestId("drill-next").click();
+  await completeFretboardAnswers(page, noteDrillAnswers.slice(1));
+
+  await page.goto("/history");
+
+  await expect(
+    page.getByRole("heading", { name: "Practice history" })
+  ).toBeVisible();
+  await expect(
+    page.locator(".progress-card-heading").getByText("Recent sessions")
+  ).toBeVisible();
+  await expect(
+    page.locator(".progress-card-heading").getByText("Weak spots")
+  ).toBeVisible();
+  await expect(
+    page.locator(".recent-session-row").getByText("Note recognition")
+  ).toBeVisible();
+  await expect(page.getByText("D notes")).toBeVisible();
 });
 
 test("completes a note lesson drill on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/?drill=note&lesson=fretboard-map#practice");
+  await page.goto("/practice?drill=note&lesson=fretboard-map#practice");
 
   await expect(page.getByText("Find D on the A string")).toBeVisible();
   await expect(
@@ -261,14 +264,17 @@ async function completeFretboardAnswers(
   answers: Array<{ fret: number; string: number }>
 ): Promise<void> {
   for (const [index, answer] of answers.entries()) {
-    await page
-      .locator(
-        `button.fret-cell[aria-label="String ${answer.string}, fret ${answer.fret}"]`
-      )
-      .click();
+    const answerCell = page.locator(
+      `button.fret-cell[aria-label="String ${answer.string}, fret ${answer.fret}"]`
+    );
+
+    await expect(answerCell).toBeVisible();
+    await expect(answerCell).toBeEnabled();
+    await answerCell.click();
 
     if (index < answers.length - 1) {
-      await page.getByRole("button", { name: "Next question" }).click();
+      await expect(page.getByTestId("drill-next")).toBeEnabled();
+      await page.getByTestId("drill-next").click();
     }
   }
 }

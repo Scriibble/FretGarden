@@ -1,0 +1,24 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FretGarden root sprout F variation C</title>
+  <desc id="desc">A root note marker with leaves forming the crossbars of an F.</desc>
+  <rect width="1080" height="1080" fill="#FFFAF1"/>
+  <circle cx="540" cy="540" r="452" fill="#F3EADB" stroke="#DFD0BA" stroke-width="22"/>
+  <path d="M222 376H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 498H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 620H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 742H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M324 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M432 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M540 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M648 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M756 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="540" cy="620" r="140" fill="#2F4537"/>
+  <circle cx="540" cy="620" r="76" fill="#FFFAF1"/>
+  <circle cx="540" cy="620" r="34" fill="#B86F45"/>
+  <path d="M500 520V306" stroke="#2F4537" stroke-width="46" stroke-linecap="round"/>
+  <path d="M500 350C500 271.948 559.948 212 638 212H704C704 290.052 644.052 350 566 350H500Z" fill="#78966F"/>
+  <path d="M500 460C500 392.072 552.072 340 620 340H674C674 407.928 621.928 460 554 460H500Z" fill="#D6A34F"/>
+  <path d="M526 350H704" stroke="#2F4537" stroke-width="16" stroke-linecap="round" opacity="0.72"/>
+  <path d="M526 460H674" stroke="#2F4537" stroke-width="16" stroke-linecap="round" opacity="0.72"/>
+  <path d="M478 794C500 747 524 724 540 724C556 724 580 747 602 794" stroke="#78966F" stroke-width="24" stroke-linecap="round"/>
+</svg>

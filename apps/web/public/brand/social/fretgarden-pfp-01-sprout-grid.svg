@@ -1,0 +1,25 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FretGarden profile picture option 1</title>
+  <desc id="desc">A sprouting note marker on a fretboard grid.</desc>
+  <rect width="1080" height="1080" fill="#F3EADB"/>
+  <circle cx="540" cy="540" r="454" fill="#FFFAF1" stroke="#DFD0BA" stroke-width="24"/>
+  <rect x="275" y="283" width="530" height="514" rx="82" fill="#2F4537"/>
+  <path d="M355 283V797" stroke="#78966F" stroke-width="18" stroke-linecap="round"/>
+  <path d="M448 283V797" stroke="#78966F" stroke-width="18" stroke-linecap="round"/>
+  <path d="M540 283V797" stroke="#78966F" stroke-width="18" stroke-linecap="round"/>
+  <path d="M632 283V797" stroke="#78966F" stroke-width="18" stroke-linecap="round"/>
+  <path d="M725 283V797" stroke="#78966F" stroke-width="18" stroke-linecap="round"/>
+  <path d="M302 390H778" stroke="#F8F0E2" stroke-width="13" stroke-linecap="round" opacity="0.78"/>
+  <path d="M302 474H778" stroke="#F8F0E2" stroke-width="13" stroke-linecap="round" opacity="0.78"/>
+  <path d="M302 558H778" stroke="#F8F0E2" stroke-width="13" stroke-linecap="round" opacity="0.78"/>
+  <path d="M302 642H778" stroke="#F8F0E2" stroke-width="13" stroke-linecap="round" opacity="0.78"/>
+  <path d="M302 726H778" stroke="#F8F0E2" stroke-width="13" stroke-linecap="round" opacity="0.78"/>
+  <circle cx="448" cy="474" r="42" fill="#D6A34F"/>
+  <circle cx="632" cy="642" r="42" fill="#B86F45"/>
+  <circle cx="725" cy="390" r="32" fill="#F4DFCF"/>
+  <path d="M540 700V506" stroke="#F8F0E2" stroke-width="33" stroke-linecap="round"/>
+  <path d="M540 546C540 469.232 599.232 410 676 410C676 486.768 616.768 546 540 546Z" fill="#E4EDDC"/>
+  <path d="M540 584C540 507.232 480.768 448 404 448C404 524.768 463.232 584 540 584Z" fill="#78966F"/>
+  <circle cx="540" cy="714" r="76" fill="#F8F0E2"/>
+  <circle cx="540" cy="714" r="36" fill="#3F5F4B"/>
+</svg>

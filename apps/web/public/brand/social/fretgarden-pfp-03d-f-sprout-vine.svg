@@ -1,0 +1,24 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FretGarden root sprout F variation D</title>
+  <desc id="desc">A curved vine-like F sprout growing from a root note marker.</desc>
+  <rect width="1080" height="1080" fill="#FFFAF1"/>
+  <circle cx="540" cy="540" r="452" fill="#F3EADB" stroke="#DFD0BA" stroke-width="22"/>
+  <path d="M222 376H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 498H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 620H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M222 742H858" stroke="#3F5F4B" stroke-width="22" stroke-linecap="round"/>
+  <path d="M324 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M432 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M540 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M648 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <path d="M756 300V800" stroke="#CDB89D" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="540" cy="620" r="140" fill="#2F4537"/>
+  <circle cx="540" cy="620" r="76" fill="#FFFAF1"/>
+  <circle cx="540" cy="620" r="34" fill="#B86F45"/>
+  <path d="M514 518C498 438 510 350 568 292C612 248 674 235 742 254" stroke="#2F4537" stroke-width="42" stroke-linecap="round"/>
+  <path d="M526 394C578 366 648 360 718 382" stroke="#78966F" stroke-width="36" stroke-linecap="round"/>
+  <path d="M522 482C570 452 632 446 696 464" stroke="#D6A34F" stroke-width="34" stroke-linecap="round"/>
+  <path d="M716 248C716 181.178 766.178 131 833 131C833 197.822 782.822 248 716 248Z" fill="#78966F"/>
+  <path d="M676 462C676 409.885 715.885 370 768 370C768 422.115 728.115 462 676 462Z" fill="#E4EDDC"/>
+  <path d="M478 794C500 747 524 724 540 724C556 724 580 747 602 794" stroke="#78966F" stroke-width="24" stroke-linecap="round"/>
+</svg>

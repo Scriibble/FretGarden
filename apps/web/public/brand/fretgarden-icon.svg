@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FretGarden app icon</title>
+  <desc id="desc">A sprouting note marker growing from a stylized guitar fretboard.</desc>
+  <rect width="512" height="512" rx="96" fill="#F3EADB"/>
+  <rect x="54" y="54" width="404" height="404" rx="74" fill="#FFFAF1" stroke="#DFD0BA" stroke-width="8"/>
+  <path d="M114 156C114 141.641 125.641 130 140 130H372C386.359 130 398 141.641 398 156V356C398 370.359 386.359 382 372 382H140C125.641 382 114 370.359 114 356V156Z" fill="#2F4537"/>
+  <path d="M161 130V382" stroke="#78966F" stroke-width="7" stroke-linecap="round"/>
+  <path d="M209 130V382" stroke="#78966F" stroke-width="7" stroke-linecap="round"/>
+  <path d="M256 130V382" stroke="#78966F" stroke-width="7" stroke-linecap="round"/>
+  <path d="M303 130V382" stroke="#78966F" stroke-width="7" stroke-linecap="round"/>
+  <path d="M351 130V382" stroke="#78966F" stroke-width="7" stroke-linecap="round"/>
+  <path d="M130 179H382" stroke="#F8F0E2" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+  <path d="M130 221H382" stroke="#F8F0E2" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+  <path d="M130 263H382" stroke="#F8F0E2" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+  <path d="M130 305H382" stroke="#F8F0E2" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+  <path d="M130 347H382" stroke="#F8F0E2" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+  <circle cx="209" cy="221" r="19" fill="#D6A34F"/>
+  <circle cx="303" cy="305" r="19" fill="#B86F45"/>
+  <circle cx="351" cy="179" r="15" fill="#F4DFCF"/>
+  <path d="M256 321V235" stroke="#F8F0E2" stroke-width="12" stroke-linecap="round"/>
+  <path d="M256 252C256 219.967 280.967 195 313 195C313 227.033 288.033 252 256 252Z" fill="#E4EDDC"/>
+  <path d="M256 269C256 236.967 231.033 212 199 212C199 244.033 223.967 269 256 269Z" fill="#78966F"/>
+  <circle cx="256" cy="330" r="31" fill="#F8F0E2"/>
+  <circle cx="256" cy="330" r="15" fill="#3F5F4B"/>
+</svg>

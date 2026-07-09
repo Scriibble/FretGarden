@@ -1,0 +1,17 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FretGarden profile picture option 2</title>
+  <desc id="desc">An FG monogram built from fret lines and garden leaves.</desc>
+  <rect width="1080" height="1080" fill="#2F4537"/>
+  <circle cx="540" cy="540" r="448" fill="#3F5F4B"/>
+  <circle cx="540" cy="540" r="390" fill="#FFFAF1"/>
+  <path d="M324 296H640" stroke="#2F4537" stroke-width="72" stroke-linecap="round"/>
+  <path d="M324 510H572" stroke="#2F4537" stroke-width="72" stroke-linecap="round"/>
+  <path d="M324 296V790" stroke="#2F4537" stroke-width="72" stroke-linecap="round"/>
+  <path d="M736 356C693.022 318.504 637.473 296 577 296C441.69 296 332 405.69 332 541C332 676.31 441.69 786 577 786C656.5 786 727.164 748.187 771.891 689.587" stroke="#78966F" stroke-width="74" stroke-linecap="round"/>
+  <path d="M614 548H790" stroke="#78966F" stroke-width="74" stroke-linecap="round"/>
+  <path d="M790 548V754" stroke="#78966F" stroke-width="74" stroke-linecap="round"/>
+  <circle cx="324" cy="296" r="28" fill="#D6A34F"/>
+  <circle cx="324" cy="510" r="28" fill="#B86F45"/>
+  <path d="M668 316C668 246.412 721.412 193 791 193C791 262.588 737.588 316 668 316Z" fill="#E4EDDC"/>
+  <path d="M660 770C660 700.412 606.588 647 537 647C537 716.588 590.412 770 660 770Z" fill="#D6A34F"/>
+</svg>

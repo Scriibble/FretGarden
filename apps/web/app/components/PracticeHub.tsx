@@ -2,11 +2,6 @@
 
 import Link from "next/link";
 
-export interface DemoChecklistItem {
-  isComplete: boolean;
-  label: string;
-}
-
 interface PracticeHubProps {
   noteLastSessionLabel: string;
   noteWeakSpotLabel: string;
@@ -32,18 +27,9 @@ interface PracticeHubProps {
   triadInversionWeakSpotLabel: string;
   triadInversionPresetLabel: string;
   onStartTriadInversion: () => void;
-  courseRecommendationTitle: string;
-  courseRecommendationDescription: string;
-  courseProgressLabel: string;
-  courseProgressPercent: number;
-  courseStepLabel: string;
-  courseLessonHref: string;
-  coursePracticeHref: string;
   recommendationTitle: string;
   recommendationDescription: string;
   onStartRecommendation: () => void;
-  demoChecklistItems: DemoChecklistItem[];
-  onResetDemoProgress: () => void;
 }
 
 export function PracticeHub({
@@ -71,101 +57,16 @@ export function PracticeHub({
   triadInversionWeakSpotLabel,
   triadInversionPresetLabel,
   onStartTriadInversion,
-  courseRecommendationTitle,
-  courseRecommendationDescription,
-  courseProgressLabel,
-  courseProgressPercent,
-  courseStepLabel,
-  courseLessonHref,
-  coursePracticeHref,
   recommendationTitle,
   recommendationDescription,
-  onStartRecommendation,
-  demoChecklistItems,
-  onResetDemoProgress
+  onStartRecommendation
 }: PracticeHubProps) {
   return (
     <section className="practice-hub" aria-label="Practice hub">
-      <div className="hub-heading">
-        <div>
-          <p className="eyebrow">Practice Hub</p>
-          <h2>Choose today&apos;s session</h2>
-        </div>
-        <div className="hub-heading-actions">
-          <p>
-            Start from a preset, review weak spots, or jump back into the active
-            fretboard.
-          </p>
-          <Link className="lesson-library-link" href="/lessons">
-            Open lesson library
-          </Link>
-        </div>
-      </div>
-
-      <article className="course-recommendation-card">
-        <div>
-          <span className="control-label">Start here</span>
-          <h3>{courseRecommendationTitle}</h3>
-          <div className="course-progress-inline">
-            <span>{courseStepLabel}</span>
-            <div
-              aria-label={courseProgressLabel}
-              className="course-progress-track"
-            >
-              <i style={{ width: `${courseProgressPercent}%` }} />
-            </div>
-            <strong>{courseProgressLabel}</strong>
-          </div>
-          <p>{courseRecommendationDescription}</p>
-        </div>
-        <div className="hub-heading-actions">
-          <Link className="lesson-cta" href={courseLessonHref}>
-            Open lesson
-          </Link>
-          <Link className="lesson-secondary-link" href={coursePracticeHref}>
-            Reinforce with drill
-          </Link>
-        </div>
-      </article>
-
-      <article className="demo-checklist-card">
-        <div>
-          <span className="control-label">Tester demo loop</span>
-          <h3>Try the first three learning steps</h3>
-          <p>
-            Use this path for a quick playable test: start the first lesson,
-            finish one note drill, then try chord tones and scale degrees.
-          </p>
-        </div>
-        <ol className="demo-checklist">
-          {demoChecklistItems.map((item) => (
-            <li
-              className={item.isComplete ? "is-complete" : ""}
-              key={item.label}
-            >
-              <span aria-hidden="true">{item.isComplete ? "Done" : ""}</span>
-              {item.label}
-            </li>
-          ))}
-        </ol>
-        <button
-          className="demo-reset-button"
-          onClick={onResetDemoProgress}
-          type="button"
-        >
-          Reset local demo progress
-        </button>
-      </article>
-
       <section className="hub-section" aria-labelledby="core-path-heading">
-        <div className="hub-section-heading">
-          <span className="control-label">First release focus</span>
-          <h3 id="core-path-heading">Core MVP path</h3>
-          <p>
-            These drills form the first public learning loop: notes, chord
-            tones, and scale degrees.
-          </p>
-        </div>
+        <h2 className="visually-hidden" id="core-path-heading">
+          Core practice
+        </h2>
 
         <div className="hub-grid hub-grid-core">
           <article className="hub-card hub-card-core">
@@ -234,14 +135,9 @@ export function PracticeHub({
         className="hub-section"
         aria-labelledby="advanced-practice-heading"
       >
-        <div className="hub-section-heading">
-          <span className="control-label">Available beyond the core path</span>
-          <h3 id="advanced-practice-heading">Advanced practice</h3>
-          <p>
-            Keep using these recovered drills as stretch work and review while
-            the MVP stays focused.
-          </p>
-        </div>
+        <h2 className="visually-hidden" id="advanced-practice-heading">
+          Advanced practice
+        </h2>
 
         <div className="hub-grid">
           <article className="hub-card">
@@ -317,6 +213,10 @@ export function PracticeHub({
           </article>
         </div>
       </section>
+
+      <Link className="lesson-library-link hub-library-link" href="/lessons">
+        Open lesson library
+      </Link>
     </section>
   );
 }

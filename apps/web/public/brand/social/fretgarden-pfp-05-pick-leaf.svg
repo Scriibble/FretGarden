@@ -1,0 +1,20 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FretGarden profile picture option 5</title>
+  <desc id="desc">A guitar pick containing a fretboard sprout mark.</desc>
+  <rect width="1080" height="1080" fill="#F3EADB"/>
+  <circle cx="540" cy="540" r="452" fill="#FFFAF1" stroke="#DFD0BA" stroke-width="24"/>
+  <path d="M540 178C709 178 842 300 842 457C842 650 632 852 560 898C548 906 532 906 520 898C448 852 238 650 238 457C238 300 371 178 540 178Z" fill="#2F4537"/>
+  <path d="M400 378H680" stroke="#F8F0E2" stroke-width="16" stroke-linecap="round" opacity="0.85"/>
+  <path d="M374 478H706" stroke="#F8F0E2" stroke-width="16" stroke-linecap="round" opacity="0.85"/>
+  <path d="M392 578H688" stroke="#F8F0E2" stroke-width="16" stroke-linecap="round" opacity="0.85"/>
+  <path d="M452 322V690" stroke="#78966F" stroke-width="14" stroke-linecap="round"/>
+  <path d="M540 302V778" stroke="#78966F" stroke-width="14" stroke-linecap="round"/>
+  <path d="M628 322V690" stroke="#78966F" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="452" cy="478" r="36" fill="#D6A34F"/>
+  <circle cx="628" cy="578" r="36" fill="#B86F45"/>
+  <path d="M540 664V438" stroke="#FFFAF1" stroke-width="28" stroke-linecap="round"/>
+  <path d="M540 480C540 408.877 594.877 354 666 354C666 425.123 611.123 480 540 480Z" fill="#E4EDDC"/>
+  <path d="M540 518C540 446.877 485.123 392 414 392C414 463.123 468.877 518 540 518Z" fill="#78966F"/>
+  <circle cx="540" cy="686" r="68" fill="#FFFAF1"/>
+  <circle cx="540" cy="686" r="30" fill="#3F5F4B"/>
+</svg>

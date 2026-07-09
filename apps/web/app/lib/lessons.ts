@@ -132,7 +132,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice note recognition",
-      href: "/?drill=note&lesson=fretboard-map#practice",
+      href: "/practice?drill=note&lesson=fretboard-map#practice",
       drill: "note",
       criteria: {
         promptCount: 10,
@@ -211,7 +211,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice string-specific notes",
-      href: "/?drill=note&lesson=repeating-notes#practice",
+      href: "/practice?drill=note&lesson=repeating-notes#practice",
       drill: "note",
       criteria: {
         promptCount: 10,
@@ -290,7 +290,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice chord tones",
-      href: "/?drill=chordTone&lesson=triads#practice",
+      href: "/practice?drill=chordTone&lesson=triads#practice",
       drill: "chordTone",
       criteria: {
         promptCount: 12,
@@ -369,7 +369,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice scale degrees",
-      href: "/?drill=scaleDegree&lesson=scale-degrees#practice",
+      href: "/practice?drill=scaleDegree&lesson=scale-degrees#practice",
       drill: "scaleDegree",
       criteria: {
         promptCount: 12,
@@ -448,7 +448,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice interval landmarks",
-      href: "/?drill=interval&lesson=intervals#practice",
+      href: "/practice?drill=interval&lesson=intervals#practice",
       drill: "interval",
       criteria: {
         promptCount: 12,
@@ -527,7 +527,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice CAGED octave shapes",
-      href: "/?drill=octaveShape&lesson=octave-shapes#practice",
+      href: "/practice?drill=octaveShape&lesson=octave-shapes#practice",
       drill: "octaveShape",
       criteria: {
         promptCount: 10,
@@ -606,7 +606,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice triad inversions",
-      href: "/?drill=triadInversion&lesson=triad-inversions#practice",
+      href: "/practice?drill=triadInversion&lesson=triad-inversions#practice",
       drill: "triadInversion",
       criteria: {
         promptCount: 12,
@@ -685,7 +685,7 @@ export const lessons = [
     ],
     practice: {
       label: "Practice major scale landmarks",
-      href: "/?drill=scaleDegree&lesson=major-scale-landmarks#practice",
+      href: "/practice?drill=scaleDegree&lesson=major-scale-landmarks#practice",
       drill: "scaleDegree",
       criteria: {
         promptCount: 12,

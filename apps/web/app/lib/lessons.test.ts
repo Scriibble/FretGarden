@@ -6,7 +6,7 @@ describe("lessons", () => {
     lessons.forEach((lesson) => {
       const practiceUrl = new URL(lesson.practice.href, "http://localhost");
 
-      expect(practiceUrl.pathname).toBe("/");
+      expect(practiceUrl.pathname).toBe("/practice");
       expect(practiceUrl.searchParams.get("drill")).toBe(lesson.practice.drill);
       expect(practiceUrl.searchParams.get("lesson")).toBe(lesson.slug);
       expect(practiceUrl.hash).toBe("#practice");

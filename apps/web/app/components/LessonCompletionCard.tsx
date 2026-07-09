@@ -27,7 +27,7 @@ const checkpoints = [
   },
   {
     id: "play",
-    label: "I played the lesson prompts on guitar."
+    label: "I played the lesson examples on guitar."
   },
   {
     id: "write",

@@ -1,0 +1,18 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FretGarden profile picture option 6</title>
+  <desc id="desc">A high contrast F-shaped fretboard mark with a leaf.</desc>
+  <rect width="1080" height="1080" fill="#24231C"/>
+  <circle cx="540" cy="540" r="446" fill="#2F4537"/>
+  <circle cx="540" cy="540" r="374" fill="#F8F0E2"/>
+  <path d="M330 300H742" stroke="#2F4537" stroke-width="92" stroke-linecap="round"/>
+  <path d="M330 522H672" stroke="#2F4537" stroke-width="92" stroke-linecap="round"/>
+  <path d="M330 300V790" stroke="#2F4537" stroke-width="92" stroke-linecap="round"/>
+  <path d="M410 300V790" stroke="#78966F" stroke-width="18" stroke-linecap="round"/>
+  <path d="M330 410H742" stroke="#78966F" stroke-width="18" stroke-linecap="round"/>
+  <path d="M330 632H672" stroke="#78966F" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="330" cy="300" r="35" fill="#D6A34F"/>
+  <circle cx="330" cy="522" r="35" fill="#B86F45"/>
+  <path d="M694 366C694 286.28 755.28 225 835 225C835 304.72 773.72 366 694 366Z" fill="#78966F"/>
+  <path d="M693 362C724 334 758 306 835 225" stroke="#E4EDDC" stroke-width="12" stroke-linecap="round"/>
+  <path d="M572 790C572 710.28 510.72 649 431 649C431 728.72 492.28 790 572 790Z" fill="#D6A34F"/>
+</svg>

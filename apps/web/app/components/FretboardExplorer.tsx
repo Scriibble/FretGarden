@@ -14,7 +14,7 @@ import type {
   TriadQuality
 } from "@pocket-practice/music-theory-engine";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { PracticeHub, type DemoChecklistItem } from "./PracticeHub";
+import { PracticeHub } from "./PracticeHub";
 import { PracticePromptPanel } from "./PracticePromptPanel";
 import {
   PracticeReviewPanel,
@@ -24,12 +24,6 @@ import {
   type PracticeReviewSection
 } from "./PracticeReviewPanel";
 import { PracticeSessionSettings } from "./PracticeSessionSettings";
-import {
-  ProgressDashboard,
-  type HabitStat,
-  type PracticeWeakSpot,
-  type RecentPracticeSession
-} from "./ProgressDashboard";
 import {
   getLesson,
   getNextLesson,
@@ -57,7 +51,6 @@ import {
   SCALE_DEGREE_HISTORY_STORAGE_KEY,
   TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY,
   TRIAD_INVERSION_HISTORY_STORAGE_KEY,
-  clearStoredPracticeData,
   readStoredPracticeData
 } from "../lib/practiceStorage";
 import {
@@ -70,6 +63,7 @@ import {
   buildLearningCourseProgress,
   type LessonLearningProgressRecord
 } from "../lib/lessonLearningProgress";
+import { formatSessionDate } from "../lib/practiceHistory";
 import {
   CHORD_TONE_SESSION_PRESETS,
   DEFAULT_CHORD_TONE_SESSION_SETTINGS,
@@ -911,106 +905,6 @@ export function FretboardExplorer() {
     recommendedTriadInversionPreset,
     courseProgress
   );
-  const courseRecommendationLesson =
-    courseProgress.currentLesson ?? lessons[0] ?? null;
-  const courseRecommendationStepNumber =
-    courseRecommendationLesson === null
-      ? 0
-      : (courseProgress.items.find(
-          (item) => item.lesson.slug === courseRecommendationLesson.slug
-        )?.index ?? 0) + 1;
-  const demoChecklistItems = useMemo<DemoChecklistItem[]>(
-    () => [
-      {
-        label: "Open the first lesson",
-        isComplete:
-          lessonLearningProgressRecords.some(
-            (record) => record.slug === "fretboard-map"
-          ) ||
-          lessonProgressRecords.some((record) => record.slug === "fretboard-map")
-      },
-      {
-        label: "Complete a note-recognition drill",
-        isComplete: isLessonComplete(lessonProgressRecords, "fretboard-map")
-      },
-      {
-        label: "Complete the chord-tone drill",
-        isComplete: isLessonComplete(lessonProgressRecords, "triads")
-      },
-      {
-        label: "Complete the scale-degree drill",
-        isComplete: isLessonComplete(lessonProgressRecords, "scale-degrees")
-      },
-      {
-        label: "Review local progress",
-        isComplete:
-          courseProgress.completedCount > 0 ||
-          lessonProgressRecords.some((record) => record.status === "complete")
-      }
-    ],
-    [
-      courseProgress.completedCount,
-      lessonLearningProgressRecords,
-      lessonProgressRecords
-    ]
-  );
-  const recentPracticeSessions = useMemo(
-    () =>
-      buildRecentPracticeSessions(
-        sessionHistory,
-        chordSessionHistory,
-        scaleDegreeSessionHistory,
-        intervalSessionHistory,
-        octaveSessionHistory,
-        triadInversionSessionHistory
-      ),
-    [
-      sessionHistory,
-      chordSessionHistory,
-      scaleDegreeSessionHistory,
-      intervalSessionHistory,
-      octaveSessionHistory,
-      triadInversionSessionHistory
-    ]
-  );
-  const habitStats = useMemo(
-    () =>
-      buildHabitStats(
-        sessionHistory,
-        chordSessionHistory,
-        scaleDegreeSessionHistory,
-        intervalSessionHistory,
-        octaveSessionHistory,
-        triadInversionSessionHistory
-      ),
-    [
-      sessionHistory,
-      chordSessionHistory,
-      scaleDegreeSessionHistory,
-      intervalSessionHistory,
-      octaveSessionHistory,
-      triadInversionSessionHistory
-    ]
-  );
-  const dashboardWeakSpots = useMemo(
-    () =>
-      buildDashboardWeakSpots(
-        notePerformance.weakSpots,
-        chordPerformance.weakSpots,
-        scaleDegreePerformance.weakSpots,
-        intervalPerformance.weakSpots,
-        octavePerformance.weakSpots,
-        triadInversionPerformance.weakSpots
-      ),
-    [
-      notePerformance.weakSpots,
-      chordPerformance.weakSpots,
-      scaleDegreePerformance.weakSpots,
-      intervalPerformance.weakSpots,
-      octavePerformance.weakSpots,
-      triadInversionPerformance.weakSpots
-    ]
-  );
   const activeLesson = useMemo(
     () => (activeLessonSlug ? getLesson(activeLessonSlug) ?? null : null),
     [activeLessonSlug]
@@ -1775,39 +1669,6 @@ export function FretboardExplorer() {
     })();
   }
 
-  function handleResetDemoProgress(): void {
-    const shouldReset = window.confirm(
-      "Reset local demo progress on this browser?"
-    );
-
-    if (!shouldReset) {
-      return;
-    }
-
-    clearStoredPracticeData();
-    setSessionHistory([]);
-    setChordSessionHistory([]);
-    setScaleDegreeSessionHistory([]);
-    setIntervalSessionHistory([]);
-    setOctaveSessionHistory([]);
-    setTriadInversionSessionHistory([]);
-    setCustomNotePreset(null);
-    setCustomChordPreset(null);
-    setCustomScaleDegreePreset(null);
-    setCustomIntervalPreset(null);
-    setCustomOctavePreset(null);
-    setCustomTriadInversionPreset(null);
-    setLessonProgressRecords([]);
-    setLessonLearningProgressRecords([]);
-    setActiveLessonSlug(null);
-    resetNoteRecognitionDrill();
-    resetChordToneDrill();
-    resetScaleDegreeDrill();
-    resetIntervalLandmarkDrill();
-    resetOctaveShapeDrill();
-    resetTriadInversionDrill();
-  }
-
   function scrollPracticeSessionIntoView(): void {
     window.setTimeout(() => {
       practiceLayoutRef.current?.scrollIntoView({
@@ -1913,7 +1774,7 @@ export function FretboardExplorer() {
     <main className="app-shell">
       <header className="app-header">
         <div>
-          <p className="eyebrow">Pocket.Practice</p>
+          <p className="eyebrow">FretGarden</p>
           <h1>Fretboard Practice</h1>
           <p>
             Explore standard tuning, find notes, and map chord or scale tones
@@ -1978,51 +1839,11 @@ export function FretboardExplorer() {
         onStartTriadInversion={() =>
           handleStartTriadInversionPreset(recommendedTriadInversionPreset)
         }
-        courseRecommendationTitle={
-          courseProgress.isComplete
-            ? "Course path complete"
-            : courseRecommendationLesson?.title ?? "Start the lesson path"
-        }
-        courseRecommendationDescription={
-          courseProgress.isComplete
-            ? "You finished every guided lesson in the current path. Use smart recommendations to reinforce weak spots."
-            : courseRecommendationLesson
-              ? `Continue step ${courseRecommendationStepNumber} of ${courseProgress.totalCount}: ${courseRecommendationLesson.summary}`
-              : "Start with the fretboard map, then read, play, and write through each lesson."
-        }
-        courseProgressLabel={`${courseProgress.completedCount}/${courseProgress.totalCount} lessons complete`}
-        courseProgressPercent={courseProgress.percentComplete}
-        courseStepLabel={
-          courseProgress.isComplete
-            ? "Course complete"
-            : courseRecommendationLesson
-              ? `Current step ${courseRecommendationStepNumber}`
-              : "Ready to begin"
-        }
-        courseLessonHref={
-          courseRecommendationLesson
-            ? `/lessons/${courseRecommendationLesson.slug}`
-            : "/lessons"
-        }
-        coursePracticeHref={courseRecommendationLesson?.practice.href ?? "#practice"}
         recommendationTitle={practiceRecommendation.title}
         recommendationDescription={practiceRecommendation.description}
         onStartRecommendation={() =>
           handleStartRecommendation(practiceRecommendation)
         }
-        demoChecklistItems={demoChecklistItems}
-        onResetDemoProgress={handleResetDemoProgress}
-      />
-
-      <ProgressDashboard
-        recommendationTitle={practiceRecommendation.title}
-        recommendationDescription={practiceRecommendation.description}
-        onStartRecommendation={() =>
-          handleStartRecommendation(practiceRecommendation)
-        }
-        habitStats={habitStats}
-        recentSessions={recentPracticeSessions}
-        weakSpots={dashboardWeakSpots}
       />
 
       <section
@@ -2036,43 +1857,19 @@ export function FretboardExplorer() {
         ref={practiceLayoutRef}
       >
         <aside className="controls-panel" aria-label="Fretboard controls">
-          <div className="control-group">
-            <span className="control-label">Mode</span>
-            <div className="segmented-control">
-              {modes.map((option) => (
-                <button
-                  className={option.id === mode ? "is-selected" : ""}
-                  data-testid={`mode-${option.id}`}
-                  key={option.id}
-                  onClick={() => handleModeChange(option.id)}
-                  type="button"
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {mode === "practice" ? (
+          <details className="control-disclosure">
+            <summary>
+              <span className="control-label">Mode</span>
+              <strong>{getModeLabel(mode)}</strong>
+            </summary>
             <div className="control-group">
-              <span className="control-label">Drill</span>
-              <div className="segmented-control option-grid six">
-                {([
-                  { id: "note", label: "Note drill" },
-                  { id: "chordTone", label: "Chord drill" },
-                  { id: "scaleDegree", label: "Scale drill" },
-                  { id: "interval", label: "Interval drill" },
-                  { id: "octaveShape", label: "Octave drill" },
-                  { id: "triadInversion", label: "Inversion drill" }
-                ] as const).map((option) => (
+              <div className="segmented-control">
+                {modes.map((option) => (
                   <button
-                    className={option.id === practiceDrill ? "is-selected" : ""}
-                    data-testid={`drill-${option.id}`}
+                    className={option.id === mode ? "is-selected" : ""}
+                    data-testid={`mode-${option.id}`}
                     key={option.id}
-                    onClick={() => {
-                      setPracticeDrill(option.id);
-                      setSelectedPosition(null);
-                    }}
+                    onClick={() => handleModeChange(option.id)}
                     type="button"
                   >
                     {option.label}
@@ -2080,60 +1877,105 @@ export function FretboardExplorer() {
                 ))}
               </div>
             </div>
+          </details>
+
+          {mode === "practice" ? (
+            <details className="control-disclosure">
+              <summary>
+                <span className="control-label">Drill</span>
+                <strong>{getPracticeDrillLabel(practiceDrill)}</strong>
+              </summary>
+              <div className="control-group">
+                <div className="segmented-control option-grid six">
+                  {([
+                    { id: "note", label: "Note drill" },
+                    { id: "chordTone", label: "Chord drill" },
+                    { id: "scaleDegree", label: "Scale drill" },
+                    { id: "interval", label: "Interval drill" },
+                    { id: "octaveShape", label: "Octave drill" },
+                    { id: "triadInversion", label: "Inversion drill" }
+                  ] as const).map((option) => (
+                    <button
+                      className={
+                        option.id === practiceDrill ? "is-selected" : ""
+                      }
+                      data-testid={`drill-${option.id}`}
+                      key={option.id}
+                      onClick={() => {
+                        setPracticeDrill(option.id);
+                        setSelectedPosition(null);
+                      }}
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </details>
           ) : null}
 
           {mode === "practice" ? (
-            <PracticeSessionSettings
-              practiceDrill={practiceDrill}
-              note={{
-                presetOptions: notePresetOptions,
-                settings: noteSessionSettings,
-                missedReviewCount: noteMissedReviewCount,
-                onPresetSelect: handleNotePresetSelect,
-                onSavePreset: handleSaveNotePreset,
-                onSettingsChange: handleNoteSessionSettingsChange
-              }}
-              chord={{
-                presetOptions: chordPresetOptions,
-                settings: chordSessionSettings,
-                missedReviewCount: chordMissedReviewCount,
-                onPresetSelect: handleChordPresetSelect,
-                onSavePreset: handleSaveChordPreset,
-                onSettingsChange: handleChordSessionSettingsChange
-              }}
-              scale={{
-                presetOptions: scaleDegreePresetOptions,
-                settings: scaleDegreeSessionSettings,
-                missedReviewCount: scaleDegreeMissedReviewCount,
-                onPresetSelect: handleScaleDegreePresetSelect,
-                onSavePreset: handleSaveScaleDegreePreset,
-                onSettingsChange: handleScaleDegreeSessionSettingsChange
-              }}
-              interval={{
-                presetOptions: intervalPresetOptions,
-                settings: intervalSessionSettings,
-                missedReviewCount: intervalMissedReviewCount,
-                onPresetSelect: handleIntervalPresetSelect,
-                onSavePreset: handleSaveIntervalPreset,
-                onSettingsChange: handleIntervalSessionSettingsChange
-              }}
-              octave={{
-                presetOptions: octavePresetOptions,
-                settings: octaveSessionSettings,
-                missedReviewCount: octaveMissedReviewCount,
-                onPresetSelect: handleOctavePresetSelect,
-                onSavePreset: handleSaveOctavePreset,
-                onSettingsChange: handleOctaveSessionSettingsChange
-              }}
-              triadInversion={{
-                presetOptions: triadInversionPresetOptions,
-                settings: triadInversionSessionSettings,
-                missedReviewCount: triadInversionMissedReviewCount,
-                onPresetSelect: handleTriadInversionPresetSelect,
-                onSavePreset: handleSaveTriadInversionPreset,
-                onSettingsChange: handleTriadInversionSessionSettingsChange
-              }}
-            />
+            <details
+              className="control-disclosure"
+              data-testid="session-setup-disclosure"
+            >
+              <summary>
+                <span className="control-label">Session setup</span>
+                <strong>{activePromptCount} questions</strong>
+              </summary>
+              <PracticeSessionSettings
+                practiceDrill={practiceDrill}
+                note={{
+                  presetOptions: notePresetOptions,
+                  settings: noteSessionSettings,
+                  missedReviewCount: noteMissedReviewCount,
+                  onPresetSelect: handleNotePresetSelect,
+                  onSavePreset: handleSaveNotePreset,
+                  onSettingsChange: handleNoteSessionSettingsChange
+                }}
+                chord={{
+                  presetOptions: chordPresetOptions,
+                  settings: chordSessionSettings,
+                  missedReviewCount: chordMissedReviewCount,
+                  onPresetSelect: handleChordPresetSelect,
+                  onSavePreset: handleSaveChordPreset,
+                  onSettingsChange: handleChordSessionSettingsChange
+                }}
+                scale={{
+                  presetOptions: scaleDegreePresetOptions,
+                  settings: scaleDegreeSessionSettings,
+                  missedReviewCount: scaleDegreeMissedReviewCount,
+                  onPresetSelect: handleScaleDegreePresetSelect,
+                  onSavePreset: handleSaveScaleDegreePreset,
+                  onSettingsChange: handleScaleDegreeSessionSettingsChange
+                }}
+                interval={{
+                  presetOptions: intervalPresetOptions,
+                  settings: intervalSessionSettings,
+                  missedReviewCount: intervalMissedReviewCount,
+                  onPresetSelect: handleIntervalPresetSelect,
+                  onSavePreset: handleSaveIntervalPreset,
+                  onSettingsChange: handleIntervalSessionSettingsChange
+                }}
+                octave={{
+                  presetOptions: octavePresetOptions,
+                  settings: octaveSessionSettings,
+                  missedReviewCount: octaveMissedReviewCount,
+                  onPresetSelect: handleOctavePresetSelect,
+                  onSavePreset: handleSaveOctavePreset,
+                  onSettingsChange: handleOctaveSessionSettingsChange
+                }}
+                triadInversion={{
+                  presetOptions: triadInversionPresetOptions,
+                  settings: triadInversionSessionSettings,
+                  missedReviewCount: triadInversionMissedReviewCount,
+                  onPresetSelect: handleTriadInversionPresetSelect,
+                  onSavePreset: handleSaveTriadInversionPreset,
+                  onSettingsChange: handleTriadInversionSessionSettingsChange
+                }}
+              />
+            </details>
           ) : null}
 
           {mode !== "practice" ? (
@@ -2191,26 +2033,18 @@ export function FretboardExplorer() {
             </div>
           ) : null}
 
-          <div className="summary-panel">
-            <span>{summary.badge}</span>
-            <strong>{mode === "practice" ? "Practice session" : summary.title}</strong>
-            <p>
-              {mode === "practice"
-                ? "Read the question, then answer from the board or answer controls."
-                : summary.description}
-            </p>
-            <div className="tone-list" aria-label="Current tones">
-              {(mode === "practice"
-                ? [
-                    getPracticeDrillLabel(practiceDrill),
-                    `${activeDrillSummary.attempted}/${activePromptCount} complete`
-                  ]
-                : summary.tones
-              ).map((tone) => (
-                <span key={tone}>{tone}</span>
-              ))}
+          {mode !== "practice" ? (
+            <div className="summary-panel">
+              <span>{summary.badge}</span>
+              <strong>{summary.title}</strong>
+              <p>{summary.description}</p>
+              <div className="tone-list" aria-label="Current tones">
+                {summary.tones.map((tone) => (
+                  <span key={tone}>{tone}</span>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           {mode === "practice" &&
           (practiceDrill === "chordTone" ||
@@ -2282,7 +2116,7 @@ export function FretboardExplorer() {
                 </strong>
               </div>
               <div
-                aria-label={`${activeDrillSummary.attempted} of ${activePromptCount} prompts complete`}
+                aria-label={`${activeDrillSummary.attempted} of ${activePromptCount} questions complete`}
                 className="progress-track"
               >
                 <span
@@ -3291,6 +3125,10 @@ function getStringDisplayName(string: GuitarStringNumber): string {
   return stringDisplayNames[string];
 }
 
+function getModeLabel(mode: DisplayMode): string {
+  return modes.find((option) => option.id === mode)?.label ?? "Practice";
+}
+
 function getPracticeDrillLabel(practiceDrill: PracticeDrill): string {
   if (practiceDrill === "chordTone") {
     return "Chord tones";
@@ -3348,15 +3186,6 @@ function parseLessonPracticeRequest(
     slug: lesson.slug,
     drill: lesson.practice.drill
   };
-}
-
-function isLessonComplete(
-  progress: readonly LessonProgressRecord[],
-  slug: string
-): boolean {
-  return progress.some(
-    (record) => record.slug === slug && record.status === "complete"
-  );
 }
 
 function normalizeNoteSessionSettings(
@@ -4094,222 +3923,6 @@ function formatHubAccuracy(
   return session ? `${session.accuracy}% last session` : "No sessions yet";
 }
 
-function buildHabitStats(
-  noteSessions: readonly NoteRecognitionSession[],
-  chordSessions: readonly ChordToneSession[],
-  scaleSessions: readonly ScaleDegreeSession[],
-  intervalSessions: readonly IntervalLandmarkSession[],
-  octaveSessions: readonly OctaveShapeSession[],
-  triadInversionSessions: readonly TriadInversionSession[]
-): HabitStat[] {
-  const sessions = [
-    ...noteSessions,
-    ...chordSessions,
-    ...scaleSessions,
-    ...intervalSessions,
-    ...octaveSessions,
-    ...triadInversionSessions
-  ];
-  const recentSessions = [...sessions]
-    .sort(
-      (left, right) =>
-        new Date(right.completedAt).getTime() -
-        new Date(left.completedAt).getTime()
-    )
-    .slice(0, 5);
-  const mastery =
-    recentSessions.length === 0
-      ? 0
-      : Math.round(
-          recentSessions.reduce((total, session) => total + session.accuracy, 0) /
-            recentSessions.length
-        );
-
-  const streak = getPracticeStreak(sessions);
-
-  return [
-    {
-      id: "streak",
-      label: "Streak",
-      value: `${streak} day${streak === 1 ? "" : "s"}`,
-      detail:
-        sessions.length > 0
-          ? "Keep the daily chain alive"
-          : "Finish one session to begin",
-      variant: "streak"
-    },
-    {
-      id: "xp",
-      label: "Practice XP",
-      value: String(getPracticeXp(sessions)),
-      detail: `${sessions.length} saved session${sessions.length === 1 ? "" : "s"}`,
-      variant: "xp"
-    },
-    {
-      id: "mastery",
-      label: "Mastery",
-      value: `${mastery}%`,
-      detail:
-        recentSessions.length > 0
-          ? "Average of recent sessions"
-          : "Build a baseline today",
-      variant: "mastery"
-    }
-  ];
-}
-
-function getPracticeXp(
-  sessions: readonly {
-    correct: number;
-    promptCount: number;
-  }[]
-): number {
-  return sessions.reduce(
-    (total, session) => total + session.promptCount * 10 + session.correct * 5,
-    0
-  );
-}
-
-function getPracticeStreak(
-  sessions: readonly {
-    completedAt: string;
-  }[]
-): number {
-  const sessionDays = new Set(
-    sessions.map((session) => formatDateKey(new Date(session.completedAt)))
-  );
-  const today = new Date();
-  let streak = 0;
-
-  for (
-    const cursor = new Date(today);
-    sessionDays.has(formatDateKey(cursor));
-    cursor.setDate(cursor.getDate() - 1)
-  ) {
-    streak += 1;
-  }
-
-  return streak;
-}
-
-function formatDateKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
-function buildRecentPracticeSessions(
-  noteSessions: readonly NoteRecognitionSession[],
-  chordSessions: readonly ChordToneSession[],
-  scaleSessions: readonly ScaleDegreeSession[],
-  intervalSessions: readonly IntervalLandmarkSession[],
-  octaveSessions: readonly OctaveShapeSession[],
-  triadInversionSessions: readonly TriadInversionSession[]
-): RecentPracticeSession[] {
-  return [
-    ...noteSessions.map((session) => ({
-      session,
-      drillLabel: "Note recognition"
-    })),
-    ...chordSessions.map((session) => ({
-      session,
-      drillLabel: "Chord tones"
-    })),
-    ...scaleSessions.map((session) => ({
-      session,
-      drillLabel: "Scale degrees"
-    })),
-    ...intervalSessions.map((session) => ({
-      session,
-      drillLabel: "Interval landmarks"
-    })),
-    ...octaveSessions.map((session) => ({
-      session,
-      drillLabel: "Octave shapes"
-    })),
-    ...triadInversionSessions.map((session) => ({
-      session,
-      drillLabel: "Triad inversions"
-    }))
-  ]
-    .sort(
-      (left, right) =>
-        new Date(right.session.completedAt).getTime() -
-        new Date(left.session.completedAt).getTime()
-    )
-    .slice(0, 5)
-    .map(({ session, drillLabel }) =>
-      toRecentPracticeSession(session, drillLabel)
-    );
-}
-
-function toRecentPracticeSession(
-  session:
-    | NoteRecognitionSession
-    | ChordToneSession
-    | ScaleDegreeSession
-    | IntervalLandmarkSession
-    | OctaveShapeSession
-    | TriadInversionSession,
-  drillLabel: string
-): RecentPracticeSession {
-  return {
-    id: `${drillLabel}-${session.id}`,
-    drillLabel,
-    accuracy: session.accuracy,
-    correct: session.correct,
-    promptCount: session.promptCount,
-    completedAtLabel: formatSessionDate(session.completedAt)
-  };
-}
-
-function buildDashboardWeakSpots(
-  noteWeakSpots: readonly NoteRecognitionPerformanceStat[],
-  chordWeakSpots: readonly ChordTonePerformanceStat[],
-  scaleWeakSpots: readonly ScaleDegreePerformanceStat[],
-  intervalWeakSpots: readonly IntervalLandmarkPerformanceStat[],
-  octaveWeakSpots: readonly OctaveShapePerformanceStat[],
-  triadInversionWeakSpots: readonly TriadInversionPerformanceStat[]
-): PracticeWeakSpot[] {
-  return [
-    ...noteWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Note recognition")),
-    ...chordWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Chord tones")),
-    ...scaleWeakSpots.map((stat) => toPracticeWeakSpot(stat, "Scale degrees")),
-    ...intervalWeakSpots.map((stat) =>
-      toPracticeWeakSpot(stat, "Interval landmarks")
-    ),
-    ...octaveWeakSpots.map((stat) =>
-      toPracticeWeakSpot(stat, "Octave shapes")
-    ),
-    ...triadInversionWeakSpots.map((stat) =>
-      toPracticeWeakSpot(stat, "Triad inversions")
-    )
-  ]
-    .sort(
-      (left, right) =>
-        left.accuracy - right.accuracy ||
-        right.missed - left.missed ||
-        right.attempted - left.attempted ||
-        left.label.localeCompare(right.label)
-    )
-    .slice(0, 6);
-}
-
-function toPracticeWeakSpot(
-  stat: PerformanceStat,
-  drillLabel: string
-): PracticeWeakSpot {
-  return {
-    id: `${drillLabel}-${stat.category}-${stat.id}`,
-    drillLabel,
-    label: stat.label,
-    accuracy: stat.accuracy,
-    missed: stat.missed,
-    attempted: stat.attempted
-  };
-}
-
 function getRecommendedNotePreset(
   performance: ReturnType<typeof buildNoteRecognitionPerformanceSummary>,
   presets: readonly NoteRecognitionSessionPreset[]
@@ -4559,7 +4172,7 @@ function buildPracticeHubRecommendation(
     drill: "note",
     title: "Start with a quick warmup",
     description:
-      "No weak spots yet. Begin with a short note session, then Pocket.Practice can recommend more targeted work.",
+      "No weak spots yet. Begin with a short note session, then FretGarden can recommend more targeted work.",
     preset: notePreset
   };
 }
@@ -4709,13 +4322,4 @@ function collectTriadInversionReviewPrompts(
   });
 
   return [...promptsByTarget.values()];
-}
-
-function formatSessionDate(completedAt: string): string {
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit"
-  }).format(new Date(completedAt));
 }

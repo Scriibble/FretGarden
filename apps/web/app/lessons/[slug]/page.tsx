@@ -29,7 +29,7 @@ export async function generateMetadata({
   const lesson = getLesson(slug);
 
   return {
-    title: lesson ? `${lesson.title} | Pocket.Practice` : "Lesson not found",
+    title: lesson ? lesson.title : "Lesson not found",
     description: lesson?.summary
   };
 }
@@ -49,7 +49,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     <main className="lesson-shell lesson-page">
       <nav className="lesson-nav" aria-label="Lesson navigation">
         <Link href="/lessons">All lessons</Link>
-        <Link href="/#practice">Practice</Link>
+        <Link href="/practice#practice">Practice</Link>
       </nav>
 
       <article className="lesson-content">
