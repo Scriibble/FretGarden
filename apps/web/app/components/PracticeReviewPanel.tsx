@@ -69,7 +69,7 @@ export function PracticeReviewPanel({
         <div className="review-actions">
           {canPracticeMisses ? (
             <button onClick={onPracticeMisses} type="button">
-              Practice missed prompts
+              Practice missed answers
             </button>
           ) : null}
           <button onClick={onPracticeAgain} type="button">
@@ -110,7 +110,7 @@ export function PracticeReviewPanel({
       </div>
 
       <div className="missed-prompts">
-        <span className="control-label">Missed prompts</span>
+        <span className="control-label">Missed answers</span>
         {missedPrompts.length > 0 ? (
           <ul>
             {missedPrompts.map((missedPrompt) => (
@@ -121,7 +121,7 @@ export function PracticeReviewPanel({
             ))}
           </ul>
         ) : (
-          <p>No missed prompts. Clean run.</p>
+          <p>No missed answers. Clean run.</p>
         )}
       </div>
 

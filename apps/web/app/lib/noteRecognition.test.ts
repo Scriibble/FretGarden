@@ -53,17 +53,6 @@ describe("noteRecognition", () => {
           promptOrder: "random",
           reviewMode: "missed"
         }
-      },
-      {
-        id: "low-e-focus",
-        label: "Low E focus",
-        settings: {
-          sessionLength: 10,
-          noteFocus: "all",
-          stringFocus: 6,
-          promptOrder: "random",
-          reviewMode: "full"
-        }
       }
     ]);
   });

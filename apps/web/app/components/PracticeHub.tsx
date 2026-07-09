@@ -172,7 +172,7 @@ export function PracticeHub({
             <div>
               <span className="control-label">Note Recognition</span>
               <h3>Find notes by string</h3>
-              <p>Train the fretboard map with string-specific note prompts.</p>
+              <p>Train the fretboard map with string-specific questions.</p>
             </div>
             <div className="hub-metrics">
               <span>{noteLastSessionLabel}</span>
@@ -191,7 +191,7 @@ export function PracticeHub({
             <div>
               <span className="control-label">Chord Tones</span>
               <h3>Spell roots, 3rds, and 5ths</h3>
-              <p>Build triad fluency with concept-first chord-tone prompts.</p>
+              <p>Build triad fluency with concept-first chord-tone questions.</p>
             </div>
             <div className="hub-metrics">
               <span>{chordLastSessionLabel}</span>

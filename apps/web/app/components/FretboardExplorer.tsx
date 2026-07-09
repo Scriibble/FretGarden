@@ -1066,7 +1066,11 @@ export function FretboardExplorer() {
       storedPracticeData.triadInversionSessionHistory
     );
     setLessonProgressRecords(storedPracticeData.lessonProgressRecords);
-    setCustomNotePreset(storedPracticeData.customNotePreset);
+    setCustomNotePreset(
+      storedPracticeData.customNotePreset
+        ? normalizeNotePreset(storedPracticeData.customNotePreset)
+        : null
+    );
     setCustomChordPreset(storedPracticeData.customChordPreset);
     setCustomScaleDegreePreset(storedPracticeData.customScaleDegreePreset);
     setCustomIntervalPreset(storedPracticeData.customIntervalPreset);
@@ -1626,15 +1630,17 @@ export function FretboardExplorer() {
   function handleNoteSessionSettingsChange(
     nextSettings: Partial<NoteRecognitionSessionSettings>
   ): void {
-    setNoteSessionSettings((previousSettings) => ({
-      ...previousSettings,
-      ...nextSettings
-    }));
+    setNoteSessionSettings((previousSettings) =>
+      normalizeNoteSessionSettings({
+        ...previousSettings,
+        ...nextSettings
+      })
+    );
     resetNoteRecognitionDrill();
   }
 
   function handleNotePresetSelect(preset: NoteRecognitionSessionPreset): void {
-    setNoteSessionSettings(preset.settings);
+    setNoteSessionSettings(normalizeNoteSessionSettings(preset.settings));
     resetNoteRecognitionDrill();
   }
 
@@ -1686,7 +1692,7 @@ export function FretboardExplorer() {
     const nextPreset = {
       id: "custom",
       label: "Custom",
-      settings: noteSessionSettings
+      settings: normalizeNoteSessionSettings(noteSessionSettings)
     } satisfies NoteRecognitionSessionPreset;
 
     setCustomNotePreset(nextPreset);
@@ -1849,11 +1855,13 @@ export function FretboardExplorer() {
         resetIntervalLandmarkDrill();
       },
       note: () => {
-        setNoteSessionSettings((previousSettings) => ({
-          ...previousSettings,
-          promptOrder: "fixed",
-          reviewMode: "missed"
-        }));
+        setNoteSessionSettings((previousSettings) =>
+          normalizeNoteSessionSettings({
+            ...previousSettings,
+            promptOrder: "fixed",
+            reviewMode: "missed"
+          })
+        );
         resetNoteRecognitionDrill();
       },
       octaveShape: () => {
@@ -2170,7 +2178,7 @@ export function FretboardExplorer() {
             <strong>{mode === "practice" ? "Practice session" : summary.title}</strong>
             <p>
               {mode === "practice"
-                ? "Read the active prompt, then answer from the board or answer controls."
+                ? "Read the question, then answer from the board or answer controls."
                 : summary.description}
             </p>
             <div className="tone-list" aria-label="Current tones">
@@ -2273,7 +2281,7 @@ export function FretboardExplorer() {
               practicePrompt={{
                 label: activeDrillSummary.isComplete
                   ? "Session complete"
-                  : "Prompt",
+                  : "Question",
                 title: summary.title,
                 status: getPracticePromptStatus(
                   practiceDrill,
@@ -2810,7 +2818,7 @@ function buildModeSummary(
       if (chordDrillSummary.isComplete) {
         return {
           title: "Chord tone drill complete",
-          description: `You found ${chordDrillSummary.correct} of ${chordDrillSummary.attempted} chord-tone prompts.`,
+          description: `You found ${chordDrillSummary.correct} of ${chordDrillSummary.attempted} chord-tone questions.`,
           badge: `${chordDrillSummary.accuracy}% accuracy`,
           tones: [
             `${chordDrillSummary.correct} correct`,
@@ -2851,7 +2859,7 @@ function buildModeSummary(
       if (scaleDegreeDrillSummary.isComplete) {
         return {
           title: "Scale degree drill complete",
-          description: `You found ${scaleDegreeDrillSummary.correct} of ${scaleDegreeDrillSummary.attempted} scale-degree prompts.`,
+          description: `You found ${scaleDegreeDrillSummary.correct} of ${scaleDegreeDrillSummary.attempted} scale-degree questions.`,
           badge: `${scaleDegreeDrillSummary.accuracy}% accuracy`,
           tones: [
             `${scaleDegreeDrillSummary.correct} correct`,
@@ -2887,7 +2895,7 @@ function buildModeSummary(
       if (intervalDrillSummary.isComplete) {
         return {
           title: "Interval landmark drill complete",
-          description: `You found ${intervalDrillSummary.correct} of ${intervalDrillSummary.attempted} interval prompts.`,
+          description: `You found ${intervalDrillSummary.correct} of ${intervalDrillSummary.attempted} interval questions.`,
           badge: `${intervalDrillSummary.accuracy}% accuracy`,
           tones: [
             `${intervalDrillSummary.correct} correct`,
@@ -2924,7 +2932,7 @@ function buildModeSummary(
       if (octaveDrillSummary.isComplete) {
         return {
           title: "Octave shape drill complete",
-          description: `You found ${octaveDrillSummary.correct} of ${octaveDrillSummary.attempted} octave-shape prompts.`,
+          description: `You found ${octaveDrillSummary.correct} of ${octaveDrillSummary.attempted} octave-shape questions.`,
           badge: `${octaveDrillSummary.accuracy}% accuracy`,
           tones: [
             `${octaveDrillSummary.correct} correct`,
@@ -2971,7 +2979,7 @@ function buildModeSummary(
       if (triadInversionDrillSummary.isComplete) {
         return {
           title: "Triad inversion drill complete",
-          description: `You found ${triadInversionDrillSummary.correct} of ${triadInversionDrillSummary.attempted} inversion prompts.`,
+          description: `You found ${triadInversionDrillSummary.correct} of ${triadInversionDrillSummary.attempted} inversion questions.`,
           badge: `${triadInversionDrillSummary.accuracy}% accuracy`,
           tones: [
             `${triadInversionDrillSummary.correct} correct`,
@@ -3001,7 +3009,7 @@ function buildModeSummary(
     if (drillSummary.isComplete) {
       return {
         title: "Note recognition complete",
-        description: `You found ${drillSummary.correct} of ${drillSummary.attempted} prompts.`,
+        description: `You found ${drillSummary.correct} of ${drillSummary.attempted} questions.`,
         badge: `${drillSummary.accuracy}% accuracy`,
         tones: [
           `${drillSummary.correct} correct`,
@@ -3333,6 +3341,25 @@ function isLessonComplete(
   );
 }
 
+function normalizeNoteSessionSettings(
+  settings: NoteRecognitionSessionSettings
+): NoteRecognitionSessionSettings {
+  return {
+    ...settings,
+    noteFocus: "all",
+    stringFocus: "all"
+  };
+}
+
+function normalizeNotePreset(
+  preset: NoteRecognitionSessionPreset
+): NoteRecognitionSessionPreset {
+  return {
+    ...preset,
+    settings: normalizeNoteSessionSettings(preset.settings)
+  };
+}
+
 function markStoredLessonStarted(
   slug: string,
   drill: LessonPracticeDrill
@@ -3439,7 +3466,7 @@ function buildLessonReviewOutcome(
   return {
     status: "in-progress",
     title: "Keep this lesson in progress",
-    description: `${lesson.title} needs ${criteriaLabel.toLowerCase()}. This session reached ${summary.accuracy}% accuracy across ${summary.attempted} prompts.`,
+    description: `${lesson.title} needs ${criteriaLabel.toLowerCase()}. This session reached ${summary.accuracy}% accuracy across ${summary.attempted} questions.`,
     criteriaLabel
   };
 }
@@ -3739,7 +3766,7 @@ function toPerformanceReviewItem(stat: PerformanceStat): PracticeReviewItem {
 }
 
 function formatLessonCriteria(promptCount: number, minAccuracy: number): string {
-  return `${promptCount} prompts at ${minAccuracy}%+`;
+  return `${promptCount} questions at ${minAccuracy}%+`;
 }
 
 function getPracticePromptStatus(

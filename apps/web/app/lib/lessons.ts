@@ -83,7 +83,7 @@ export const lessons = [
         heading: "String-specific practice matters",
         body: [
           "Finding a note on one requested string prevents guessing from a familiar shape.",
-          "That is why Pocket.Practice asks prompts like finding D on the A string."
+          "That is why Pocket.Practice asks questions like finding D on the A string."
         ]
       }
     ],

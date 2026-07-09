@@ -1,6 +1,7 @@
 "use client";
 
-import type { NoteName, ScaleQuality } from "@pocket-practice/music-theory-engine";
+import type { ScaleQuality } from "@pocket-practice/music-theory-engine";
+import type { ReactNode } from "react";
 import type {
   ChordTonePromptOrder,
   ChordToneQualityFocus,
@@ -20,13 +21,11 @@ import type {
   IntervalLandmarkStringFocus
 } from "../lib/intervalLandmarkRecognition";
 import type {
-  NoteRecognitionNoteFocus,
   NoteRecognitionPromptOrder,
   NoteRecognitionReviewMode,
   NoteRecognitionSessionLength,
   NoteRecognitionSessionPreset,
   NoteRecognitionSessionSettings,
-  NoteRecognitionStringFocus
 } from "../lib/noteRecognition";
 import type {
   OctaveShapeFocus,
@@ -127,29 +126,7 @@ interface PracticeSessionSettingsProps {
   };
 }
 
-const notes = [
-  "C",
-  "C#",
-  "D",
-  "D#",
-  "E",
-  "F",
-  "F#",
-  "G",
-  "G#",
-  "A",
-  "A#",
-  "B"
-] as const satisfies readonly NoteName[];
-
 const noteSessionLengthOptions = [6, 10, 20] as const satisfies readonly NoteRecognitionSessionLength[];
-const noteFocusOptions = [
-  { id: "all", label: "All" },
-  ...notes.map((note) => ({ id: note, label: note }))
-] as const satisfies ReadonlyArray<{
-  id: NoteRecognitionNoteFocus;
-  label: string;
-}>;
 const stringFocusOptions = [
   { id: "all", label: "All" },
   { id: 6, label: "Low E" },
@@ -160,7 +137,6 @@ const stringFocusOptions = [
   { id: 1, label: "High E" }
 ] as const satisfies ReadonlyArray<{
   id:
-    | NoteRecognitionStringFocus
     | ScaleDegreeStringFocus
     | IntervalLandmarkStringFocus
     | OctaveShapeStringFocus;
@@ -277,13 +253,6 @@ export function PracticeSessionSettings({
       <div className="session-setup-panel">
         <span className="control-label">Session setup</span>
 
-        <PresetField
-          presets={note.presetOptions}
-          testIdPrefix="note"
-          onPresetSelect={note.onPresetSelect}
-          onSavePreset={note.onSavePreset}
-        />
-
         <div className="setup-field">
           <span>Length</span>
           <div className="segmented-control option-grid three">
@@ -305,49 +274,22 @@ export function PracticeSessionSettings({
           </div>
         </div>
 
-        <div className="setup-field">
-          <span>Target note</span>
-          <div className="note-grid">
-            {noteFocusOptions.map((option) => (
-              <button
-                className={
-                  note.settings.noteFocus === option.id ? "is-selected" : ""
-                }
-                data-testid={`note-focus-${formatNoteFocusTestId(option.id)}`}
-                key={option.id}
-                onClick={() =>
-                  note.onSettingsChange({
-                    noteFocus: option.id
-                  })
-                }
-                type="button"
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <AdvancedSettings>
+          <PromptOrderField
+            selectedOrder={note.settings.promptOrder}
+            testIdPrefix="note"
+            onChange={(promptOrder) => note.onSettingsChange({ promptOrder })}
+          />
 
-        <StringFocusField
-          selectedString={note.settings.stringFocus}
-          testIdPrefix="note"
-          onChange={(stringFocus) => note.onSettingsChange({ stringFocus })}
-        />
-
-        <PromptOrderField
-          selectedOrder={note.settings.promptOrder}
-          testIdPrefix="note"
-          onChange={(promptOrder) => note.onSettingsChange({ promptOrder })}
-        />
-
-        <ReviewModeField
-          missedReviewCount={note.missedReviewCount}
-          selectedReviewMode={note.settings.reviewMode}
-          testIdPrefix="note"
-          emptyMessage="No missed note prompts yet, using the full set."
-          reviewLabel="missed note prompt"
-          onChange={(reviewMode) => note.onSettingsChange({ reviewMode })}
-        />
+          <ReviewModeField
+            missedReviewCount={note.missedReviewCount}
+            selectedReviewMode={note.settings.reviewMode}
+            testIdPrefix="note"
+            emptyMessage="No missed note questions yet, using the full set."
+            reviewLabel="missed note question"
+            onChange={(reviewMode) => note.onSettingsChange({ reviewMode })}
+          />
+        </AdvancedSettings>
       </div>
     );
   }
@@ -414,20 +356,22 @@ export function PracticeSessionSettings({
           </div>
         </div>
 
-        <PromptOrderField
-          selectedOrder={chord.settings.promptOrder}
-          testIdPrefix="chord"
-          onChange={(promptOrder) => chord.onSettingsChange({ promptOrder })}
-        />
+        <AdvancedSettings>
+          <PromptOrderField
+            selectedOrder={chord.settings.promptOrder}
+            testIdPrefix="chord"
+            onChange={(promptOrder) => chord.onSettingsChange({ promptOrder })}
+          />
 
-        <ReviewModeField
-          missedReviewCount={chord.missedReviewCount}
-          selectedReviewMode={chord.settings.reviewMode}
-          testIdPrefix="chord"
-          emptyMessage="No missed chord prompts yet, using the full set."
-          reviewLabel="missed chord prompt"
-          onChange={(reviewMode) => chord.onSettingsChange({ reviewMode })}
-        />
+          <ReviewModeField
+            missedReviewCount={chord.missedReviewCount}
+            selectedReviewMode={chord.settings.reviewMode}
+            testIdPrefix="chord"
+            emptyMessage="No missed chord questions yet, using the full set."
+            reviewLabel="missed chord question"
+            onChange={(reviewMode) => chord.onSettingsChange({ reviewMode })}
+          />
+        </AdvancedSettings>
       </div>
     );
   }
@@ -496,20 +440,26 @@ export function PracticeSessionSettings({
           onChange={(stringFocus) => interval.onSettingsChange({ stringFocus })}
         />
 
-        <PromptOrderField
-          selectedOrder={interval.settings.promptOrder}
-          testIdPrefix="interval"
-          onChange={(promptOrder) => interval.onSettingsChange({ promptOrder })}
-        />
+        <AdvancedSettings>
+          <PromptOrderField
+            selectedOrder={interval.settings.promptOrder}
+            testIdPrefix="interval"
+            onChange={(promptOrder) =>
+              interval.onSettingsChange({ promptOrder })
+            }
+          />
 
-        <ReviewModeField
-          missedReviewCount={interval.missedReviewCount}
-          selectedReviewMode={interval.settings.reviewMode}
-          testIdPrefix="interval"
-          emptyMessage="No missed interval prompts yet, using the full set."
-          reviewLabel="missed interval prompt"
-          onChange={(reviewMode) => interval.onSettingsChange({ reviewMode })}
-        />
+          <ReviewModeField
+            missedReviewCount={interval.missedReviewCount}
+            selectedReviewMode={interval.settings.reviewMode}
+            testIdPrefix="interval"
+            emptyMessage="No missed interval questions yet, using the full set."
+            reviewLabel="missed interval question"
+            onChange={(reviewMode) =>
+              interval.onSettingsChange({ reviewMode })
+            }
+          />
+        </AdvancedSettings>
       </div>
     );
   }
@@ -576,20 +526,24 @@ export function PracticeSessionSettings({
           onChange={(stringFocus) => octave.onSettingsChange({ stringFocus })}
         />
 
-        <PromptOrderField
-          selectedOrder={octave.settings.promptOrder}
-          testIdPrefix="octave"
-          onChange={(promptOrder) => octave.onSettingsChange({ promptOrder })}
-        />
+        <AdvancedSettings>
+          <PromptOrderField
+            selectedOrder={octave.settings.promptOrder}
+            testIdPrefix="octave"
+            onChange={(promptOrder) =>
+              octave.onSettingsChange({ promptOrder })
+            }
+          />
 
-        <ReviewModeField
-          missedReviewCount={octave.missedReviewCount}
-          selectedReviewMode={octave.settings.reviewMode}
-          testIdPrefix="octave"
-          emptyMessage="No missed octave prompts yet, using the full set."
-          reviewLabel="missed octave prompt"
-          onChange={(reviewMode) => octave.onSettingsChange({ reviewMode })}
-        />
+          <ReviewModeField
+            missedReviewCount={octave.missedReviewCount}
+            selectedReviewMode={octave.settings.reviewMode}
+            testIdPrefix="octave"
+            emptyMessage="No missed octave questions yet, using the full set."
+            reviewLabel="missed octave question"
+            onChange={(reviewMode) => octave.onSettingsChange({ reviewMode })}
+          />
+        </AdvancedSettings>
       </div>
     );
   }
@@ -662,24 +616,26 @@ export function PracticeSessionSettings({
           </div>
         </div>
 
-        <PromptOrderField
-          selectedOrder={triadInversion.settings.promptOrder}
-          testIdPrefix="triad-inversion"
-          onChange={(promptOrder) =>
-            triadInversion.onSettingsChange({ promptOrder })
-          }
-        />
+        <AdvancedSettings>
+          <PromptOrderField
+            selectedOrder={triadInversion.settings.promptOrder}
+            testIdPrefix="triad-inversion"
+            onChange={(promptOrder) =>
+              triadInversion.onSettingsChange({ promptOrder })
+            }
+          />
 
-        <ReviewModeField
-          missedReviewCount={triadInversion.missedReviewCount}
-          selectedReviewMode={triadInversion.settings.reviewMode}
-          testIdPrefix="triad-inversion"
-          emptyMessage="No missed inversion prompts yet, using the full set."
-          reviewLabel="missed inversion prompt"
-          onChange={(reviewMode) =>
-            triadInversion.onSettingsChange({ reviewMode })
-          }
-        />
+          <ReviewModeField
+            missedReviewCount={triadInversion.missedReviewCount}
+            selectedReviewMode={triadInversion.settings.reviewMode}
+            testIdPrefix="triad-inversion"
+            emptyMessage="No missed inversion questions yet, using the full set."
+            reviewLabel="missed inversion question"
+            onChange={(reviewMode) =>
+              triadInversion.onSettingsChange({ reviewMode })
+            }
+          />
+        </AdvancedSettings>
       </div>
     );
   }
@@ -751,20 +707,22 @@ export function PracticeSessionSettings({
         onChange={(stringFocus) => scale.onSettingsChange({ stringFocus })}
       />
 
-      <PromptOrderField
-        selectedOrder={scale.settings.promptOrder}
-        testIdPrefix="scale"
-        onChange={(promptOrder) => scale.onSettingsChange({ promptOrder })}
-      />
+      <AdvancedSettings>
+        <PromptOrderField
+          selectedOrder={scale.settings.promptOrder}
+          testIdPrefix="scale"
+          onChange={(promptOrder) => scale.onSettingsChange({ promptOrder })}
+        />
 
-      <ReviewModeField
-        missedReviewCount={scale.missedReviewCount}
-        selectedReviewMode={scale.settings.reviewMode}
-        testIdPrefix="scale"
-        emptyMessage="No missed scale prompts yet, using the full set."
-        reviewLabel="missed scale prompt"
-        onChange={(reviewMode) => scale.onSettingsChange({ reviewMode })}
-      />
+        <ReviewModeField
+          missedReviewCount={scale.missedReviewCount}
+          selectedReviewMode={scale.settings.reviewMode}
+          testIdPrefix="scale"
+          emptyMessage="No missed scale questions yet, using the full set."
+          reviewLabel="missed scale question"
+          onChange={(reviewMode) => scale.onSettingsChange({ reviewMode })}
+        />
+      </AdvancedSettings>
     </div>
   );
 }
@@ -781,8 +739,11 @@ function PresetField<Preset extends { id: string; label: string }>({
   onSavePreset: () => void;
 }) {
   return (
-    <div className="setup-field">
-      <span>Preset</span>
+    <details className="settings-disclosure preset-disclosure">
+      <summary>
+        <span>Quick presets</span>
+        <small>Optional shortcuts and saved custom setup</small>
+      </summary>
       <div className="preset-grid">
         {presets.map((preset) => (
           <button
@@ -802,7 +763,19 @@ function PresetField<Preset extends { id: string; label: string }>({
           Save current
         </button>
       </div>
-    </div>
+    </details>
+  );
+}
+
+function AdvancedSettings({ children }: { children: ReactNode }) {
+  return (
+    <details className="settings-disclosure advanced-settings">
+      <summary>
+        <span>More options</span>
+        <small>Question order and missed-answer review</small>
+      </summary>
+      <div className="advanced-settings-fields">{children}</div>
+    </details>
   );
 }
 
@@ -849,14 +822,12 @@ function StringFocusField({
   onChange
 }: {
   selectedString:
-    | NoteRecognitionStringFocus
     | ScaleDegreeStringFocus
     | IntervalLandmarkStringFocus
     | OctaveShapeStringFocus;
-  testIdPrefix: "note" | "scale" | "interval" | "octave";
+  testIdPrefix: "scale" | "interval" | "octave";
   onChange: (
     stringFocus:
-      | NoteRecognitionStringFocus
       | ScaleDegreeStringFocus
       | IntervalLandmarkStringFocus
       | OctaveShapeStringFocus
@@ -992,12 +963,4 @@ function ReviewModeField({
       ) : null}
     </div>
   );
-}
-
-function formatNoteFocusTestId(noteFocus: NoteRecognitionNoteFocus): string {
-  return noteFocus === "all" ? noteFocus : formatNoteTestId(noteFocus);
-}
-
-function formatNoteTestId(note: NoteName): string {
-  return note.replace("#", "sharp").replace("b", "flat");
 }

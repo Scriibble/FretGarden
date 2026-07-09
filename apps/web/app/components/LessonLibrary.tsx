@@ -142,14 +142,14 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
                   <p>{lesson.summary}</p>
                   <div className="lesson-requirements">
                     <span>
-                      {lesson.practice.criteria.promptCount} prompts at{" "}
+                      {lesson.practice.criteria.promptCount} questions at{" "}
                       {lesson.practice.criteria.minAccuracy}%+
                     </span>
                     {lessonProgress?.lastAccuracy !== undefined &&
                     lessonProgress.lastPromptCount !== undefined ? (
                       <span>
                         Last try: {lessonProgress.lastAccuracy}% over{" "}
-                        {lessonProgress.lastPromptCount} prompts
+                        {lessonProgress.lastPromptCount} questions
                       </span>
                     ) : null}
                   </div>

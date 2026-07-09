@@ -225,6 +225,21 @@ test("keeps the tester demo path usable on mobile", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("keeps practice settings compact until expanded", async ({ page }) => {
+  await page.goto("/?drill=note&lesson=fretboard-map#practice");
+
+  const settingsPanel = page.locator(".session-setup-panel");
+
+  await expect(settingsPanel.getByText("Quick presets")).toHaveCount(0);
+  await expect(settingsPanel.getByText("Target note")).toHaveCount(0);
+  await expect(settingsPanel.getByText("String")).toHaveCount(0);
+  await expect(page.getByText("More options")).toBeVisible();
+  await expect(page.getByTestId("note-order-random")).toBeHidden();
+
+  await page.getByText("More options").click();
+  await expect(page.getByTestId("note-order-random")).toBeVisible();
+});
+
 test("completes a note lesson drill on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/?drill=note&lesson=fretboard-map#practice");
@@ -253,7 +268,7 @@ async function completeFretboardAnswers(
       .click();
 
     if (index < answers.length - 1) {
-      await page.getByRole("button", { name: "Next prompt" }).click();
+      await page.getByRole("button", { name: "Next question" }).click();
     }
   }
 }
@@ -266,7 +281,7 @@ async function completeChordToneAnswers(
     await page.getByTestId(`chord-answer-${formatNoteTestId(answer)}`).click();
 
     if (index < answers.length - 1) {
-      await page.getByRole("button", { name: "Next prompt" }).click();
+      await page.getByRole("button", { name: "Next question" }).click();
     }
   }
 }

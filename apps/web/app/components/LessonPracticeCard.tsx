@@ -34,14 +34,14 @@ export function LessonPracticeCard({ lesson }: LessonPracticeCardProps) {
           </span>
         </div>
         <p>
-          Complete {lesson.practice.criteria.promptCount} prompts at{" "}
+          Complete {lesson.practice.criteria.promptCount} questions at{" "}
           {lesson.practice.criteria.minAccuracy}%+ to finish this lesson.
         </p>
         {lessonProgress?.lastAccuracy !== undefined &&
         lessonProgress.lastPromptCount !== undefined ? (
           <p className="lesson-attempt-note">
             Last try: {lessonProgress.lastAccuracy}% over{" "}
-            {lessonProgress.lastPromptCount} prompts.
+            {lessonProgress.lastPromptCount} questions.
           </p>
         ) : null}
       </div>

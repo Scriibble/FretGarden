@@ -46,7 +46,7 @@ export function PracticePromptPanel({
               onClick={practicePrompt.onNextPrompt}
               type="button"
             >
-              Next prompt
+              Next question
             </button>
             <button
               data-testid="drill-restart"
