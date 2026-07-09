@@ -68,7 +68,7 @@ Recommended path:
 1. Push the current branch to GitHub.
 2. Import the repo into Vercel.
 3. Use the root as the project directory.
-4. Use `pnpm install` and `pnpm build`.
+4. Use the settings in `docs/VERCEL_DEPLOYMENT.md`.
 5. Share the Vercel preview URL with testers.
 
 Tester caveat: progress is stored only in each browser's localStorage. Different devices and browsers will not share progress.
