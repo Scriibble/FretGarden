@@ -3,6 +3,7 @@ import { LESSON_PROGRESS_STORAGE_KEY } from "./lessonProgress";
 import {
   NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY,
   NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
+  clearStoredPracticeData,
   readStoredPracticeData
 } from "./practiceStorage";
 
@@ -78,6 +79,27 @@ describe("practiceStorage", () => {
       customOctavePreset: null,
       customTriadInversionPreset: null
     });
+  });
+
+  it("clears stored practice data while preserving unrelated storage", () => {
+    window.localStorage.setItem(LESSON_PROGRESS_STORAGE_KEY, "progress");
+    window.localStorage.setItem(NOTE_RECOGNITION_HISTORY_STORAGE_KEY, "history");
+    window.localStorage.setItem(
+      NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY,
+      "preset"
+    );
+    window.localStorage.setItem("unrelated", "keep");
+
+    clearStoredPracticeData();
+
+    expect(window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY)).toBeNull();
+    expect(
+      window.localStorage.getItem(NOTE_RECOGNITION_HISTORY_STORAGE_KEY)
+    ).toBeNull();
+    expect(
+      window.localStorage.getItem(NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY)
+    ).toBeNull();
+    expect(window.localStorage.getItem("unrelated")).toBe("keep");
   });
 });
 

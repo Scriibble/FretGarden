@@ -57,6 +57,9 @@ test("surfaces the core MVP path while keeping advanced drills available", async
   await expect(
     page.getByRole("heading", { name: "Advanced practice" })
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Try the first three learning steps" })
+  ).toBeVisible();
 
   await expect(page.getByTestId("hub-start-note")).toBeVisible();
   await expect(page.getByTestId("hub-start-chord")).toBeVisible();
@@ -64,6 +67,9 @@ test("surfaces the core MVP path while keeping advanced drills available", async
   await expect(page.getByTestId("hub-start-interval")).toBeVisible();
   await expect(page.getByTestId("hub-start-octave")).toBeVisible();
   await expect(page.getByTestId("hub-start-triad-inversion")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Reset local demo progress" })
+  ).toBeVisible();
 });
 
 test("links a lesson into its matching practice drill", async ({ page }) => {
@@ -168,6 +174,71 @@ test("completes a chord-tone lesson drill and persists course progress", async (
       status: "complete"
     })
   );
+});
+
+test("resets local demo progress for another tester", async ({ page }) => {
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      "pocket-practice:lesson-progress",
+      JSON.stringify({
+        version: 1,
+        progress: [
+          {
+            slug: "fretboard-map",
+            drill: "note",
+            status: "complete",
+            startedAt: "2026-07-08T12:00:00.000Z"
+          }
+        ]
+      })
+    );
+  });
+  await page.reload();
+  await expect(page.getByText("Done").first()).toBeVisible();
+
+  page.once("dialog", async (dialog) => {
+    await dialog.accept();
+  });
+  await page.getByRole("button", { name: "Reset local demo progress" }).click();
+
+  await expect(page.getByText("Done")).toHaveCount(0);
+  await expect.poll(() =>
+    page.evaluate(() =>
+      window.localStorage.getItem("pocket-practice:lesson-progress")
+    )
+  ).toBeNull();
+});
+
+test("keeps the tester demo path usable on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await expect(
+    page.getByRole("heading", { name: "Try the first three learning steps" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { exact: true, name: "Open lesson" })
+  ).toBeVisible();
+  await expect(page.getByTestId("hub-start-note")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Reset local demo progress" })
+  ).toBeVisible();
+});
+
+test("completes a note lesson drill on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/?drill=note&lesson=fretboard-map#practice");
+
+  await expect(page.getByText("Find D on the A string")).toBeVisible();
+  await expect(
+    page.locator('button.fret-cell[aria-label="String 5, fret 5"]')
+  ).toBeVisible();
+  await completeFretboardAnswers(page, noteDrillAnswers);
+
+  await expect(
+    page.getByRole("heading", { name: "Note recognition complete" })
+  ).toBeVisible();
+  await expect(page.getByText("Lesson complete")).toBeVisible();
 });
 
 async function completeFretboardAnswers(

@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 
+export interface DemoChecklistItem {
+  isComplete: boolean;
+  label: string;
+}
+
 interface PracticeHubProps {
   noteLastSessionLabel: string;
   noteWeakSpotLabel: string;
@@ -37,6 +42,8 @@ interface PracticeHubProps {
   recommendationTitle: string;
   recommendationDescription: string;
   onStartRecommendation: () => void;
+  demoChecklistItems: DemoChecklistItem[];
+  onResetDemoProgress: () => void;
 }
 
 export function PracticeHub({
@@ -73,7 +80,9 @@ export function PracticeHub({
   coursePracticeHref,
   recommendationTitle,
   recommendationDescription,
-  onStartRecommendation
+  onStartRecommendation,
+  demoChecklistItems,
+  onResetDemoProgress
 }: PracticeHubProps) {
   return (
     <section className="practice-hub" aria-label="Practice hub">
@@ -95,7 +104,7 @@ export function PracticeHub({
 
       <article className="course-recommendation-card">
         <div>
-          <span className="control-label">Course recommendation</span>
+          <span className="control-label">Start here</span>
           <h3>{courseRecommendationTitle}</h3>
           <div className="course-progress-inline">
             <span>{courseStepLabel}</span>
@@ -117,6 +126,35 @@ export function PracticeHub({
             Practice lesson
           </Link>
         </div>
+      </article>
+
+      <article className="demo-checklist-card">
+        <div>
+          <span className="control-label">Tester demo loop</span>
+          <h3>Try the first three learning steps</h3>
+          <p>
+            Use this path for a quick playable test: start the first lesson,
+            finish one note drill, then try chord tones and scale degrees.
+          </p>
+        </div>
+        <ol className="demo-checklist">
+          {demoChecklistItems.map((item) => (
+            <li
+              className={item.isComplete ? "is-complete" : ""}
+              key={item.label}
+            >
+              <span aria-hidden="true">{item.isComplete ? "Done" : ""}</span>
+              {item.label}
+            </li>
+          ))}
+        </ol>
+        <button
+          className="demo-reset-button"
+          onClick={onResetDemoProgress}
+          type="button"
+        >
+          Reset local demo progress
+        </button>
       </article>
 
       <section className="hub-section" aria-labelledby="core-path-heading">

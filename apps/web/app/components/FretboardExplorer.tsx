@@ -14,7 +14,7 @@ import type {
   TriadQuality
 } from "@pocket-practice/music-theory-engine";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { PracticeHub } from "./PracticeHub";
+import { PracticeHub, type DemoChecklistItem } from "./PracticeHub";
 import { PracticePromptPanel } from "./PracticePromptPanel";
 import {
   PracticeReviewPanel,
@@ -56,6 +56,7 @@ import {
   SCALE_DEGREE_HISTORY_STORAGE_KEY,
   TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY,
   TRIAD_INVERSION_HISTORY_STORAGE_KEY,
+  clearStoredPracticeData,
   readStoredPracticeData
 } from "../lib/practiceStorage";
 import {
@@ -912,6 +913,33 @@ export function FretboardExplorer() {
       : (courseProgress.items.find(
           (item) => item.lesson.slug === courseRecommendationLesson.slug
         )?.index ?? 0) + 1;
+  const demoChecklistItems = useMemo<DemoChecklistItem[]>(
+    () => [
+      {
+        label: "Open the first lesson",
+        isComplete: lessonProgressRecords.some(
+          (record) => record.slug === "fretboard-map"
+        )
+      },
+      {
+        label: "Complete a note-recognition drill",
+        isComplete: isLessonComplete(lessonProgressRecords, "fretboard-map")
+      },
+      {
+        label: "Complete the chord-tone drill",
+        isComplete: isLessonComplete(lessonProgressRecords, "triads")
+      },
+      {
+        label: "Complete the scale-degree drill",
+        isComplete: isLessonComplete(lessonProgressRecords, "scale-degrees")
+      },
+      {
+        label: "Review local progress",
+        isComplete: courseProgress.completedCount > 0
+      }
+    ],
+    [courseProgress.completedCount, lessonProgressRecords]
+  );
   const recentPracticeSessions = useMemo(
     () =>
       buildRecentPracticeSessions(
@@ -1724,6 +1752,38 @@ export function FretboardExplorer() {
     })();
   }
 
+  function handleResetDemoProgress(): void {
+    const shouldReset = window.confirm(
+      "Reset local demo progress on this browser?"
+    );
+
+    if (!shouldReset) {
+      return;
+    }
+
+    clearStoredPracticeData();
+    setSessionHistory([]);
+    setChordSessionHistory([]);
+    setScaleDegreeSessionHistory([]);
+    setIntervalSessionHistory([]);
+    setOctaveSessionHistory([]);
+    setTriadInversionSessionHistory([]);
+    setCustomNotePreset(null);
+    setCustomChordPreset(null);
+    setCustomScaleDegreePreset(null);
+    setCustomIntervalPreset(null);
+    setCustomOctavePreset(null);
+    setCustomTriadInversionPreset(null);
+    setLessonProgressRecords([]);
+    setActiveLessonSlug(null);
+    resetNoteRecognitionDrill();
+    resetChordToneDrill();
+    resetScaleDegreeDrill();
+    resetIntervalLandmarkDrill();
+    resetOctaveShapeDrill();
+    resetTriadInversionDrill();
+  }
+
   function scrollPracticeSessionIntoView(): void {
     window.setTimeout(() => {
       practiceLayoutRef.current?.scrollIntoView({
@@ -1924,6 +1984,8 @@ export function FretboardExplorer() {
         onStartRecommendation={() =>
           handleStartRecommendation(practiceRecommendation)
         }
+        demoChecklistItems={demoChecklistItems}
+        onResetDemoProgress={handleResetDemoProgress}
       />
 
       <ProgressDashboard
@@ -1939,7 +2001,11 @@ export function FretboardExplorer() {
 
       <section
         id="practice"
-        className="practice-layout"
+        className={
+          mode === "practice"
+            ? "practice-layout practice-layout-practice"
+            : "practice-layout"
+        }
         aria-label="Fretboard explorer"
         ref={practiceLayoutRef}
       >
@@ -2104,7 +2170,7 @@ export function FretboardExplorer() {
             <strong>{mode === "practice" ? "Practice session" : summary.title}</strong>
             <p>
               {mode === "practice"
-                ? "Read the active prompt beneath the fretboard, then answer from the board or answer controls."
+                ? "Read the active prompt, then answer from the board or answer controls."
                 : summary.description}
             </p>
             <div className="tone-list" aria-label="Current tones">
@@ -2203,22 +2269,31 @@ export function FretboardExplorer() {
           ) : null}
 
           {mode === "practice" ? (
-            <div className="last-session-panel" data-testid="last-session">
-              <span className="control-label">Last session</span>
-              {latestSession ? (
-                <>
-                  <strong>
-                    {latestSession.correct}/{latestSession.promptCount} correct
-                  </strong>
-                  <p>
-                    {latestSession.accuracy}% accuracy ·{" "}
-                    {formatSessionDate(latestSession.completedAt)}
-                  </p>
-                </>
-              ) : (
-                <p>Finish a session to save your first local result.</p>
-              )}
-            </div>
+            <PracticePromptPanel
+              practicePrompt={{
+                label: activeDrillSummary.isComplete
+                  ? "Session complete"
+                  : "Prompt",
+                title: summary.title,
+                status: getPracticePromptStatus(
+                  practiceDrill,
+                  activeDrillSummary,
+                  activeDrillAttempt
+                ),
+                description: summary.description,
+                canGoNext:
+                  activeDrillAttempt !== null && !activeDrillSummary.isComplete,
+                onNextPrompt: handleNextPrompt,
+                onReset: handleRestartDrill
+              }}
+              referencePrompt={{
+                title: selectedPosition
+                  ? `String ${selectedPosition.string}, fret ${selectedPosition.fret}: ${selectedPosition.note}`
+                  : "Choose any fret",
+                status: selectedActive?.descriptor ?? "No active role",
+                description: "Choose any fret to inspect its note and role."
+              }}
+            />
           ) : null}
         </aside>
 
@@ -2239,6 +2314,10 @@ export function FretboardExplorer() {
               </span>
             </div>
           </div>
+
+          <p className="mobile-fretboard-hint">
+            Swipe the fretboard sideways, then tap the highlighted string.
+          </p>
 
           <div className="fretboard-scroll">
             <div
@@ -2335,36 +2414,35 @@ export function FretboardExplorer() {
             </div>
           </div>
 
-          <PracticePromptPanel
-            practicePrompt={
-              mode === "practice"
-                ? {
-                    label: activeDrillSummary.isComplete
-                      ? "Session complete"
-                      : "Prompt",
-                    title: summary.title,
-                    status: getPracticePromptStatus(
-                      practiceDrill,
-                      activeDrillSummary,
-                      activeDrillAttempt
-                    ),
-                    description: summary.description,
-                    canGoNext:
-                      activeDrillAttempt !== null &&
-                      !activeDrillSummary.isComplete,
-                    onNextPrompt: handleNextPrompt,
-                    onReset: handleRestartDrill
-                  }
-                : null
-            }
-            referencePrompt={{
-              title: selectedPosition
-                ? `String ${selectedPosition.string}, fret ${selectedPosition.fret}: ${selectedPosition.note}`
-                : "Choose any fret",
-              status: selectedActive?.descriptor ?? "No active role",
-              description: "Choose any fret to inspect its note and role."
-            }}
-          />
+          {mode === "practice" ? (
+            <div className="last-session-panel" data-testid="last-session">
+              <span className="control-label">Last session</span>
+              {latestSession ? (
+                <>
+                  <strong>
+                    {latestSession.correct}/{latestSession.promptCount} correct
+                  </strong>
+                  <p>
+                    {latestSession.accuracy}% accuracy ·{" "}
+                    {formatSessionDate(latestSession.completedAt)}
+                  </p>
+                </>
+              ) : (
+                <p>Finish a session to save your first local result.</p>
+              )}
+            </div>
+          ) : (
+            <PracticePromptPanel
+              practicePrompt={null}
+              referencePrompt={{
+                title: selectedPosition
+                  ? `String ${selectedPosition.string}, fret ${selectedPosition.fret}: ${selectedPosition.note}`
+                  : "Choose any fret",
+                status: selectedActive?.descriptor ?? "No active role",
+                description: "Choose any fret to inspect its note and role."
+              }}
+            />
+          )}
 
           {mode === "practice" && activeDrillSummary.isComplete ? (
             <PracticeReviewPanel
@@ -3244,6 +3322,15 @@ function parseLessonPracticeRequest(
     slug: lesson.slug,
     drill: lesson.practice.drill
   };
+}
+
+function isLessonComplete(
+  progress: readonly LessonProgressRecord[],
+  slug: string
+): boolean {
+  return progress.some(
+    (record) => record.slug === slug && record.status === "complete"
+  );
 }
 
 function markStoredLessonStarted(

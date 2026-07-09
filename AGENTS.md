@@ -13,6 +13,8 @@ Guidance for future Codex sessions working in this repository.
 
 Pocket.Practice is a browser-based guitar fretboard practice app. The current working product helps learners practice short drills, get immediate feedback, review local session history, and connect short lessons to matching practice sessions.
 
+The current demo layer includes a tester checklist and local reset control so a few people can try the first learning loop on the same device or browser.
+
 The first public learning loop should stay focused on:
 
 - Note recognition
@@ -48,6 +50,7 @@ Longer-term roadmap items such as bass, alternate tunings, audio, ear training, 
 - `packages/music-theory-engine`: UI-independent TypeScript package for notes, pitch classes, intervals, major/minor scales, and major/minor triads.
 - `packages/fretboard-engine`: UI-independent TypeScript package for standard guitar tuning, fret positions, note lookup, scale maps, and chord maps.
 - `docs/CURRENT_STATUS.md`: current state and near-term roadmap.
+- `docs/DEMO_TEST_PLAN.md`: tester script, feedback questions, and temporary deployment notes for private demos.
 - `Pocket_Practice_Master_Plan.md`: MVP planning source.
 
 ## Current Persistence Model
@@ -59,6 +62,7 @@ Longer-term roadmap items such as bass, alternate tunings, audio, ear training, 
 - `apps/web/app/lib/practiceSessionCompletion.ts` owns shared session completion persistence for drill histories.
 - `apps/web/app/lib/lessonProgress.ts` owns lesson progress parsing, serialization, and course progress logic.
 - Stored session history, presets, and lesson progress should be validated before the app uses them.
+- The Practice Hub includes a reset button for clearing local demo progress between testers.
 - There is no account system, backend sync, database, or cloud history.
 
 ## Commands
@@ -108,8 +112,8 @@ Command notes:
 
 Near-term work:
 
-1. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup, prompt progression, and answer handling.
-2. Extract shared prompt progression and reset handling now that note, chord-tone, and scale-degree lesson completion have browser coverage.
+1. Run a hands-on demo pass with 2-5 testers using `docs/DEMO_TEST_PLAN.md`.
+2. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup and answer handling.
 3. Consider a small shared test utility for browser localStorage mocks if storage tests keep growing.
 4. Keep the first public MVP visually and conceptually centered on notes, chord tones, and scale degrees.
 5. Revisit Zustand only when shared client state becomes clearer than component-local state.

@@ -9,6 +9,7 @@ import {
   type IntervalLandmarkSessionPreset
 } from "./intervalLandmarkRecognition";
 import {
+  LESSON_PROGRESS_STORAGE_KEY,
   type LessonProgressRecord
 } from "./lessonProgress";
 import {
@@ -79,6 +80,22 @@ export interface StoredPracticeData {
   customTriadInversionPreset: TriadInversionSessionPreset | null;
 }
 
+const practiceStorageKeys = [
+  LESSON_PROGRESS_STORAGE_KEY,
+  NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
+  CHORD_TONE_HISTORY_STORAGE_KEY,
+  SCALE_DEGREE_HISTORY_STORAGE_KEY,
+  INTERVAL_LANDMARK_HISTORY_STORAGE_KEY,
+  OCTAVE_SHAPE_HISTORY_STORAGE_KEY,
+  TRIAD_INVERSION_HISTORY_STORAGE_KEY,
+  NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY,
+  CHORD_TONE_CUSTOM_PRESET_STORAGE_KEY,
+  SCALE_DEGREE_CUSTOM_PRESET_STORAGE_KEY,
+  INTERVAL_LANDMARK_CUSTOM_PRESET_STORAGE_KEY,
+  OCTAVE_SHAPE_CUSTOM_PRESET_STORAGE_KEY,
+  TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY
+];
+
 export function readStoredPracticeData(): StoredPracticeData {
   return {
     lessonProgressRecords: readStoredLessonProgress(),
@@ -126,4 +143,14 @@ export function readStoredPracticeData(): StoredPracticeData {
       TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY
     )
   };
+}
+
+export function clearStoredPracticeData(): void {
+  try {
+    for (const storageKey of practiceStorageKeys) {
+      window.localStorage.removeItem(storageKey);
+    }
+  } catch {
+    // Local progress is a convenience; practice should keep working if storage is unavailable.
+  }
 }

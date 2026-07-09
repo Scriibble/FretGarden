@@ -6,7 +6,7 @@ This document describes the repository as it exists today. Treat `README.md` as 
 
 Pocket.Practice is currently a browser-based guitar fretboard practice app for standard EADGBE tuning. The working app focuses on short drills, immediate feedback, local session history, and lesson-linked practice.
 
-The current MVP is broader than the earliest master-plan scope. It includes note recognition, chord tone recognition, scale degree recognition, interval landmarks, CAGED octave shapes, and triad inversion recognition. The UI now visually foregrounds the first public learning loop around notes, chord tones, and scale degrees while keeping the advanced drills available.
+The current MVP is broader than the earliest master-plan scope. It includes note recognition, chord tone recognition, scale degree recognition, interval landmarks, CAGED octave shapes, and triad inversion recognition. The UI now visually foregrounds the first public learning loop around notes, chord tones, and scale degrees while keeping the advanced drills available. A tester checklist and local reset control support short playable demo sessions.
 
 ## Architecture
 
@@ -16,10 +16,11 @@ The current MVP is broader than the earliest master-plan scope. It includes note
 - `apps/web/app/lib`: drill logic, lesson data, browser storage helpers, practice storage snapshot loading, shared session completion persistence, local lesson progress helpers, and Zod-backed localStorage validation.
 - `apps/web/app/components`: UI components for the fretboard explorer, practice hub, settings, review, lessons, and progress dashboard.
 - `apps/web/e2e`: Playwright browser coverage for the main practice hub and core note/chord/scale lesson-to-practice flows.
+- `docs/DEMO_TEST_PLAN.md`: tester script, feedback questions, and temporary deployment notes for private demos.
 
 ## Persistence
 
-Progress is local-only. The app stores recent drill sessions, custom drill presets, and lesson progress in `window.localStorage`. Stored lesson progress, session history, and custom preset payloads are validated before being used by the app.
+Progress is local-only. The app stores recent drill sessions, custom drill presets, and lesson progress in `window.localStorage`. Stored lesson progress, session history, and custom preset payloads are validated before being used by the app. The Practice Hub includes a reset button for clearing local demo progress between testers.
 
 There is no account system, backend sync, database, subscription flow, or cloud progress history.
 
@@ -45,8 +46,8 @@ The following are future roadmap items, not current app behavior:
 
 ## Likely Next Steps
 
-1. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup, prompt progression, and answer handling.
-2. Extract shared prompt progression and reset handling now that note, chord-tone, and scale-degree lesson completion have browser coverage.
+1. Run a hands-on demo pass with 2-5 testers using `docs/DEMO_TEST_PLAN.md`.
+2. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup and answer handling.
 3. Consider a small shared test utility for browser localStorage mocks if storage tests keep growing.
 4. Keep the first public MVP messaging centered on notes, chord tones, and scale degrees while preserving advanced drills as stretch practice.
 5. Revisit `zustand` only when shared client state becomes clearer than the current component-local state model.
