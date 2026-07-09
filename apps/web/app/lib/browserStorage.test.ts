@@ -1,12 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  readStoredLessonLearningProgress,
   readStoredLessonProgress,
   readStoredPreset,
   readStoredSessionHistory,
+  writeStoredLessonLearningProgress,
   writeStoredLessonProgress,
   writeStoredPreset,
   writeStoredSessionHistory
 } from "./browserStorage";
+import { LESSON_LEARNING_PROGRESS_STORAGE_KEY } from "./lessonLearningProgress";
 import { LESSON_PROGRESS_STORAGE_KEY } from "./lessonProgress";
 
 interface TestSession {
@@ -174,6 +177,32 @@ describe("browserStorage", () => {
     expect(readStoredLessonProgress()).toEqual(progress);
   });
 
+  it("reads and writes lesson learning progress through browser storage", () => {
+    const progress = [
+      {
+        slug: "scale-degrees",
+        status: "complete",
+        startedAt: "2026-07-08T12:00:00.000Z",
+        completedAt: "2026-07-08T12:05:00.000Z",
+        completedCheckpoints: ["read", "play", "write"]
+      }
+    ] as const;
+
+    writeStoredLessonLearningProgress(progress);
+
+    expect(
+      JSON.parse(
+        window.localStorage.getItem(
+          LESSON_LEARNING_PROGRESS_STORAGE_KEY
+        ) ?? ""
+      )
+    ).toEqual({
+      version: 1,
+      progress
+    });
+    expect(readStoredLessonLearningProgress()).toEqual(progress);
+  });
+
   it("ignores malformed lesson progress in browser storage", () => {
     window.localStorage.setItem(
       LESSON_PROGRESS_STORAGE_KEY,
@@ -207,6 +236,7 @@ describe("browserStorage", () => {
       } satisfies TestPreset)
     ).not.toThrow();
     expect(() => writeStoredLessonProgress([])).not.toThrow();
+    expect(() => writeStoredLessonLearningProgress([])).not.toThrow();
   });
 });
 

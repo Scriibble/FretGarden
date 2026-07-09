@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { LessonCompletionCard } from "../../components/LessonCompletionCard";
 import { LessonPracticeCard } from "../../components/LessonPracticeCard";
 import {
   getLesson,
@@ -68,6 +69,71 @@ export default async function LessonPage({ params }: LessonPageProps) {
             ))}
           </section>
         ))}
+
+        {lesson.fretboardApplications.map((section) => (
+          <section className="lesson-section" key={section.heading}>
+            <span className="control-label">Fretboard application</span>
+            <h2>{section.heading}</h2>
+            {section.body.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </section>
+        ))}
+
+        <section className="lesson-section lesson-guided-panel">
+          <span className="control-label">Play this now</span>
+          <h2>Use the idea on your guitar</h2>
+          {lesson.playPrompts.map((prompt) => (
+            <div className="lesson-guided-block" key={prompt.title}>
+              <h3>{prompt.title}</h3>
+              <ol>
+                {prompt.instructions.map((instruction) => (
+                  <li key={instruction}>{instruction}</li>
+                ))}
+              </ol>
+              <p>
+                <strong>Listen for:</strong> {prompt.listeningGoal}
+              </p>
+            </div>
+          ))}
+        </section>
+
+        <section className="lesson-section">
+          <span className="control-label">Song connection</span>
+          <h2>{lesson.songConnection.title}</h2>
+          <p>
+            <strong>Reference:</strong> {lesson.songConnection.reference}
+          </p>
+          {lesson.songConnection.body.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </section>
+
+        <section className="lesson-section lesson-guided-panel">
+          <span className="control-label">Write with it</span>
+          <h2>{lesson.writeWithIt.title}</h2>
+          <p>{lesson.writeWithIt.prompt}</p>
+          <ul>
+            {lesson.writeWithIt.constraints.map((constraint) => (
+              <li key={constraint}>{constraint}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="lesson-section">
+          <span className="control-label">Check understanding</span>
+          <h2>Before you move on</h2>
+          <dl className="lesson-check-list">
+            {lesson.checkUnderstanding.map((check) => (
+              <div key={check.question}>
+                <dt>{check.question}</dt>
+                <dd>{check.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <LessonCompletionCard lesson={lesson} />
 
         <LessonPracticeCard lesson={lesson} />
 

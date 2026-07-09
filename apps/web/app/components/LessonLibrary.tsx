@@ -3,11 +3,18 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Lesson } from "../lib/lessons";
-import { readStoredLessonProgress } from "../lib/browserStorage";
 import {
-  buildCourseProgress,
+  readStoredLessonLearningProgress,
+  readStoredLessonProgress
+} from "../lib/browserStorage";
+import {
+  buildLearningCourseProgress,
+  getLessonLearningProgressStatus,
+  type LearningPathState,
+  type LessonLearningProgressRecord
+} from "../lib/lessonLearningProgress";
+import {
   getLessonProgressStatus,
-  type CoursePathState,
   type LessonProgressRecord
 } from "../lib/lessonProgress";
 
@@ -16,8 +23,13 @@ interface LessonLibraryProps {
 }
 
 export function LessonLibrary({ lessons }: LessonLibraryProps) {
-  const [progress, setProgress] = useState<LessonProgressRecord[]>([]);
-  const courseProgress = buildCourseProgress(lessons, progress);
+  const [learningProgress, setLearningProgress] = useState<
+    LessonLearningProgressRecord[]
+  >([]);
+  const [drillProgress, setDrillProgress] = useState<LessonProgressRecord[]>(
+    []
+  );
+  const courseProgress = buildLearningCourseProgress(lessons, learningProgress);
   const currentStepNumber = courseProgress.currentLesson
     ? (courseProgress.items.find(
         (item) => item.lesson.slug === courseProgress.currentLesson?.slug
@@ -25,7 +37,8 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
     : null;
 
   useEffect(() => {
-    setProgress(readStoredLessonProgress());
+    setLearningProgress(readStoredLessonLearningProgress());
+    setDrillProgress(readStoredLessonProgress());
   }, []);
 
   return (
@@ -45,10 +58,10 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
             </h2>
             <p>
               {courseProgress.isComplete
-                ? "Every lesson in this first Pocket.Practice path is complete. Revisit weak spots or keep refining the drills."
+                ? "Every guided lesson in this first Pocket.Practice path is complete. Revisit a lesson or reinforce with drills."
                 : courseProgress.currentLesson
                   ? `Your current lesson is step ${currentStepNumber} of ${courseProgress.totalCount}.`
-                  : "Begin with the fretboard map, then move through the path one lesson at a time."}
+                  : "Begin with the fretboard map, then read, play, and write through the path one lesson at a time."}
             </p>
           </div>
 
@@ -79,7 +92,7 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
                 className="lesson-secondary-link"
                 href={courseProgress.currentLesson.practice.href}
               >
-                Practice current lesson
+                Reinforce with drill
               </Link>
             </>
           ) : (
@@ -122,9 +135,17 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
 
         <div className="lesson-grid">
           {lessons.map((lesson) => {
-            const status = getLessonProgressStatus(progress, lesson.slug);
-            const lessonProgress =
-              progress.find((record) => record.slug === lesson.slug) ?? null;
+            const status = getLessonLearningProgressStatus(
+              learningProgress,
+              lesson.slug
+            );
+            const drillStatus = getLessonProgressStatus(
+              drillProgress,
+              lesson.slug
+            );
+            const drillRecord =
+              drillProgress.find((record) => record.slug === lesson.slug) ??
+              null;
 
             return (
               <article
@@ -141,15 +162,13 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
                   <h2>{lesson.title}</h2>
                   <p>{lesson.summary}</p>
                   <div className="lesson-requirements">
-                    <span>
-                      {lesson.practice.criteria.promptCount} questions at{" "}
-                      {lesson.practice.criteria.minAccuracy}%+
-                    </span>
-                    {lessonProgress?.lastAccuracy !== undefined &&
-                    lessonProgress.lastPromptCount !== undefined ? (
+                    <span>Read, play, and write to complete</span>
+                    <span>Optional drill: {formatLessonStatus(drillStatus)}</span>
+                    {drillRecord?.lastAccuracy !== undefined &&
+                    drillRecord.lastPromptCount !== undefined ? (
                       <span>
-                        Last try: {lessonProgress.lastAccuracy}% over{" "}
-                        {lessonProgress.lastPromptCount} questions
+                        Last drill: {drillRecord.lastAccuracy}% over{" "}
+                        {drillRecord.lastPromptCount} questions
                       </span>
                     ) : null}
                   </div>
@@ -162,7 +181,7 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
                     className="lesson-secondary-link"
                     href={lesson.practice.href}
                   >
-                    {getLessonPracticeLabel(status)}
+                    {getLessonPracticeLabel(drillStatus)}
                   </Link>
                 </div>
               </article>
@@ -174,13 +193,13 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
   );
 }
 
-function getPathStateDescription(state: CoursePathState) {
+function getPathStateDescription(state: LearningPathState) {
   if (state === "complete") {
     return "Finished. Revisit it anytime for review.";
   }
 
   if (state === "current") {
-    return "Current step. Complete its drill target to move forward.";
+    return "Current step. Read, play, and write through this lesson.";
   }
 
   if (state === "up-next") {

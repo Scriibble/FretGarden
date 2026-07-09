@@ -1,5 +1,11 @@
 import { z } from "zod";
 import {
+  LESSON_LEARNING_PROGRESS_STORAGE_KEY,
+  parseLessonLearningProgress,
+  serializeLessonLearningProgress,
+  type LessonLearningProgressRecord
+} from "./lessonLearningProgress";
+import {
   LESSON_PROGRESS_STORAGE_KEY,
   parseLessonProgress,
   serializeLessonProgress,
@@ -148,5 +154,24 @@ export function writeStoredLessonProgress(
     );
   } catch {
     // Lesson progress is a convenience; practice should keep working if storage is unavailable.
+  }
+}
+
+export function readStoredLessonLearningProgress(): LessonLearningProgressRecord[] {
+  return parseLessonLearningProgress(
+    window.localStorage.getItem(LESSON_LEARNING_PROGRESS_STORAGE_KEY)
+  );
+}
+
+export function writeStoredLessonLearningProgress(
+  progress: readonly LessonLearningProgressRecord[]
+): void {
+  try {
+    window.localStorage.setItem(
+      LESSON_LEARNING_PROGRESS_STORAGE_KEY,
+      serializeLessonLearningProgress(progress)
+    );
+  } catch {
+    // Lesson learning progress is a convenience; lessons should remain readable if storage is unavailable.
   }
 }

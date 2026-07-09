@@ -13,6 +13,17 @@ describe("lessons", () => {
     });
   });
 
+  it("keeps every lesson aligned with the guided lesson anatomy", () => {
+    lessons.forEach((lesson) => {
+      expect(lesson.sections.length).toBeGreaterThan(0);
+      expect(lesson.fretboardApplications.length).toBeGreaterThan(0);
+      expect(lesson.playPrompts.length).toBeGreaterThan(0);
+      expect(lesson.songConnection.body.length).toBeGreaterThan(0);
+      expect(lesson.writeWithIt.constraints.length).toBeGreaterThan(0);
+      expect(lesson.checkUnderstanding.length).toBeGreaterThan(0);
+    });
+  });
+
   it("looks up neighboring lessons in course order", () => {
     expect(getLesson("triads")?.title).toBe("Roots, 3rds, and 5ths");
     expect(getPreviousLesson("triads")?.slug).toBe("repeating-notes");

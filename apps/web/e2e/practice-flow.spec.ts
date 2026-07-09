@@ -74,7 +74,7 @@ test("surfaces the core MVP path while keeping advanced drills available", async
 
 test("links a lesson into its matching practice drill", async ({ page }) => {
   await page.goto("/lessons/fretboard-map");
-  await page.getByRole("link", { name: "Start lesson practice" }).click();
+  await page.getByRole("link", { name: "Start reinforcement drill" }).click();
 
   await expect(page).toHaveURL(/drill=note/);
   await expect(page).toHaveURL(/lesson=fretboard-map/);

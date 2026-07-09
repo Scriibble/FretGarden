@@ -13,6 +13,10 @@ import {
   type LessonProgressRecord
 } from "./lessonProgress";
 import {
+  LESSON_LEARNING_PROGRESS_STORAGE_KEY,
+  type LessonLearningProgressRecord
+} from "./lessonLearningProgress";
+import {
   NOTE_RECOGNITION_HISTORY_LIMIT,
   type NoteRecognitionSession,
   type NoteRecognitionSessionPreset
@@ -33,6 +37,7 @@ import {
   type TriadInversionSessionPreset
 } from "./triadInversionRecognition";
 import {
+  readStoredLessonLearningProgress,
   readStoredLessonProgress,
   readStoredPreset,
   readStoredSessionHistory
@@ -65,6 +70,7 @@ export const TRIAD_INVERSION_CUSTOM_PRESET_STORAGE_KEY =
   "pocket-practice:triad-inversion-custom-preset";
 
 export interface StoredPracticeData {
+  lessonLearningProgressRecords: LessonLearningProgressRecord[];
   lessonProgressRecords: LessonProgressRecord[];
   noteSessionHistory: NoteRecognitionSession[];
   chordSessionHistory: ChordToneSession[];
@@ -81,6 +87,7 @@ export interface StoredPracticeData {
 }
 
 const practiceStorageKeys = [
+  LESSON_LEARNING_PROGRESS_STORAGE_KEY,
   LESSON_PROGRESS_STORAGE_KEY,
   NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
   CHORD_TONE_HISTORY_STORAGE_KEY,
@@ -98,6 +105,7 @@ const practiceStorageKeys = [
 
 export function readStoredPracticeData(): StoredPracticeData {
   return {
+    lessonLearningProgressRecords: readStoredLessonLearningProgress(),
     lessonProgressRecords: readStoredLessonProgress(),
     noteSessionHistory: readStoredSessionHistory<NoteRecognitionSession>(
       NOTE_RECOGNITION_HISTORY_STORAGE_KEY,

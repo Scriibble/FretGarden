@@ -123,7 +123,7 @@ export function PracticeHub({
             Open lesson
           </Link>
           <Link className="lesson-secondary-link" href={coursePracticeHref}>
-            Practice lesson
+            Reinforce with drill
           </Link>
         </div>
       </article>

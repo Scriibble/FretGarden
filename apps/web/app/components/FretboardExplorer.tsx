@@ -38,6 +38,7 @@ import {
   type LessonPracticeDrill
 } from "../lib/lessons";
 import {
+  readStoredLessonLearningProgress,
   readStoredLessonProgress,
   writeStoredLessonProgress,
   writeStoredPreset,
@@ -60,12 +61,15 @@ import {
   readStoredPracticeData
 } from "../lib/practiceStorage";
 import {
-  buildCourseProgress,
   doesLessonPracticeMeetCriteria,
   markLessonPracticed,
   markLessonStarted,
   type LessonProgressRecord
 } from "../lib/lessonProgress";
+import {
+  buildLearningCourseProgress,
+  type LessonLearningProgressRecord
+} from "../lib/lessonLearningProgress";
 import {
   CHORD_TONE_SESSION_PRESETS,
   DEFAULT_CHORD_TONE_SESSION_SETTINGS,
@@ -407,6 +411,8 @@ export function FretboardExplorer() {
   const [lessonProgressRecords, setLessonProgressRecords] = useState<
     LessonProgressRecord[]
   >([]);
+  const [lessonLearningProgressRecords, setLessonLearningProgressRecords] =
+    useState<LessonLearningProgressRecord[]>([]);
   const [selectedPosition, setSelectedPosition] = useState<FretPosition | null>(
     null
   );
@@ -887,8 +893,8 @@ export function FretboardExplorer() {
     triadInversionPresetOptions
   );
   const courseProgress = useMemo(
-    () => buildCourseProgress(lessons, lessonProgressRecords),
-    [lessonProgressRecords]
+    () => buildLearningCourseProgress(lessons, lessonLearningProgressRecords),
+    [lessonLearningProgressRecords]
   );
   const practiceRecommendation = buildPracticeHubRecommendation(
     notePerformance,
@@ -917,9 +923,11 @@ export function FretboardExplorer() {
     () => [
       {
         label: "Open the first lesson",
-        isComplete: lessonProgressRecords.some(
-          (record) => record.slug === "fretboard-map"
-        )
+        isComplete:
+          lessonLearningProgressRecords.some(
+            (record) => record.slug === "fretboard-map"
+          ) ||
+          lessonProgressRecords.some((record) => record.slug === "fretboard-map")
       },
       {
         label: "Complete a note-recognition drill",
@@ -935,10 +943,16 @@ export function FretboardExplorer() {
       },
       {
         label: "Review local progress",
-        isComplete: courseProgress.completedCount > 0
+        isComplete:
+          courseProgress.completedCount > 0 ||
+          lessonProgressRecords.some((record) => record.status === "complete")
       }
     ],
-    [courseProgress.completedCount, lessonProgressRecords]
+    [
+      courseProgress.completedCount,
+      lessonLearningProgressRecords,
+      lessonProgressRecords
+    ]
   );
   const recentPracticeSessions = useMemo(
     () =>
@@ -1066,6 +1080,9 @@ export function FretboardExplorer() {
       storedPracticeData.triadInversionSessionHistory
     );
     setLessonProgressRecords(storedPracticeData.lessonProgressRecords);
+    setLessonLearningProgressRecords(
+      storedPracticeData.lessonLearningProgressRecords
+    );
     setCustomNotePreset(
       storedPracticeData.customNotePreset
         ? normalizeNotePreset(storedPracticeData.customNotePreset)
@@ -1781,6 +1798,7 @@ export function FretboardExplorer() {
     setCustomOctavePreset(null);
     setCustomTriadInversionPreset(null);
     setLessonProgressRecords([]);
+    setLessonLearningProgressRecords([]);
     setActiveLessonSlug(null);
     resetNoteRecognitionDrill();
     resetChordToneDrill();
@@ -1967,10 +1985,10 @@ export function FretboardExplorer() {
         }
         courseRecommendationDescription={
           courseProgress.isComplete
-            ? "You finished every lesson in the current path. Use smart recommendations to review weak spots."
+            ? "You finished every guided lesson in the current path. Use smart recommendations to reinforce weak spots."
             : courseRecommendationLesson
               ? `Continue step ${courseRecommendationStepNumber} of ${courseProgress.totalCount}: ${courseRecommendationLesson.summary}`
-              : "Start with the fretboard map, then follow each lesson into its matching drill."
+              : "Start with the fretboard map, then read, play, and write through each lesson."
         }
         courseProgressLabel={`${courseProgress.completedCount}/${courseProgress.totalCount} lessons complete`}
         courseProgressPercent={courseProgress.percentComplete}
@@ -4427,7 +4445,7 @@ function buildPracticeHubRecommendation(
   intervalPreset: IntervalLandmarkSessionPreset,
   octavePreset: OctaveShapeSessionPreset,
   triadInversionPreset: TriadInversionSessionPreset,
-  courseProgress: ReturnType<typeof buildCourseProgress>
+  courseProgress: ReturnType<typeof buildLearningCourseProgress>
 ): PracticeHubRecommendation {
   const weakestSpots: Array<{
     drill: PracticeDrill;
@@ -4551,7 +4569,7 @@ function isStrongWeakSpot(stat: PerformanceStat): boolean {
 }
 
 function getCoursePracticeRecommendation(
-  courseProgress: ReturnType<typeof buildCourseProgress>,
+  courseProgress: ReturnType<typeof buildLearningCourseProgress>,
   notePreset: NoteRecognitionSessionPreset,
   chordPreset: ChordToneSessionPreset,
   scaleDegreePreset: ScaleDegreeSessionPreset,
@@ -4578,8 +4596,8 @@ function getCoursePracticeRecommendation(
 
   return {
     drill: currentLesson.practice.drill,
-    title: `Continue ${currentLesson.title}`,
-    description: `Course progress points to ${currentLesson.title}. Start ${preset.label.toLowerCase()} to work toward ${formatLessonCriteria(
+    title: `Reinforce ${currentLesson.title}`,
+    description: `After the guided lesson, start ${preset.label.toLowerCase()} to reinforce it with ${formatLessonCriteria(
       currentLesson.practice.criteria.promptCount,
       currentLesson.practice.criteria.minAccuracy
     )}.`,

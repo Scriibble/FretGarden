@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { LESSON_LEARNING_PROGRESS_STORAGE_KEY } from "./lessonLearningProgress";
 import { LESSON_PROGRESS_STORAGE_KEY } from "./lessonProgress";
 import {
   NOTE_RECOGNITION_CUSTOM_PRESET_STORAGE_KEY,
@@ -41,6 +42,13 @@ describe("practiceStorage", () => {
       status: "complete",
       startedAt: "2026-07-08T12:00:00.000Z"
     };
+    const lessonLearningProgress = {
+      slug: "fretboard-map",
+      status: "complete",
+      startedAt: "2026-07-08T12:00:00.000Z",
+      completedAt: "2026-07-08T12:05:00.000Z",
+      completedCheckpoints: ["read", "play", "write"]
+    };
 
     window.localStorage.setItem(
       NOTE_RECOGNITION_HISTORY_STORAGE_KEY,
@@ -63,8 +71,16 @@ describe("practiceStorage", () => {
         progress: [lessonProgress]
       })
     );
+    window.localStorage.setItem(
+      LESSON_LEARNING_PROGRESS_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        progress: [lessonLearningProgress]
+      })
+    );
 
     expect(readStoredPracticeData()).toEqual({
+      lessonLearningProgressRecords: [lessonLearningProgress],
       lessonProgressRecords: [lessonProgress],
       noteSessionHistory: [noteSession],
       chordSessionHistory: [],
@@ -82,6 +98,10 @@ describe("practiceStorage", () => {
   });
 
   it("clears stored practice data while preserving unrelated storage", () => {
+    window.localStorage.setItem(
+      LESSON_LEARNING_PROGRESS_STORAGE_KEY,
+      "learning-progress"
+    );
     window.localStorage.setItem(LESSON_PROGRESS_STORAGE_KEY, "progress");
     window.localStorage.setItem(NOTE_RECOGNITION_HISTORY_STORAGE_KEY, "history");
     window.localStorage.setItem(
@@ -92,6 +112,9 @@ describe("practiceStorage", () => {
 
     clearStoredPracticeData();
 
+    expect(
+      window.localStorage.getItem(LESSON_LEARNING_PROGRESS_STORAGE_KEY)
+    ).toBeNull();
     expect(window.localStorage.getItem(LESSON_PROGRESS_STORAGE_KEY)).toBeNull();
     expect(
       window.localStorage.getItem(NOTE_RECOGNITION_HISTORY_STORAGE_KEY)

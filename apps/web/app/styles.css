@@ -1585,6 +1585,74 @@ button {
   gap: 0.6rem;
 }
 
+.lesson-guided-panel {
+  border-left: 4px solid rgba(34, 197, 94, 0.55);
+  padding-left: 1rem;
+}
+
+.lesson-guided-block {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lesson-guided-block h3 {
+  margin: 0;
+}
+
+.lesson-guided-block ol,
+.lesson-guided-panel ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.lesson-guided-block li,
+.lesson-guided-panel li {
+  color: var(--color-muted);
+  line-height: 1.65;
+}
+
+.lesson-check-list {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+}
+
+.lesson-check-list div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.lesson-check-list dt {
+  font-weight: 700;
+}
+
+.lesson-check-list dd {
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.lesson-checklist {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.lesson-checklist label {
+  align-items: flex-start;
+  color: var(--color-muted);
+  display: flex;
+  gap: 0.65rem;
+  line-height: 1.5;
+}
+
+.lesson-checklist input {
+  margin-top: 0.2rem;
+}
+
+.lesson-cta:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
 .lesson-practice-card {
   align-items: center;
   background: #f8faf8;
