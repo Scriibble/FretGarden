@@ -17,16 +17,16 @@ This means:
 Import the GitHub repository into Vercel with these settings:
 
 - **Framework Preset:** Next.js
-- **Root Directory:** repository root
+- **Root Directory:** `apps/web`
 - **Install Command:** `pnpm install --frozen-lockfile`
-- **Build Command:** `pnpm build:packages && pnpm --filter @pocket-practice/web build`
-- **Output Directory:** `apps/web/.next`
+- **Build Command:** `pnpm build`
+- **Output Directory:** `.next`
 
-The root `vercel.json` records these build settings so the Vercel project should pick them up from the repo.
+The `apps/web/vercel.json` file records these build settings so the Vercel project should pick them up when Root Directory is set to `apps/web`.
 
 ## Why These Settings
 
-The web app lives in `apps/web`, but it imports workspace packages from `packages/music-theory-engine` and `packages/fretboard-engine`. Those packages export built `dist` files, so Vercel needs to build the internal packages before building the Next app.
+The web app lives in `apps/web`, and that package owns the `next` dependency Vercel needs to detect the framework. The app imports workspace packages from `packages/music-theory-engine` and `packages/fretboard-engine`, so the `apps/web` build script runs `pnpm -w build:packages` before `next build`.
 
 ## Pre-Deploy Checks
 

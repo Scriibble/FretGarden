@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "next build",
+    "build": "pnpm -w build:packages && next build",
     "dev": "next dev",
     "lint": "tsc --noEmit",
     "test:e2e": "playwright test",
