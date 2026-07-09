@@ -155,7 +155,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           ) : (
             <Link href="/lessons">
               <span>Course path</span>
-              <strong>Review completed lessons</strong>
+              <strong>Back to lessons</strong>
             </Link>
           )}
         </nav>

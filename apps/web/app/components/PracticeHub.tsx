@@ -61,6 +61,28 @@ export function PracticeHub({
   recommendationDescription,
   onStartRecommendation
 }: PracticeHubProps) {
+  const noteMetrics = getVisibleMetrics(noteLastSessionLabel, noteWeakSpotLabel);
+  const chordMetrics = getVisibleMetrics(
+    chordLastSessionLabel,
+    chordWeakSpotLabel
+  );
+  const scaleMetrics = getVisibleMetrics(
+    scaleLastSessionLabel,
+    scaleWeakSpotLabel
+  );
+  const intervalMetrics = getVisibleMetrics(
+    intervalLastSessionLabel,
+    intervalWeakSpotLabel
+  );
+  const octaveMetrics = getVisibleMetrics(
+    octaveLastSessionLabel,
+    octaveWeakSpotLabel
+  );
+  const triadInversionMetrics = getVisibleMetrics(
+    triadInversionLastSessionLabel,
+    triadInversionWeakSpotLabel
+  );
+
   return (
     <section className="practice-hub" aria-label="Practice hub">
       <section className="hub-section" aria-labelledby="core-path-heading">
@@ -75,10 +97,7 @@ export function PracticeHub({
               <h3>Find notes by string</h3>
               <p>Train the fretboard map with string-specific questions.</p>
             </div>
-            <div className="hub-metrics">
-              <span>{noteLastSessionLabel}</span>
-              <span>{noteWeakSpotLabel}</span>
-            </div>
+            <HubMetrics metrics={noteMetrics} />
             <button
               data-testid="hub-start-note"
               onClick={onStartNote}
@@ -94,10 +113,7 @@ export function PracticeHub({
               <h3>Spell roots, 3rds, and 5ths</h3>
               <p>Build triad fluency with concept-first chord-tone questions.</p>
             </div>
-            <div className="hub-metrics">
-              <span>{chordLastSessionLabel}</span>
-              <span>{chordWeakSpotLabel}</span>
-            </div>
+            <HubMetrics metrics={chordMetrics} />
             <button
               data-testid="hub-start-chord"
               onClick={onStartChord}
@@ -116,10 +132,7 @@ export function PracticeHub({
                 locations.
               </p>
             </div>
-            <div className="hub-metrics">
-              <span>{scaleLastSessionLabel}</span>
-              <span>{scaleWeakSpotLabel}</span>
-            </div>
+            <HubMetrics metrics={scaleMetrics} />
             <button
               data-testid="hub-start-scale-degree"
               onClick={onStartScale}
@@ -146,10 +159,7 @@ export function PracticeHub({
               <h3>Find landmark intervals</h3>
               <p>Train major/minor 3rds, 5ths, and other intervals by string.</p>
             </div>
-            <div className="hub-metrics">
-              <span>{intervalLastSessionLabel}</span>
-              <span>{intervalWeakSpotLabel}</span>
-            </div>
+            <HubMetrics metrics={intervalMetrics} />
             <button
               data-testid="hub-start-interval"
               onClick={onStartInterval}
@@ -165,10 +175,7 @@ export function PracticeHub({
               <h3>Find CAGED octaves</h3>
               <p>Use highlighted anchors to connect CAGED octave positions.</p>
             </div>
-            <div className="hub-metrics">
-              <span>{octaveLastSessionLabel}</span>
-              <span>{octaveWeakSpotLabel}</span>
-            </div>
+            <HubMetrics metrics={octaveMetrics} />
             <button
               data-testid="hub-start-octave"
               onClick={onStartOctave}
@@ -184,10 +191,7 @@ export function PracticeHub({
               <h3>Name the bass function</h3>
               <p>Practice which chord tone sits in the bass of each inversion.</p>
             </div>
-            <div className="hub-metrics">
-              <span>{triadInversionLastSessionLabel}</span>
-              <span>{triadInversionWeakSpotLabel}</span>
-            </div>
+            <HubMetrics metrics={triadInversionMetrics} />
             <button
               data-testid="hub-start-triad-inversion"
               onClick={onStartTriadInversion}
@@ -218,5 +222,25 @@ export function PracticeHub({
         Open lesson library
       </Link>
     </section>
+  );
+}
+
+function HubMetrics({ metrics }: { metrics: string[] }) {
+  if (metrics.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="hub-metrics">
+      {metrics.map((metric) => (
+        <span key={metric}>{metric}</span>
+      ))}
+    </div>
+  );
+}
+
+function getVisibleMetrics(...metrics: string[]): string[] {
+  return metrics.filter(
+    (metric) => metric !== "No sessions yet" && metric !== "No weak spots"
   );
 }

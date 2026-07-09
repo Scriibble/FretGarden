@@ -182,6 +182,13 @@ body {
   box-shadow: var(--shadow-card);
 }
 
+.landing-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  grid-column: 1 / -1;
+}
+
 .landing-history-link {
   align-items: center;
   background: rgba(255, 253, 247, 0.76);
@@ -191,8 +198,6 @@ body {
   display: inline-flex;
   font-size: 0.9rem;
   font-weight: 850;
-  grid-column: 1 / -1;
-  justify-self: start;
   min-height: 2.4rem;
   padding: 0.55rem 0.95rem;
   text-decoration: none;

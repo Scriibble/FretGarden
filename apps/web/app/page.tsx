@@ -31,9 +31,14 @@ export default function HomePage() {
                 <span>Lessons</span>
                 <strong>Learn the idea, then play it</strong>
               </Link>
-              <Link className="landing-history-link" href="/history">
-                History
-              </Link>
+              <div className="landing-secondary-actions">
+                <Link className="landing-history-link" href="/explore">
+                  Explore
+                </Link>
+                <Link className="landing-history-link" href="/history">
+                  History
+                </Link>
+              </div>
             </div>
           </div>
 

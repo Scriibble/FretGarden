@@ -59,6 +59,10 @@ test("shows a focused branded landing page", async ({ page }) => {
     "href",
     "/lessons"
   );
+  await expect(page.getByRole("link", { name: "Explore" })).toHaveAttribute(
+    "href",
+    "/explore"
+  );
   await expect(page.getByRole("link", { name: "History" })).toHaveAttribute(
     "href",
     "/history"
@@ -76,6 +80,11 @@ test("surfaces the core MVP path while keeping advanced drills available", async
   await expect(page.getByTestId("hub-start-interval")).toBeVisible();
   await expect(page.getByTestId("hub-start-octave")).toBeVisible();
   await expect(page.getByTestId("hub-start-triad-inversion")).toBeVisible();
+  await expect(page.getByText("No sessions yet", { exact: true })).toHaveCount(
+    0
+  );
+  await expect(page.getByText("No weak spots", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Explore mode")).toHaveCount(0);
 });
 
 test("links a lesson into its matching practice drill", async ({ page }) => {
@@ -195,7 +204,6 @@ test("keeps practice settings compact until expanded", async ({ page }) => {
 
   const settingsPanel = page.locator(".session-setup-panel");
 
-  await expect(page.getByText("Mode", { exact: true })).toBeVisible();
   await expect(page.getByText("Drill", { exact: true })).toBeVisible();
   await expect(
     page.getByTestId("session-setup-disclosure").locator("summary").first()
@@ -216,12 +224,28 @@ test("keeps practice settings compact until expanded", async ({ page }) => {
   await expect(page.getByTestId("note-order-random")).toBeVisible();
 });
 
+test("keeps fretboard exploration separate from practice", async ({ page }) => {
+  await page.goto("/explore");
+
+  await expect(
+    page.getByRole("heading", { name: "Fretboard Explorer" })
+  ).toBeVisible();
+  await expect(page.getByText("Explore mode")).toBeVisible();
+  await expect(page.getByTestId("mode-notes")).toBeVisible();
+  await expect(page.getByTestId("mode-practice")).toHaveCount(0);
+  await expect(page.getByTestId("hub-start-note")).toHaveCount(0);
+});
+
 test("moves recent sessions and weak spots to history", async ({ page }) => {
   await page.goto("/practice?drill=note&lesson=fretboard-map#practice");
 
-  await page
-    .locator('button.fret-cell[aria-label="String 5, fret 4"]')
-    .click();
+  await expect(page.getByText("Find D on the A string")).toBeVisible();
+  const missedAnswer = page.locator(
+    'button.fret-cell[aria-label="String 5, fret 4"]'
+  );
+  await expect(missedAnswer).toBeVisible();
+  await expect(missedAnswer).toBeEnabled();
+  await missedAnswer.click();
   await expect(page.getByTestId("drill-next")).toBeEnabled();
   await page.getByTestId("drill-next").click();
   await completeFretboardAnswers(page, noteDrillAnswers.slice(1));
@@ -264,10 +288,9 @@ async function completeFretboardAnswers(
   answers: Array<{ fret: number; string: number }>
 ): Promise<void> {
   for (const [index, answer] of answers.entries()) {
-    const answerCell = page.locator(
-      `button.fret-cell[aria-label="String ${answer.string}, fret ${answer.fret}"]`
-    );
+    const answerCell = page.getByTestId(`fret-${answer.string}-${answer.fret}`);
 
+    await answerCell.scrollIntoViewIfNeeded();
     await expect(answerCell).toBeVisible();
     await expect(answerCell).toBeEnabled();
     await answerCell.click();

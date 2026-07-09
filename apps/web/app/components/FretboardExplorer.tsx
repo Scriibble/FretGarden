@@ -254,6 +254,10 @@ interface ModeSummary {
   tones: string[];
 }
 
+interface FretboardExplorerProps {
+  experience?: "practice" | "explore";
+}
+
 interface PracticeReviewContent {
   metrics: PracticeReviewMetric[];
   missedPrompts: PracticeReviewItem[];
@@ -308,8 +312,13 @@ const modes: Array<{ id: DisplayMode; label: string }> = [
   { id: "chord", label: "Chord" }
 ];
 
-export function FretboardExplorer() {
-  const [mode, setMode] = useState<DisplayMode>("practice");
+export function FretboardExplorer({
+  experience = "practice"
+}: FretboardExplorerProps) {
+  const isPracticeExperience = experience === "practice";
+  const [mode, setMode] = useState<DisplayMode>(
+    isPracticeExperience ? "practice" : "notes"
+  );
   const [practiceDrill, setPracticeDrill] = useState<PracticeDrill>("note");
   const [rootNote, setRootNote] = useState<NoteName>("C");
   const [scaleQuality, setScaleQuality] = useState<ScaleQuality>("major");
@@ -1775,10 +1784,11 @@ export function FretboardExplorer() {
       <header className="app-header">
         <div>
           <p className="eyebrow">FretGarden</p>
-          <h1>Fretboard Practice</h1>
+          <h1>{isPracticeExperience ? "Fretboard Practice" : "Fretboard Explorer"}</h1>
           <p>
-            Explore standard tuning, find notes, and map chord or scale tones
-            across the first twelve frets.
+            {isPracticeExperience
+              ? "Practice notes, chord tones, and scale degrees in focused fretboard drills."
+              : "Explore standard tuning, find notes, and map chord or scale tones across the first twelve frets."}
           </p>
         </div>
         <div className="status-panel" aria-label="Current fretboard setup">
@@ -1788,63 +1798,65 @@ export function FretboardExplorer() {
         </div>
       </header>
 
-      <PracticeHub
-        noteLastSessionLabel={formatHubAccuracy(sessionHistory[0] ?? null)}
-        noteWeakSpotLabel={notePerformance.weakSpots[0]?.label ?? "No weak spots"}
-        notePresetLabel={recommendedNotePreset.label}
-        onStartNote={() => handleStartNotePreset(recommendedNotePreset)}
-        chordLastSessionLabel={formatHubAccuracy(
-          chordSessionHistory[0] ?? null
-        )}
-        chordWeakSpotLabel={
-          chordPerformance.weakSpots[0]?.label ?? "No weak spots"
-        }
-        chordPresetLabel={recommendedChordPreset.label}
-        onStartChord={() => handleStartChordPreset(recommendedChordPreset)}
-        scaleLastSessionLabel={formatHubAccuracy(
-          scaleDegreeSessionHistory[0] ?? null
-        )}
-        scaleWeakSpotLabel={
-          scaleDegreePerformance.weakSpots[0]?.label ?? "No weak spots"
-        }
-        scalePresetLabel={recommendedScaleDegreePreset.label}
-        onStartScale={() =>
-          handleStartScaleDegreePreset(recommendedScaleDegreePreset)
-        }
-        intervalLastSessionLabel={formatHubAccuracy(
-          intervalSessionHistory[0] ?? null
-        )}
-        intervalWeakSpotLabel={
-          intervalPerformance.weakSpots[0]?.label ?? "No weak spots"
-        }
-        intervalPresetLabel={recommendedIntervalPreset.label}
-        onStartInterval={() =>
-          handleStartIntervalPreset(recommendedIntervalPreset)
-        }
-        octaveLastSessionLabel={formatHubAccuracy(
-          octaveSessionHistory[0] ?? null
-        )}
-        octaveWeakSpotLabel={
-          octavePerformance.weakSpots[0]?.label ?? "No weak spots"
-        }
-        octavePresetLabel={recommendedOctavePreset.label}
-        onStartOctave={() => handleStartOctavePreset(recommendedOctavePreset)}
-        triadInversionLastSessionLabel={formatHubAccuracy(
-          triadInversionSessionHistory[0] ?? null
-        )}
-        triadInversionWeakSpotLabel={
-          triadInversionPerformance.weakSpots[0]?.label ?? "No weak spots"
-        }
-        triadInversionPresetLabel={recommendedTriadInversionPreset.label}
-        onStartTriadInversion={() =>
-          handleStartTriadInversionPreset(recommendedTriadInversionPreset)
-        }
-        recommendationTitle={practiceRecommendation.title}
-        recommendationDescription={practiceRecommendation.description}
-        onStartRecommendation={() =>
-          handleStartRecommendation(practiceRecommendation)
-        }
-      />
+      {isPracticeExperience ? (
+        <PracticeHub
+          noteLastSessionLabel={formatHubAccuracy(sessionHistory[0] ?? null)}
+          noteWeakSpotLabel={notePerformance.weakSpots[0]?.label ?? "No weak spots"}
+          notePresetLabel={recommendedNotePreset.label}
+          onStartNote={() => handleStartNotePreset(recommendedNotePreset)}
+          chordLastSessionLabel={formatHubAccuracy(
+            chordSessionHistory[0] ?? null
+          )}
+          chordWeakSpotLabel={
+            chordPerformance.weakSpots[0]?.label ?? "No weak spots"
+          }
+          chordPresetLabel={recommendedChordPreset.label}
+          onStartChord={() => handleStartChordPreset(recommendedChordPreset)}
+          scaleLastSessionLabel={formatHubAccuracy(
+            scaleDegreeSessionHistory[0] ?? null
+          )}
+          scaleWeakSpotLabel={
+            scaleDegreePerformance.weakSpots[0]?.label ?? "No weak spots"
+          }
+          scalePresetLabel={recommendedScaleDegreePreset.label}
+          onStartScale={() =>
+            handleStartScaleDegreePreset(recommendedScaleDegreePreset)
+          }
+          intervalLastSessionLabel={formatHubAccuracy(
+            intervalSessionHistory[0] ?? null
+          )}
+          intervalWeakSpotLabel={
+            intervalPerformance.weakSpots[0]?.label ?? "No weak spots"
+          }
+          intervalPresetLabel={recommendedIntervalPreset.label}
+          onStartInterval={() =>
+            handleStartIntervalPreset(recommendedIntervalPreset)
+          }
+          octaveLastSessionLabel={formatHubAccuracy(
+            octaveSessionHistory[0] ?? null
+          )}
+          octaveWeakSpotLabel={
+            octavePerformance.weakSpots[0]?.label ?? "No weak spots"
+          }
+          octavePresetLabel={recommendedOctavePreset.label}
+          onStartOctave={() => handleStartOctavePreset(recommendedOctavePreset)}
+          triadInversionLastSessionLabel={formatHubAccuracy(
+            triadInversionSessionHistory[0] ?? null
+          )}
+          triadInversionWeakSpotLabel={
+            triadInversionPerformance.weakSpots[0]?.label ?? "No weak spots"
+          }
+          triadInversionPresetLabel={recommendedTriadInversionPreset.label}
+          onStartTriadInversion={() =>
+            handleStartTriadInversionPreset(recommendedTriadInversionPreset)
+          }
+          recommendationTitle={practiceRecommendation.title}
+          recommendationDescription={practiceRecommendation.description}
+          onStartRecommendation={() =>
+            handleStartRecommendation(practiceRecommendation)
+          }
+        />
+      ) : null}
 
       <section
         id="practice"
@@ -1857,27 +1869,31 @@ export function FretboardExplorer() {
         ref={practiceLayoutRef}
       >
         <aside className="controls-panel" aria-label="Fretboard controls">
-          <details className="control-disclosure">
-            <summary>
-              <span className="control-label">Mode</span>
-              <strong>{getModeLabel(mode)}</strong>
-            </summary>
-            <div className="control-group">
-              <div className="segmented-control">
-                {modes.map((option) => (
-                  <button
-                    className={option.id === mode ? "is-selected" : ""}
-                    data-testid={`mode-${option.id}`}
-                    key={option.id}
-                    onClick={() => handleModeChange(option.id)}
-                    type="button"
-                  >
-                    {option.label}
-                  </button>
-                ))}
+          {!isPracticeExperience ? (
+            <details className="control-disclosure" open>
+              <summary>
+                <span className="control-label">Explore mode</span>
+                <strong>{getModeLabel(mode)}</strong>
+              </summary>
+              <div className="control-group">
+                <div className="segmented-control">
+                  {modes
+                    .filter((option) => option.id !== "practice")
+                    .map((option) => (
+                      <button
+                        className={option.id === mode ? "is-selected" : ""}
+                        data-testid={`mode-${option.id}`}
+                        key={option.id}
+                        onClick={() => handleModeChange(option.id)}
+                        type="button"
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                </div>
               </div>
-            </div>
-          </details>
+            </details>
+          ) : null}
 
           {mode === "practice" ? (
             <details className="control-disclosure">
@@ -2274,24 +2290,18 @@ export function FretboardExplorer() {
             </div>
           </div>
 
-          {mode === "practice" ? (
+          {mode === "practice" && latestSession ? (
             <div className="last-session-panel" data-testid="last-session">
               <span className="control-label">Last session</span>
-              {latestSession ? (
-                <>
-                  <strong>
-                    {latestSession.correct}/{latestSession.promptCount} correct
-                  </strong>
-                  <p>
-                    {latestSession.accuracy}% accuracy ·{" "}
-                    {formatSessionDate(latestSession.completedAt)}
-                  </p>
-                </>
-              ) : (
-                <p>Finish a session to save your first local result.</p>
-              )}
+              <strong>
+                {latestSession.correct}/{latestSession.promptCount} correct
+              </strong>
+              <p>
+                {latestSession.accuracy}% accuracy ·{" "}
+                {formatSessionDate(latestSession.completedAt)}
+              </p>
             </div>
-          ) : (
+          ) : mode !== "practice" ? (
             <PracticePromptPanel
               practicePrompt={null}
               referencePrompt={{
@@ -2302,7 +2312,7 @@ export function FretboardExplorer() {
                 description: "Choose any fret to inspect its note and role."
               }}
             />
-          )}
+          ) : null}
 
           {mode === "practice" && activeDrillSummary.isComplete ? (
             <PracticeReviewPanel
