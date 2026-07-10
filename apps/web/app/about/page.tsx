@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DevelopmentWaitlist } from "../components/marketing/DevelopmentWaitlist";
 import { FounderGardenArtwork } from "../components/marketing/MarketingArtwork";
 import { MarketingShell } from "../components/marketing/MarketingShell";
 import styles from "../components/marketing/marketing.module.css";
@@ -122,27 +123,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className={styles.section} aria-labelledby="public-title">
-        <div className={styles.buildingPublic}>
-          <span className={styles.sectionEyebrow}>Building in public</span>
-          <h2 id="public-title">FretGarden is actively being developed.</h2>
-          <p>
-            The current app supports local practice for notes, chord tones, and
-            scale degrees, along with additional lessons and advanced drills.
-            Accounts, cloud sync, and a more complete learning path are planned,
-            not presented as finished features. Early testing and direct feedback
-            will help determine what should be built next.
-          </p>
-          <div className={styles.heroActions}>
-            <Link className={styles.secondaryCta} href="/signup">
-              See the signup preview
-            </Link>
-            <Link className={styles.textCta} href="/practice">
-              Open the working demo
-            </Link>
-          </div>
-        </div>
-      </section>
+      <DevelopmentWaitlist
+        headingId="public-title"
+        source="about-building-in-public"
+      />
     </MarketingShell>
   );
 }

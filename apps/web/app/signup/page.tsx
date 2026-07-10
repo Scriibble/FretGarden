@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DevelopmentWaitlist } from "../components/marketing/DevelopmentWaitlist";
 import { MarketingShell } from "../components/marketing/MarketingShell";
 import { SignupForm } from "../components/marketing/SignupForm";
 import styles from "../components/marketing/marketing.module.css";
@@ -43,8 +44,9 @@ export default function SignupPage() {
             <div className={styles.previewNotice}>
               <div>
                 <strong>Accounts are coming later.</strong>
-                This page is an interactive frontend preview. It does not send,
-                save, or permanently store any information you enter.
+                The account form below is an interactive frontend preview. It does
+                not send, save, or permanently store any account information you
+                enter.
               </div>
             </div>
 
@@ -77,6 +79,11 @@ export default function SignupPage() {
           </div>
         </div>
       </section>
+
+      <DevelopmentWaitlist
+        headingId="signup-waitlist-title"
+        source="signup-preview"
+      />
     </MarketingShell>
   );
 }
