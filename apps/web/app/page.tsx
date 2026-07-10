@@ -1,65 +1,336 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  FeatureIcon,
+  HeroGardenArtwork,
+  PracticePreview
+} from "./components/marketing/MarketingArtwork";
+import { MarketingShell } from "./components/marketing/MarketingShell";
+import styles from "./components/marketing/marketing.module.css";
+
+export const metadata: Metadata = {
+  title: "Grow Your Fretboard Knowledge",
+  description:
+    "Learn guitar notes, chord tones, scale degrees, intervals, and musical structure through focused practice designed to grow with you."
+};
+
+const features = [
+  {
+    icon: "notes" as const,
+    title: "Fretboard notes",
+    description:
+      "Build reliable note recognition across the neck instead of depending on a few familiar positions."
+  },
+  {
+    icon: "intervals" as const,
+    title: "Intervals",
+    description:
+      "See the distances between notes and understand the relationships that make patterns useful."
+  },
+  {
+    icon: "chords" as const,
+    title: "Chord tones",
+    description:
+      "Find roots, thirds, fifths, and other chord tones where they actually live on the fretboard."
+  },
+  {
+    icon: "degrees" as const,
+    title: "Scale degrees",
+    description:
+      "Connect every note to its role inside a key so scales become musical rather than mechanical."
+  },
+  {
+    icon: "patterns" as const,
+    title: "Connected patterns",
+    description:
+      "Link shapes to notes, intervals, and harmony instead of memorizing diagrams in isolation."
+  },
+  {
+    icon: "focus" as const,
+    title: "Focused sessions",
+    description:
+      "Use short, intentional practice loops that support consistency without turning practice into a grind."
+  }
+];
+
+const steps = [
+  {
+    title: "Plant the foundation",
+    description:
+      "Start with the notes and relationships that make later theory easier to understand."
+  },
+  {
+    title: "Practice with focus",
+    description:
+      "Work through manageable drills with immediate feedback and a clear objective."
+  },
+  {
+    title: "Connect the patterns",
+    description:
+      "See how notes, intervals, chords, and scale degrees relate across the guitar neck."
+  },
+  {
+    title: "Grow lasting knowledge",
+    description:
+      "Carry that understanding into improvisation, songwriting, analysis, and everyday playing."
+  }
+];
 
 export default function HomePage() {
   return (
-    <main className="landing-shell">
-      <section className="landing-hero" aria-labelledby="landing-title">
-        <nav className="landing-nav" aria-label="Primary navigation">
-          <Link className="brand-lockup" href="/">
-            <img src="/brand/fretgarden-icon.svg" alt="" />
-            <span>FretGarden</span>
-          </Link>
-          <Link className="landing-nav-link" href="/practice">
-            Open app
-          </Link>
-        </nav>
-
-        <div className="landing-hero-main">
-          <div className="landing-copy">
-            <p className="eyebrow">Guitar fretboard practice</p>
-            <h1 id="landing-title">Grow your fretboard fluency.</h1>
-            <p>
-              Practice notes, chord tones, and scale degrees in short guitar
-              drills that give immediate feedback.
+    <MarketingShell activePage="home">
+      <section className={styles.heroSection} aria-labelledby="home-title">
+        <div className={styles.heroGrid}>
+          <div className={styles.heroCopy}>
+            <span className={styles.eyebrow}>Guided guitar theory practice</span>
+            <h1 className={styles.heroTitle} id="home-title">
+              Learn the fretboard.
+              <span>Grow your musicianship.</span>
+            </h1>
+            <p className={styles.heroLead}>
+              FretGarden turns music theory into focused, practical guitar
+              exercises. Build your knowledge of notes, chord tones, scale
+              degrees, intervals, and musical structure through consistent
+              practice that grows with you.
             </p>
-            <div className="landing-actions" aria-label="Choose a path">
-              <Link className="landing-action primary" href="/practice">
-                <span>Practice drills</span>
-                <strong>Start a five-minute fretboard drill</strong>
+            <div className={styles.heroActions}>
+              <Link className={styles.primaryCta} href="/practice">
+                Open the practice app
               </Link>
-              <Link className="landing-action secondary" href="/lessons">
-                <span>Lessons</span>
-                <strong>Learn the idea, then play it</strong>
+              <Link className={styles.secondaryCta} href="/signup">
+                Preview sign up
               </Link>
-              <div className="landing-secondary-actions">
-                <Link className="landing-history-link" href="/explore">
-                  Explore
-                </Link>
-                <Link className="landing-history-link" href="/history">
-                  History
-                </Link>
+            </div>
+            <div className={styles.heroStatus} aria-label="Current product status">
+              <span>Notes, chord tones, and scale degrees available now</span>
+              <span>Accounts and cloud progress are planned</span>
+            </div>
+          </div>
+
+          <HeroGardenArtwork />
+        </div>
+      </section>
+
+      <div className={styles.trustStrip}>
+        <div className={styles.trustStripInner}>
+          <p>Practice with purpose, not pressure.</p>
+          <div className={styles.trustItem}>
+            <i className={styles.trustDot} aria-hidden="true" />
+            <div>
+              <strong>Focused drills</strong>
+              <small>Clear goals and feedback</small>
+            </div>
+          </div>
+          <div className={styles.trustItem}>
+            <i className={styles.trustDot} aria-hidden="true" />
+            <div>
+              <strong>Connected theory</strong>
+              <small>Patterns with musical meaning</small>
+            </div>
+          </div>
+          <div className={styles.trustItem}>
+            <i className={styles.trustDot} aria-hidden="true" />
+            <div>
+              <strong>Sustainable practice</strong>
+              <small>Small sessions, stronger roots</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section className={styles.section} aria-labelledby="problem-title">
+        <div className={styles.problemGrid}>
+          <div className={styles.problemCopy}>
+            <span className={styles.sectionEyebrow}>Beyond memorized shapes</span>
+            <h2 id="problem-title">Understand what you play, not only where to place your fingers.</h2>
+            <p>
+              Many guitarists collect scale boxes, chord diagrams, and familiar
+              shapes without developing a connected map of the fretboard.
+              Those patterns can be useful, but they become more flexible when
+              you know the notes and relationships underneath them.
+            </p>
+            <p>
+              FretGarden is designed to connect practical neck work with the
+              music theory that explains why those shapes sound and function
+              the way they do.
+            </p>
+          </div>
+
+          <div className={styles.problemVisual} aria-label="From isolated patterns to connected knowledge">
+            <div className={`${styles.patternCard} ${styles.patternCardMuted}`}>
+              <span className={styles.patternNumber}>1</span>
+              <div>
+                <strong>Memorize a shape</strong>
+                <p>Useful in one position, but difficult to adapt or explain.</p>
+              </div>
+            </div>
+            <div className={styles.connectionLine}>connect the relationships</div>
+            <div className={styles.patternCard}>
+              <span className={styles.patternNumber}>2</span>
+              <div>
+                <strong>See notes, intervals, and function</strong>
+                <p>Move the idea, reshape it, and use it with intention.</p>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="landing-product-panel" aria-label="FretGarden focus">
-            <img
-              className="landing-logo"
-              src="/brand/fretgarden-logo.svg"
-              alt="FretGarden"
-            />
-            <div className="landing-focus-grid">
-              <span>Notes</span>
-              <span>Chord tones</span>
-              <span>Scale degrees</span>
-            </div>
+      <section className={styles.section} aria-labelledby="features-title">
+        <div className={styles.sectionHeaderCentered}>
+          <span className={styles.sectionEyebrow}>What you will cultivate</span>
+          <h2 className={styles.sectionTitle} id="features-title">
+            A stronger map of the guitar neck
+          </h2>
+          <p className={styles.sectionLead}>
+            Each practice area reinforces the others so your knowledge becomes
+            easier to recall, apply, and hear in real music.
+          </p>
+        </div>
+
+        <div className={styles.featureGrid}>
+          {features.map((feature) => (
+            <article className={styles.featureCard} key={feature.title}>
+              <div className={styles.featureIcon}>
+                <FeatureIcon kind={feature.icon} />
+              </div>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="how-title">
+        <div className={styles.sectionHeader}>
+          <span className={styles.sectionEyebrow}>How FretGarden works</span>
+          <h2 className={styles.sectionTitle} id="how-title">
+            Grow one deliberate layer at a time
+          </h2>
+          <p className={styles.sectionLead}>
+            The learning path moves from concrete fretboard knowledge toward
+            broader musical understanding without rushing past the roots.
+          </p>
+        </div>
+
+        <div className={styles.stepsGrid}>
+          {steps.map((step) => (
+            <article className={styles.stepCard} key={step.title}>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+              <div className={styles.stepGrowth} aria-hidden="true">
+                <i />
+                <i />
+                <i />
+                <i />
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="focus-title">
+        <div className={styles.practicePhilosophy}>
+          <div className={styles.philosophyCopy}>
+            <span className={styles.sectionEyebrow}>Focused practice philosophy</span>
+            <h2 id="focus-title">Practice that respects your attention.</h2>
             <p>
-              No account, no clutter. Open a short loop, answer on the
-              fretboard, and see what needs another pass.
+              FretGarden encourages short, intentional sessions inspired by
+              Pomodoro-style focus. A manageable practice window makes it
+              easier to return consistently, review mistakes, and stop before
+              attention turns into frustration.
             </p>
+            <p>
+              The goal is not to rush progress. It is to make each session
+              clear enough that you can return tomorrow and keep growing.
+            </p>
+          </div>
+
+          <div className={styles.timerVisual} aria-hidden="true">
+            <span className={styles.timerLeaf} />
+            <div className={styles.timerDial}>
+              <strong>25</strong>
+              <span>focused minutes</span>
+            </div>
+            <span className={styles.timerLeafAlt} />
           </div>
         </div>
       </section>
-    </main>
+
+      <div className={styles.productPreviewSection}>
+        <section className={styles.section} aria-labelledby="preview-title">
+          <div className={styles.sectionHeaderCentered}>
+            <span className={styles.sectionEyebrow}>Current product preview</span>
+            <h2 className={styles.sectionTitle} id="preview-title">
+              Open a drill and work directly on the fretboard
+            </h2>
+            <p className={styles.sectionLead}>
+              The present demo is local-first and account-free. Practice notes,
+              chord tones, and scale degrees now; structured accounts and cloud
+              progress will come later.
+            </p>
+          </div>
+
+          <PracticePreview />
+        </section>
+      </div>
+
+      <section className={styles.section} aria-labelledby="audience-title">
+        <div className={styles.sectionHeader}>
+          <span className={styles.sectionEyebrow}>Who it is for</span>
+          <h2 className={styles.sectionTitle} id="audience-title">
+            Built for players who want the fretboard to make sense
+          </h2>
+        </div>
+
+        <div className={styles.audienceGrid}>
+          <article className={styles.audienceCard}>
+            <span>Starting out</span>
+            <h3>Beginners building a real foundation</h3>
+            <p>
+              Learn the neck in manageable steps while connecting new theory to
+              something you can immediately see and practice.
+            </p>
+          </article>
+          <article className={styles.audienceCard}>
+            <span>Filling the gaps</span>
+            <h3>Self-taught guitarists</h3>
+            <p>
+              Turn years of collected shapes and songs into a more organized,
+              flexible understanding of the instrument.
+            </p>
+          </article>
+          <article className={styles.audienceCard}>
+            <span>Connecting ideas</span>
+            <h3>Intermediate players</h3>
+            <p>
+              Strengthen note awareness, harmonic targeting, and the link
+              between theory knowledge and real playing decisions.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="final-cta-title">
+        <div className={styles.ctaPanel}>
+          <div className={styles.ctaCopy}>
+            <span className={styles.sectionEyebrow}>Give your practice room to grow</span>
+            <h2 id="final-cta-title">Build stronger fretboard knowledge one focused session at a time.</h2>
+            <p>
+              Try the current local practice experience or preview how future
+              FretGarden accounts will support saved progress and learning paths.
+            </p>
+          </div>
+          <div className={styles.ctaActions}>
+            <Link className={styles.primaryCta} href="/practice">
+              Start practicing
+            </Link>
+            <Link className={styles.secondaryCta} href="/signup">
+              Preview sign up
+            </Link>
+          </div>
+        </div>
+      </section>
+    </MarketingShell>
   );
 }
