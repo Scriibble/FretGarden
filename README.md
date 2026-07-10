@@ -1,12 +1,12 @@
-Pocket.Practice
-Pocket.Practice is an interactive platform for learning guitar, bass, and music theory through structured lessons, intelligent practice tools, and long-term progress tracking. The project is designed to make learning an instrument engaging for complete beginners while still providing enough depth for experienced musicians.
+FretGarden
+FretGarden is an interactive platform for learning guitar, bass, and music theory through structured lessons, intelligent practice tools, and long-term progress tracking. The project is designed to make learning an instrument engaging for complete beginners while still providing enough depth for experienced musicians.
 Status: Active Development (Pre-Release)
 
 Note: this README describes the long-term product direction. For the current
 repository state after the restore, see `docs/CURRENT_STATUS.md`.
 
 Vision
-Learning an instrument is often fragmented across YouTube videos, tabs, PDFs, and random practice routines. Pocket.Practice aims to bring everything together into one cohesive learning experience.
+Learning an instrument is often fragmented across YouTube videos, tabs, PDFs, and random practice routines. FretGarden aims to bring everything together into one cohesive learning experience.
 The long-term goal is to provide a curriculum that teaches:
 * Guitar fundamentals
 * Bass fundamentals
@@ -121,10 +121,10 @@ Project Roadmap
 * Version 1.0
 
 Contributing
-Pocket.Practice is currently under active development. Contributions, feature requests, and bug reports will be welcomed once the project reaches its first public milestone.
+FretGarden is currently under active development. Contributions, feature requests, and bug reports will be welcomed once the project reaches its first public milestone.
 
 License
 License information will be added before the first public release.
 
 Acknowledgements
-Pocket.Practice is built with the goal of making high-quality music education more accessible by combining structured learning, modern software, and thoughtful user experience into a single platform.
+FretGarden is built with the goal of making high-quality music education more accessible by combining structured learning, modern software, and thoughtful user experience into a single platform.
