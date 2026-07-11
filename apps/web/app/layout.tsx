@@ -5,17 +5,19 @@ export const metadata: Metadata = {
   applicationName: "FretGarden",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "FretGarden",
+    default: "FretGarden | Grow Your Fretboard Knowledge",
     template: "%s | FretGarden"
   },
   description:
-    "Guitar fretboard practice for notes, chord tones, and scale degrees.",
+    "Learn guitar notes, chord tones, scale degrees, intervals, and musical structure through focused practice designed to grow with you.",
   keywords: [
     "guitar fretboard practice",
     "fretboard trainer",
+    "music theory for guitar",
     "note recognition",
     "chord tones",
-    "scale degrees"
+    "scale degrees",
+    "guitar intervals"
   ],
   manifest: "/manifest.webmanifest",
   icons: {
@@ -24,9 +26,9 @@ export const metadata: Metadata = {
     apple: "/brand/fretgarden-icon.svg"
   },
   openGraph: {
-    title: "FretGarden",
+    title: "FretGarden | Grow Your Fretboard Knowledge",
     description:
-      "Grow your fretboard fluency with short guitar drills for notes, chord tones, and scale degrees.",
+      "Build practical fretboard knowledge through focused guitar exercises for notes, chord tones, scale degrees, intervals, and musical relationships.",
     siteName: "FretGarden",
     type: "website",
     images: [
@@ -40,9 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FretGarden",
+    title: "FretGarden | Grow Your Fretboard Knowledge",
     description:
-      "Guitar fretboard practice for notes, chord tones, and scale degrees.",
+      "Focused guitar practice for notes, chord tones, scale degrees, intervals, and musical structure.",
     images: ["/brand/fretgarden-logo.svg"]
   }
 };
