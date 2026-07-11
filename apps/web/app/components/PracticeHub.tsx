@@ -87,7 +87,7 @@ export function PracticeHub({
     <section className="practice-hub" aria-label="Practice hub">
       <section className="hub-section" aria-labelledby="core-path-heading">
         <h2 className="visually-hidden" id="core-path-heading">
-          Core practice
+          Garden Patch
         </h2>
 
         <div className="hub-grid hub-grid-core">
