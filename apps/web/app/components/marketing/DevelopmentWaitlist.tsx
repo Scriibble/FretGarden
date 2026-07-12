@@ -17,9 +17,9 @@ export function DevelopmentWaitlist({
         <span className={styles.sectionEyebrow}>Building in public</span>
         <h2 id={headingId}>FretGarden is actively being developed.</h2>
         <p>
-          The current app supports local practice for notes, chord tones, and
+          The current app supports accounts,local practice for notes, chord tones, and
           scale degrees, along with additional lessons and advanced drills.
-          Accounts, cloud sync, and a more complete learning path are planned,
+          Cloud sync, and a more complete learning path are planned, are
           not presented as finished features. Early testing and direct feedback
           will help determine what should be built next.
         </p>
