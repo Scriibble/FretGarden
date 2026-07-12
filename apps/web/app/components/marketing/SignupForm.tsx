@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { createClient } from "../../lib/supabase/client";
 import styles from "./marketing.module.css";
-
 
 type FormValues = {
   displayName: string;
@@ -28,15 +29,21 @@ function validate(values: FormValues): FormErrors {
   const trimmedEmail = values.email.trim();
 
   if (trimmedName.length < 2) {
-    errors.displayName = "Enter at least two characters for your display name.";
+    errors.displayName =
+      "Enter at least two characters for your display name.";
   }
 
   if (!/^\S+@\S+\.\S+$/.test(trimmedEmail)) {
     errors.email = "Enter a valid email address.";
   }
 
-  if (values.password.length < 8 || !/[A-Za-z]/.test(values.password) || !/\d/.test(values.password)) {
-    errors.password = "Use at least eight characters with a letter and a number.";
+  if (
+    values.password.length < 8 ||
+    !/[A-Za-z]/.test(values.password) ||
+    !/\d/.test(values.password)
+  ) {
+    errors.password =
+      "Use at least eight characters with a letter and a number.";
   }
 
   if (values.confirmPassword !== values.password) {
@@ -44,7 +51,8 @@ function validate(values: FormValues): FormErrors {
   }
 
   if (!values.agreement) {
-    errors.agreement = "Confirm that you understand this is a signup preview.";
+    errors.agreement =
+      "Confirm that you agree to create a FretGarden account.";
   }
 
   return errors;
@@ -55,14 +63,26 @@ export function SignupForm() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function updateField<K extends keyof FormValues>(field: K, value: FormValues[K]) {
-    setValues((current) => ({ ...current, [field]: value }));
-    setErrors((current) => ({ ...current, [field]: undefined }));
+  function updateField<K extends keyof FormValues>(
+    field: K,
+    value: FormValues[K]
+  ) {
+    setValues((current) => ({
+      ...current,
+      [field]: value
+    }));
+
+    setErrors((current) => ({
+      ...current,
+      [field]: undefined
+    }));
+
     setStatus("");
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const nextErrors = validate(values);
@@ -73,14 +93,42 @@ export function SignupForm() {
       return;
     }
 
-    setValues((current) => ({
-      ...current,
-      password: "",
-      confirmPassword: ""
-    }));
-    setStatus(
-      "Account creation is not connected yet. Nothing was transmitted or stored. This form is ready to be connected to authentication when that work begins."
-    );
+    setIsSubmitting(true);
+    setStatus("");
+
+    try {
+      const supabase = createClient();
+
+      const { error } = await supabase.auth.signUp({
+        email: values.email.trim(),
+        password: values.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            display_name: values.displayName.trim()
+          }
+        }
+      });
+
+      if (error) {
+        setStatus(error.message);
+        return;
+      }
+
+      setValues(initialValues);
+
+      setStatus(
+        "Check your email to confirm your FretGarden account. After confirmation, you can sign in."
+      );
+    } catch (error) {
+      console.error("FretGarden signup failed:", error);
+
+      setStatus(
+        "Account creation failed. Check your connection and try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const passwordType = showPassword ? "text" : "password";
@@ -89,6 +137,7 @@ export function SignupForm() {
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <div className={styles.fieldGroup}>
         <label htmlFor="display-name">Display name</label>
+
         <input
           autoComplete="nickname"
           id="display-name"
@@ -97,9 +146,15 @@ export function SignupForm() {
           type="text"
           value={values.displayName}
           aria-invalid={Boolean(errors.displayName)}
-          aria-describedby={errors.displayName ? "display-name-error" : undefined}
-          onChange={(event) => updateField("displayName", event.target.value)}
+          aria-describedby={
+            errors.displayName ? "display-name-error" : undefined
+          }
+          disabled={isSubmitting}
+          onChange={(event) =>
+            updateField("displayName", event.target.value)
+          }
         />
+
         {errors.displayName ? (
           <span className={styles.fieldError} id="display-name-error">
             {errors.displayName}
@@ -109,6 +164,7 @@ export function SignupForm() {
 
       <div className={styles.fieldGroup}>
         <label htmlFor="signup-email">Email address</label>
+
         <input
           autoComplete="email"
           id="signup-email"
@@ -118,9 +174,13 @@ export function SignupForm() {
           type="email"
           value={values.email}
           aria-invalid={Boolean(errors.email)}
-          aria-describedby={errors.email ? "signup-email-error" : undefined}
+          aria-describedby={
+            errors.email ? "signup-email-error" : undefined
+          }
+          disabled={isSubmitting}
           onChange={(event) => updateField("email", event.target.value)}
         />
+
         {errors.email ? (
           <span className={styles.fieldError} id="signup-email-error">
             {errors.email}
@@ -130,6 +190,7 @@ export function SignupForm() {
 
       <div className={styles.fieldGroup}>
         <label htmlFor="signup-password">Password</label>
+
         <div className={styles.passwordRow}>
           <input
             autoComplete="new-password"
@@ -140,20 +201,29 @@ export function SignupForm() {
             value={values.password}
             aria-invalid={Boolean(errors.password)}
             aria-describedby="password-requirements signup-password-error"
-            onChange={(event) => updateField("password", event.target.value)}
+            disabled={isSubmitting}
+            onChange={(event) =>
+              updateField("password", event.target.value)
+            }
           />
+
           <button
             className={styles.passwordToggle}
             type="button"
             aria-pressed={showPassword}
-            onClick={() => setShowPassword((current) => !current)}
+            disabled={isSubmitting}
+            onClick={() =>
+              setShowPassword((current) => !current)
+            }
           >
             {showPassword ? "Hide" : "Show"}
           </button>
         </div>
+
         <span className={styles.fieldHint} id="password-requirements">
           At least eight characters, including a letter and a number.
         </span>
+
         {errors.password ? (
           <span className={styles.fieldError} id="signup-password-error">
             {errors.password}
@@ -163,6 +233,7 @@ export function SignupForm() {
 
       <div className={styles.fieldGroup}>
         <label htmlFor="confirm-password">Confirm password</label>
+
         <input
           autoComplete="new-password"
           id="confirm-password"
@@ -171,11 +242,22 @@ export function SignupForm() {
           type={passwordType}
           value={values.confirmPassword}
           aria-invalid={Boolean(errors.confirmPassword)}
-          aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
-          onChange={(event) => updateField("confirmPassword", event.target.value)}
+          aria-describedby={
+            errors.confirmPassword
+              ? "confirm-password-error"
+              : undefined
+          }
+          disabled={isSubmitting}
+          onChange={(event) =>
+            updateField("confirmPassword", event.target.value)
+          }
         />
+
         {errors.confirmPassword ? (
-          <span className={styles.fieldError} id="confirm-password-error">
+          <span
+            className={styles.fieldError}
+            id="confirm-password-error"
+          >
             {errors.confirmPassword}
           </span>
         ) : null}
@@ -184,37 +266,56 @@ export function SignupForm() {
       <div className={styles.checkboxField}>
         <input
           checked={values.agreement}
-          id="preview-agreement"
+          id="account-agreement"
           name="agreement"
           type="checkbox"
           aria-invalid={Boolean(errors.agreement)}
-          aria-describedby={errors.agreement ? "preview-agreement-error" : undefined}
-          onChange={(event) => updateField("agreement", event.target.checked)}
+          aria-describedby={
+            errors.agreement ? "account-agreement-error" : undefined
+          }
+          disabled={isSubmitting}
+          onChange={(event) =>
+            updateField("agreement", event.target.checked)
+          }
         />
+
         <div>
-          <label htmlFor="preview-agreement">
-            I understand this is a preview and that no account, password, or profile will be saved yet.
+          <label htmlFor="account-agreement">
+            I agree to create a FretGarden account and receive an
+            email confirmation.
           </label>
+
           {errors.agreement ? (
-            <div className={styles.fieldError} id="preview-agreement-error">
+            <div
+              className={styles.fieldError}
+              id="account-agreement-error"
+            >
               {errors.agreement}
             </div>
           ) : null}
         </div>
       </div>
 
-      <button className={styles.submitButton} type="submit">
-        Preview account creation
+      <button
+        className={styles.submitButton}
+        type="submit"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Creating account..." : "Create account"}
       </button>
 
       {status ? (
-        <div className={styles.formStatus} role="status" aria-live="polite">
+        <div
+          className={styles.formStatus}
+          role="status"
+          aria-live="polite"
+        >
           {status}
         </div>
       ) : null}
 
       <p className={styles.formFooter}>
-        Already have a future account? <strong>Sign in will be added with authentication.</strong>
+        Already have an account? <a href="/login">Sign in</a>
       </p>
     </form>
   );
