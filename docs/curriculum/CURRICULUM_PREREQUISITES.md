@@ -2,7 +2,7 @@
 
 Date: 2026-07-14
 
-Status: Units 1-11 implemented; Units 12-51 source-mapped for later authoring review
+Status: Units 1-19 implemented; Units 20-51 source-mapped for later authoring review
 
 ## Graph Rules
 
@@ -34,11 +34,23 @@ Status: Units 1-11 implemented; Units 12-51 source-mapped for later authoring re
 
 Every instrument lesson may be previewed. The learner-facing completion control remains unavailable until the immediately required prior unit has a completed curriculum self-check.
 
+## Level 2 Instrument Sequence
+
+| Unit | Required prior unit | Skills assumed | Primary remediation | Preview before completion |
+| --- | --- | --- | --- | --- |
+| 12. Barre Chords and Movable Harmony | Unit 11 | Clear chord tone; roots; major/minor quality; pressure release | Use partial shapes, fewer strings, and short release cycles | Yes |
+| 13. Minor Pentatonic and Blues Language | Unit 12 | Movable roots; eighth-note pulse; phrase and rest | Limit the collection to three notes and track the 12-bar form before soloing | Yes |
+| 14. Fretboard Notes and Octave Shapes | Unit 13 | Musical alphabet; string names; root movement | Retrieve natural notes on strings 6 and 5 before deriving one octave | Yes |
+| 15. Major Scale and Diatonic Melody | Unit 14 | Whole/half steps; named fretboard anchors; phrasing | Use one octave, sing degrees, and develop a three-note motive | Yes |
+| 16. Rhythm Guitar Vocabulary | Unit 15 | Eighth-note motion; muting; chord recovery | Mute all strings, restore continuous motion, then add selected attacks | Yes |
+| 17. Triads in Open and Movable Contexts | Unit 16 | Intervals; major/minor quality; fretboard roots | Construct one quality from a formula and trace one voice at a time | Yes |
+| 18. Lead-Sheet Literacy and Transposition | Unit 17 | Chord quality; triads; form; interval transposition | Scan one section, label function, and transpose I-IV-V only | Yes |
+| 19. Level 2 Band and Songwriting Project | Unit 18 | Level 2 harmony, rhythm, melody, chart, listening, and recovery | Shorten the form, separate roles, and repair one transition before a complete run | Yes |
+
 ## Remaining Source-Mapped Sequence
 
 | Units | Required sequence | Core capability progression | Primary remediation direction |
 | --- | --- | --- | --- |
-| 12-19 | Each requires the previous unit | Movable harmony -> improvisation -> fretboard -> major scale -> groove -> triads -> charts -> project | Reduce shape load, key count, note count, or rhythmic density |
 | 20-27 | Each requires the previous unit | CAGED -> diatonic/minor harmony -> seventh chords -> motifs -> chord-tone soloing -> arranging -> project | Return to note, interval, triad, or guide-tone ownership |
 | 28-35 | Each requires the previous unit | Modes -> chromatic harmony -> voice leading -> advanced rhythm -> style -> counterpoint -> portfolio | Return to a stable tonal center, simpler meter, or one independent line |
 | 36-43 | Each requires the previous unit | Extensions -> chord-scale use -> modulation -> minor systems -> technique -> form -> reharmonization -> jury | Reduce harmonic choices and defend one voice-leading or functional decision |

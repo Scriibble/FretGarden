@@ -19,8 +19,9 @@ test("presents the implemented curriculum without claiming the mapped roadmap is
   await expect(page.getByRole("link", { name: "Meet the Guitar and Produce a Clear Sound" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Level 1 Integration Project" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Lead-Sheet Literacy and Transposition" })).toBeVisible();
-  await expect(page.getByText("The remaining 33 units are source-mapped", { exact: false })).toBeVisible();
-  await expect(page.getByText("Level 2 Band and Songwriting Project")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Level 2 Band and Songwriting Project" })).toBeVisible();
+  await expect(page.getByText("The remaining 32 units are source-mapped", { exact: false })).toBeVisible();
+  await expect(page.getByText("CAGED System and Fretboard Integration")).toHaveCount(0);
 });
 
 test("requires correct knowledge and explicit performance checks before Unit 1 completion", async ({ page }) => {
@@ -109,7 +110,8 @@ test("keeps every foundation route inside a 320 pixel viewport", async ({ page }
     "/lessons/major-scale-diatonic-melody",
     "/lessons/rhythm-guitar-vocabulary",
     "/lessons/triads-open-movable-contexts",
-    "/lessons/lead-sheet-literacy-transposition"
+    "/lessons/lead-sheet-literacy-transposition",
+    "/lessons/level-two-band-songwriting-project"
   ]) {
     await page.goto(route);
     const dimensions = await page.evaluate(() => ({
@@ -181,10 +183,11 @@ test("renders structured music blocks with text equivalents and explicit support
   await expect(tab.getByRole("columnheader", { name: "1 &" })).toBeVisible();
 
   await page.goto("/lessons/fretboard-notes-octave-shapes");
-  await expect(page.getByRole("table", { name: /Natural notes on strings 6 and 5/ })).toBeVisible();
+  await expect(page.getByRole("table", { name: /Strings 6 and 5 natural-note map/ })).toBeVisible();
 
   await page.goto("/lessons/lead-sheet-literacy-transposition");
-  await expect(page.getByRole("table", { name: /North Window/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "North Window: Read one section ahead" })).toBeVisible();
+  await expect(page.getByLabel(/Original G-major chart/)).toBeVisible();
   await expect(page.getByText("1 · Model", { exact: true })).toBeVisible();
 });
 
@@ -204,6 +207,19 @@ test("keeps later units previewable while enforcing the completion prerequisite"
   await expect(page.getByRole("button", { name: "Complete the prior unit first" })).toBeDisabled();
   await expect(page.getByRole("heading", { name: "Plan, perform, and assess a complete Level 1 piece" })).toBeVisible();
   await expect(page.getByText("60–120 second original piece", { exact: false })).toBeVisible();
+});
+
+test("presents the Level 2 capstone as a complete evidence-bearing project", async ({ page }) => {
+  await page.goto("/lessons/level-two-band-songwriting-project");
+
+  await expect(page.getByText("Preview available", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Complete the prior unit first" })).toBeDisabled();
+  await expect(page.getByRole("heading", { name: "Build, rehearse, and assess a complete Level 2 performance" })).toBeVisible();
+  await expect(page.getByText("two-to-four-minute original piece", { exact: false }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Lantern Lines: Original project model" })).toBeVisible();
+  await expect(page.getByLabel(/Original G-major model/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Three contrasting studies" })).toBeVisible();
+  await expect(page.getByText("FretGarden does not require or accept an upload", { exact: false })).toBeVisible();
 });
 
 test("supports a keyboard knowledge-check path in the instrument sequence", async ({ page }) => {

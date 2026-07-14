@@ -274,6 +274,15 @@ const implementedSourceMetadata: Record<number, {
       "Transpose a progression to two keys using Roman and Nashville notation."
     ],
     tags: ["lead-sheets", "transposition", "reading", "functional-harmony"]
+  },
+  16: {
+    estimatedMinutes: 240,
+    outcomes: [
+      "Create and perform a two-to-four-minute original piece with contrasting sections and recovery.",
+      "Communicate rhythm, lead, improvisation, form, and arrangement decisions in a readable chart.",
+      "Produce short ear-transcription, functional-analysis, and evidence-based reflection artifacts."
+    ],
+    tags: ["integration", "songwriting", "performance", "arrangement", "transcription"]
   }
 };
 

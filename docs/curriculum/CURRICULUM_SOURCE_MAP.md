@@ -17,14 +17,14 @@ The three Markdown-mandated foundation units occupy Units 1-3. The PDF's origina
 | 9 | PDF 6 | Power Chords and Rock Rhythm | Implemented |
 | 10 | PDF 7 | Open-Chord Vocabulary II and Song Form | Implemented |
 | 11 | PDF 8 | Level 1 Integration Project | Implemented |
-| 12 | PDF 9 | Barre Chords and Movable Harmony | Mapped |
-| 13 | PDF 10 | Minor Pentatonic and Blues Language | Mapped |
-| 14 | PDF 11 | Fretboard Notes and Octave Shapes | Mapped |
-| 15 | PDF 12 | Major Scale and Diatonic Melody | Mapped |
-| 16 | PDF 13 | Rhythm Guitar Vocabulary | Mapped |
-| 17 | PDF 14 | Triads in Open and Movable Contexts | Mapped |
-| 18 | PDF 15 | Lead-Sheet Literacy and Transposition | Mapped |
-| 19 | PDF 16 | Level 2 Band and Songwriting Project | Mapped |
+| 12 | PDF 9 | Barre Chords and Movable Harmony | Implemented |
+| 13 | PDF 10 | Minor Pentatonic and Blues Language | Implemented |
+| 14 | PDF 11 | Fretboard Notes and Octave Shapes | Implemented |
+| 15 | PDF 12 | Major Scale and Diatonic Melody | Implemented |
+| 16 | PDF 13 | Rhythm Guitar Vocabulary | Implemented |
+| 17 | PDF 14 | Triads in Open and Movable Contexts | Implemented |
+| 18 | PDF 15 | Lead-Sheet Literacy and Transposition | Implemented |
+| 19 | PDF 16 | Level 2 Band and Songwriting Project | Implemented |
 | 20 | PDF 17 | CAGED System and Fretboard Integration | Mapped |
 | 21 | PDF 18 | Diatonic Harmony in Major Keys | Mapped |
 | 22 | PDF 19 | Relative Minor and Minor-Key Harmony | Mapped |
