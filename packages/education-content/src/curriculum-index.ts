@@ -166,6 +166,42 @@ const implementedLevelOneMetadata: Record<number, {
       "Perform an original verse-chorus study with steady pulse and recovery."
     ],
     tags: ["open-chords", "song-form", "accompaniment"]
+  },
+  4: {
+    estimatedMinutes: 90,
+    outcomes: [
+      "Decode tab orientation, fret numbers, rests, ties, dots, and eighth-note rhythm.",
+      "Coordinate adjacent-string alternate picking with score reading.",
+      "Sight-read an unfamiliar eight-measure beginner tab without a model."
+    ],
+    tags: ["tablature", "rhythm-reading", "sight-reading"]
+  },
+  5: {
+    estimatedMinutes: 95,
+    outcomes: [
+      "Explain the musical alphabet, whole and half steps, tonic, and octave.",
+      "Play and name one octave of C major from memory.",
+      "Perform and create a short melody with contour, breath, and dynamics."
+    ],
+    tags: ["melody", "scale", "musical-alphabet", "ear-training"]
+  },
+  6: {
+    estimatedMinutes: 90,
+    outcomes: [
+      "Build movable root-fifth power chords from strings 6 and 5.",
+      "Control palm-muted and open articulation without changing pulse.",
+      "Perform and plan an original power-chord riff with two rhythmic motives."
+    ],
+    tags: ["power-chords", "eighth-notes", "muting", "riff"]
+  },
+  7: {
+    estimatedMinutes: 110,
+    outcomes: [
+      "Add Dm, Fmaj7, and B7 with appropriate strum ranges.",
+      "Identify phrase, section, cadence, and grouped 6/8 feel.",
+      "Perform and map a complete multi-section song form."
+    ],
+    tags: ["open-chords", "song-form", "six-eight", "accompaniment"]
   }
 };
 

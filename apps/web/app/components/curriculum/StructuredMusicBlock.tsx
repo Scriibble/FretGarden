@@ -51,7 +51,8 @@ export function StructuredMusicBlock({ block }: StructuredMusicBlockProps) {
                   <th scope="row">{string}</th>
                   {block.events.map((event, index) => {
                     const note = event.notes.find((candidate) => candidate.string === string);
-                    return <td key={`${event.count}-${index}`}>{event.rest ? "-" : note?.fret ?? "-"}</td>;
+                    const value = event.rest ? "-" : note?.fret ?? "-";
+                    return <td key={`${event.count}-${index}`}>{value}{note && event.dotted ? "·" : ""}{note && event.tieToNext ? "~" : ""}</td>;
                   })}
                 </tr>
               ))}

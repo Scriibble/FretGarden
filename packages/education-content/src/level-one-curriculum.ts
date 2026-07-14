@@ -166,6 +166,58 @@ const dDiagram: CurriculumContentBlock = {
   accessibilityDescription: "D major: strings 6 and 5 muted, string 4 open D, string 3 fret 2 finger 1 A, string 2 fret 3 finger 3 D, string 1 fret 2 finger 2 F sharp. Strum from string 4."
 };
 
+const dmDiagram: CurriculumContentBlock = {
+  id: "chord-dm",
+  type: "chord-diagram",
+  heading: "Add D minor with a compact triangle",
+  chordName: "Dm",
+  strings: [
+    { string: 6, state: "muted" }, { string: 5, state: "muted" },
+    { string: 4, state: "open", note: "D" },
+    { string: 3, state: "fretted", fret: 2, finger: 2, note: "A" },
+    { string: 2, state: "fretted", fret: 3, finger: 3, note: "D" },
+    { string: 1, state: "fretted", fret: 1, finger: 1, note: "F" }
+  ],
+  strumFromString: 4,
+  explanation: "Begin on open string 4. Compare the first-string F with the F sharp in D major to hear how one note changes chord quality.",
+  accessibilityDescription: "D minor: strings 6 and 5 muted, string 4 open D, string 3 fret 2 finger 2 A, string 2 fret 3 finger 3 D, string 1 fret 1 finger 1 F. Strum from string 4."
+};
+
+const fMaj7Diagram: CurriculumContentBlock = {
+  id: "chord-fmaj7",
+  type: "chord-diagram",
+  heading: "Use F major 7 as a hand-ready F color",
+  chordName: "Fmaj7",
+  strings: [
+    { string: 6, state: "muted" }, { string: 5, state: "muted" },
+    { string: 4, state: "fretted", fret: 3, finger: 3, note: "F" },
+    { string: 3, state: "fretted", fret: 2, finger: 2, note: "A" },
+    { string: 2, state: "fretted", fret: 1, finger: 1, note: "C" },
+    { string: 1, state: "open", note: "E" }
+  ],
+  strumFromString: 4,
+  explanation: "This voicing avoids a full barre. Keep the first string open and begin on the F at string 4 fret 3.",
+  accessibilityDescription: "F major 7: strings 6 and 5 muted, string 4 fret 3 finger 3 F, string 3 fret 2 finger 2 A, string 2 fret 1 finger 1 C, string 1 open E. Strum from string 4."
+};
+
+const b7Diagram: CurriculumContentBlock = {
+  id: "chord-b7",
+  type: "chord-diagram",
+  heading: "Prepare B7 as a return signal",
+  chordName: "B7",
+  strings: [
+    { string: 6, state: "muted" },
+    { string: 5, state: "fretted", fret: 2, finger: 2, note: "B" },
+    { string: 4, state: "fretted", fret: 1, finger: 1, note: "D#" },
+    { string: 3, state: "fretted", fret: 2, finger: 3, note: "A" },
+    { string: 2, state: "open", note: "B" },
+    { string: 1, state: "fretted", fret: 2, finger: 4, note: "F#" }
+  ],
+  strumFromString: 5,
+  explanation: "Build the three lower fingers first, verify open string 2, then add finger 4 only if the hand remains relaxed.",
+  accessibilityDescription: "B7: string 6 muted, string 5 fret 2 finger 2 B, string 4 fret 1 finger 1 D sharp, string 3 fret 2 finger 3 A, string 2 open B, string 1 fret 2 finger 4 F sharp. Strum from string 5."
+};
+
 export const levelOneLessons: readonly CurriculumLesson[] = [
   {
     id: "lesson.meet-the-guitar",
@@ -496,6 +548,279 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     ],
     reviewRecommendation: "Next session, retrieve three chords from memory and play the weakest transition first. After one week, change the section order or starting chord while preserving the pulse.",
     optionalExtension: "Create a contrasting chorus by keeping the chord order and changing only the rhythm, dynamics, or starting register."
+  },
+  {
+    id: "lesson.reading-rhythm-tablature",
+    unitId: "unit.reading-rhythm-tablature",
+    order: 1,
+    title: "Decode a riff before imitation takes over",
+    objective: "Read string and fret locations, bar lines, eighth-note counts, rests, ties, and dots to perform an unfamiliar eight-measure beginner tab at a slow steady tempo.",
+    whyItMatters: "Tab answers where to play; rhythm answers when and how long. Reading both lets you learn original material independently instead of relying on memory of a demonstration.",
+    estimatedMinutes: 90,
+    priorKnowledge: ["String numbers and fret direction", "Quarter-note pulse", "Rests and recovery", "Basic pick control"],
+    contentBlocks: [
+      {
+        id: "reading-tab-orientation",
+        type: "text",
+        heading: "Read tab from the player's view of the strings",
+        paragraphs: [
+          "The top tab line is string 1, the thinnest and highest string; the bottom line is string 6. A number names a fret, zero means open, and aligned numbers sound together. Read from left to right.",
+          "Bar lines divide measures. A repeat sign sends you back to a marked beginning. Tempo tells how quickly the beat moves. Alternate picking means successive notes can use down and up strokes rather than forcing every note downward."
+        ]
+      },
+      {
+        id: "reading-rhythm-symbols",
+        type: "callout",
+        heading: "Repeated, held, tied, dotted, and silent are different instructions",
+        body: "A repeated note starts again. A held note continues without a new attack. A tie connects duration into the next event without re-picking. A dot adds half of the note's original value. A rest preserves timed silence. Count every category before playing it.",
+        tone: "remember"
+      },
+      {
+        id: "reading-first-etude",
+        type: "tablature",
+        heading: "Adjacent-string reading etude",
+        tempo: 50,
+        events: [
+          { count: "1", notes: [{ string: 3, fret: 0, technique: "pick" }], duration: "quarter", rest: false },
+          { count: "2", notes: [{ string: 3, fret: 2, technique: "pick" }], duration: "quarter", rest: false },
+          { count: "3", notes: [{ string: 2, fret: 0, technique: "pick" }], duration: "quarter", rest: false, tieToNext: true },
+          { count: "4", notes: [{ string: 2, fret: 0 }], duration: "quarter", rest: false },
+          { count: "1 &", notes: [{ string: 2, fret: 1, technique: "pick" }], duration: "eighth", rest: false },
+          { count: "2 &", notes: [{ string: 2, fret: 3, technique: "pick" }], duration: "eighth", rest: false },
+          { count: "3", notes: [], duration: "quarter", rest: true },
+          { count: "4", notes: [{ string: 3, fret: 0, technique: "pick" }], duration: "quarter", rest: false, dotted: true }
+        ],
+        explanation: "First speak string and fret, then count the durations. The tied open second string is attacked once across beats 3 and 4; the rest on beat 3 of the second measure remains counted.",
+        accessibilityDescription: "Two-measure etude: string 3 open on beat 1, string 3 fret 2 on beat 2, string 2 open tied across beats 3 and 4; then eighth notes on string 2 frets 1 and 3 across beats 1 and 2, rest on beat 3, and dotted string 3 open on beat 4."
+      },
+      {
+        id: "reading-eighth-grid",
+        type: "rhythm-grid",
+        heading: "Count the pick motion through rests",
+        meter: "4/4",
+        events: [
+          { count: "1", action: "down", accent: true }, { count: "&", action: "up", accent: false },
+          { count: "2", action: "down", accent: false }, { count: "&", action: "up", accent: false },
+          { count: "3", action: "rest", accent: false }, { count: "&", action: "up", accent: false },
+          { count: "4", action: "down", accent: false }, { count: "&", action: "hold", accent: false }
+        ],
+        explanation: "Keep the down-up motion small during the beat-3 rest. The silent motion preserves the place of the next upstroke.",
+        accessibilityDescription: "Count 1 and 2 and 3 and 4 and. Pick down-up on beats 1 and 2, rest on beat 3 while preserving the upstroke motion, then down on beat 4 and hold."
+      },
+      ...learningStages("tab-sight-read", {
+        skill: "an unfamiliar tab in steady time",
+        model: ["Scan the tab for string range, largest fret, rhythm values, rests, and ties before touching the guitar.", "Speak each string-fret event, then clap its rhythm.", "Observe one slow play-through while tracking the score without playing."],
+        guided: ["Set 50 BPM and count one measure in.", "Read one measure at a time with spoken counts.", "Join two measures only after each can continue through its rest or tie."],
+        fade: ["Remove the spoken string names but keep counting aloud.", "Read four measures without a demonstration.", "Mark only the location where the pulse was lost, then restart from the previous measure."],
+        independent: ["Preview a new eight-measure combination for 30 seconds.", "Sight-read it once at 45-55 BPM without hearing a model.", "Continue to the final bar even after a wrong fret."],
+        success: ["String and fret locations are decoded from the tab rather than copied from memory.", "Rests and ties have correct duration.", "The beat continues through eight measures with recoverable errors."]
+      }),
+      {
+        id: "reading-write-riff",
+        type: "reflection",
+        heading: "Notate an original two-measure answer",
+        prompt: "Write a text plan for two measures using two adjacent strings, at least one eighth-note pair, and one rest or tie.",
+        fieldLabel: "Original tab plan",
+        placeholder: "Measure 1: string 3 open, 2, string 2 open tied. Measure 2: string 2 frets 1-3 as eighths, rest, string 3 open."
+      }
+    ],
+    guidedExercises: [
+      { id: "exercise.tab-scan", title: "Thirty-second score scan", purpose: "Build a repeatable reading preparation routine.", instructions: ["Find the highest and lowest strings used.", "Circle mentally or on paper every rest, tie, and eighth-note group.", "Speak the count through all measures.", "Choose a tempo that leaves time to look ahead."], successCriteria: ["The string range is known before playing.", "Every silence and sustain is anticipated.", "The tempo is selected before the count-in."], reduceDifficultyWhen: ["Scan only two measures and quarter notes."], increaseDifficultyWhen: ["Scan eight measures within 30 seconds."], relatedSkills: ["reading", "planning", "rhythm"] },
+      { id: "exercise.adjacent-alternate", title: "Adjacent-string alternate picking", purpose: "Coordinate reading with efficient pick direction.", instructions: ["Mute the strings and count 1-and-2-and.", "Alternate down-up across strings 3 and 2.", "Add the written frets while keeping the same motion."], successCriteria: ["Pick motion remains small.", "Down-up alternation survives the string change.", "The fretting hand does not rush ahead of the count."], reduceDifficultyWhen: ["Use one string or quarter notes."], increaseDifficultyWhen: ["Add a rest while the hand preserves the motion."], relatedSkills: ["alternate picking", "coordination", "eighth notes"], startingBpm: 50 }
+    ],
+    commonMistakes: [
+      { id: "mistake.tab-upside-down", symptom: "Notes appear on the opposite physical string.", likelyCause: "The top tab line is being read as string 6.", adjustment: "Say 'top line, string 1' before every score scan and trace one event to the instrument." },
+      { id: "mistake.tab-no-rhythm", symptom: "Correct frets are played with guessed timing.", likelyCause: "Tab numbers are being read without the rhythmic layer.", adjustment: "Clap and count the complete rhythm before adding any fret." },
+      { id: "mistake.tab-look-back", symptom: "The pulse stops whenever the eyes return to the fretting hand.", likelyCause: "The score is not being read ahead.", adjustment: "Slow down and let the eyes move to the next event while the current note rings." }
+    ],
+    knowledgeChecks: [
+      { id: "check.tab-line", prompt: "Which string does the top line of standard guitar tab represent?", options: ["String 1, the thinnest string", "String 6, the thickest string", "Whichever string was played last"], correctAnswer: "String 1, the thinnest string", explanation: "Guitar tab places string 1 on the top line and string 6 on the bottom." },
+      { id: "check.tie", prompt: "What happens at the second note of a tie?", options: ["The sound continues without a new attack", "The note is picked twice as loudly", "The measure restarts"], correctAnswer: "The sound continues without a new attack", explanation: "A tie joins durations of the same pitch without rearticulation." },
+      { id: "check.dot", prompt: "What does a dot add to a note's duration?", options: ["Half of its original value", "One complete measure", "No duration; it changes pitch"], correctAnswer: "Half of its original value", explanation: "A dotted half note, for example, lasts two beats plus one additional beat." }
+    ],
+    masteryCriteria: [
+      { id: "mastery.tab-symbols", description: "Explain tab orientation, fret zero, rests, ties, dots, bar lines, and repeat signs.", verification: "guided-self-check", required: true },
+      { id: "mastery.tab-read", description: "Sight-read an unfamiliar eight-measure beginner tab at a slow steady tempo without a model.", verification: "performance-checklist", required: true },
+      { id: "mastery.tab-rhythm", description: "Count eighth notes and sustain or rest for the written durations.", verification: "performance-checklist", required: true },
+      { id: "mastery.tab-write", description: "Plan an original two-measure tab using two strings and a rest or tie.", verification: "reflection", required: true }
+    ],
+    reviewRecommendation: "Next session, sight-read a reordered version before replaying today's etude. After one week, move the rhythm to different adjacent strings.",
+    optionalExtension: "Write a second ending that changes only the final two events while preserving the original rhythm."
+  },
+  {
+    id: "lesson.melody-scales-alphabet",
+    unitId: "unit.melody-scales-musical-alphabet",
+    order: 1,
+    title: "Turn an ordered scale into a shaped melody",
+    objective: "Name the musical alphabet, explain whole and half steps, play one octave of C major from memory, sing scale degrees 1-5, and perform an original four-measure melody with phrasing.",
+    whyItMatters: "A scale is raw pitch organization; melody makes choices about direction, repetition, rests, dynamics, and arrival. Naming notes and hearing the tonic lets the fingers serve a phrase instead of merely running a shape.",
+    estimatedMinutes: 95,
+    priorKnowledge: ["Tab and eighth-note reading", "Alternate picking", "String and fret direction", "Steady count-in"],
+    contentBlocks: [
+      { id: "melody-alphabet", type: "text", heading: "The alphabet repeats while distance changes", paragraphs: ["Musical letter names cycle A-B-C-D-E-F-G and return to A. Adjacent frets are half steps; two frets are whole steps. B-C and E-F are the natural half-step pairs.", "C major uses C-D-E-F-G-A-B-C. C is the tonic: the reference pitch that makes the collection feel organized. The final C is an octave above the first: the same letter name at a higher register."] },
+      { id: "melody-c-scale", type: "tablature", heading: "One-octave C major in open position", tempo: 55, events: [
+        { count: "1", notes: [{ string: 5, fret: 3 }], duration: "quarter", rest: false },
+        { count: "2", notes: [{ string: 4, fret: 0 }], duration: "quarter", rest: false },
+        { count: "3", notes: [{ string: 4, fret: 2 }], duration: "quarter", rest: false },
+        { count: "4", notes: [{ string: 4, fret: 3 }], duration: "quarter", rest: false },
+        { count: "1", notes: [{ string: 3, fret: 0 }], duration: "quarter", rest: false },
+        { count: "2", notes: [{ string: 3, fret: 2 }], duration: "quarter", rest: false },
+        { count: "3", notes: [{ string: 2, fret: 0 }], duration: "quarter", rest: false },
+        { count: "4", notes: [{ string: 2, fret: 1 }], duration: "quarter", rest: false }
+      ], explanation: "Say C-D-E-F-G-A-B-C ascending, then reverse the path. Sing 1-2-3-4-5 on the first five notes before playing them.", accessibilityDescription: "C major ascending: string 5 fret 3 C; string 4 open D, fret 2 E, fret 3 F; string 3 open G, fret 2 A; string 2 open B, fret 1 C." },
+      { id: "melody-original", type: "tablature", heading: "Original four-measure question and answer", tempo: 55, events: [
+        { count: "M1-1", notes: [{ string: 5, fret: 3 }], duration: "quarter", rest: false }, { count: "2", notes: [{ string: 4, fret: 2 }], duration: "quarter", rest: false }, { count: "3", notes: [{ string: 3, fret: 0 }], duration: "quarter", rest: false }, { count: "4", notes: [], duration: "quarter", rest: true },
+        { count: "M2-1", notes: [{ string: 3, fret: 2 }], duration: "quarter", rest: false }, { count: "2", notes: [{ string: 3, fret: 0 }], duration: "quarter", rest: false }, { count: "3", notes: [{ string: 4, fret: 2 }], duration: "quarter", rest: false }, { count: "4", notes: [], duration: "quarter", rest: true },
+        { count: "M3-1", notes: [{ string: 4, fret: 3 }], duration: "quarter", rest: false }, { count: "2", notes: [{ string: 3, fret: 0 }], duration: "quarter", rest: false }, { count: "3", notes: [{ string: 3, fret: 2 }], duration: "quarter", rest: false }, { count: "4", notes: [{ string: 2, fret: 0 }], duration: "quarter", rest: false },
+        { count: "M4-1", notes: [{ string: 2, fret: 1 }], duration: "half", rest: false, dotted: true }, { count: "4", notes: [{ string: 5, fret: 3 }], duration: "quarter", rest: false }
+      ], explanation: "Measures 1-2 leave space like a question. Measures 3-4 climb to high C, then return to low C. Shape the first note quietly, grow toward measure 3, and release the final note.", accessibilityDescription: "Four measures in C major: C E G rest; A G E rest; F G A B; high C held for three beats then low C on beat 4." },
+      ...learningStages("c-melody", {
+        skill: "a named C major scale and phrased melody",
+        model: ["Trace C major while saying each note and notice the E-F and B-C half steps.", "Listen internally for a breath at each written rest.", "Observe the melody grow toward measure 3 and settle in measure 4."],
+        guided: ["Play C major ascending and descending at 55 BPM with named notes.", "Sing scale degrees 1-2-3-4-5, then play them.", "Learn the melody two measures at a time with a planned breath."],
+        fade: ["Play the scale from memory, checking the tab only afterward.", "Perform the melody with only measure numbers and dynamic plan visible.", "Change one repeated note but preserve the phrase ending."],
+        independent: ["Play the scale ascending and descending from memory.", "Perform the four-measure melody without a model and with audible dynamic shape.", "Create and perform a new four-measure answer using five or more scale notes."],
+        success: ["The scale uses the correct note order and returns without stopping.", "The melody includes intentional rests or breaths and a clear arrival.", "A changed melody stays inside the chosen C major collection."]
+      }),
+      { id: "melody-compose", type: "reflection", heading: "Plan a melody instead of filling every beat", prompt: "Write a four-measure contour using repeat, step, leap, rest, and arrival. Name the final tonic note.", fieldLabel: "Melody contour plan", placeholder: "Repeat C-E-G, answer A-G-E, climb F-G-A-B, arrive on C after a breath." }
+    ],
+    guidedExercises: [
+      { id: "exercise.scale-name-sing", title: "Name, sing, then play", purpose: "Connect letter, scale degree, sound, and location.", instructions: ["Say C through C while tracing the frets.", "Sing 1-2-3-4-5 and back to 1.", "Play ascending and descending with alternate picking."], successCriteria: ["Letters remain in order.", "E-F and B-C are recognized as half steps.", "The scale ends on the intended tonic."], reduceDifficultyWhen: ["Use C-D-E-F-G only."], increaseDifficultyWhen: ["Begin from G and continue through the same collection to C."], relatedSkills: ["note names", "scale degrees", "ear matching"] },
+      { id: "exercise.phrase-breath", title: "Make a breath audible", purpose: "Separate melodic phrasing from uninterrupted scale motion.", instructions: ["Play measures 1-2 and allow both rests to remain silent.", "Repeat with a gentle dynamic rise and fall.", "Play measures 3-4 and aim the line toward high C."], successCriteria: ["Rests are timed, not accidental gaps.", "The phrase has a direction and arrival.", "Tone remains clear across string changes."], reduceDifficultyWhen: ["Use only measures 1-2."], increaseDifficultyWhen: ["Change one note while preserving the contour."], relatedSkills: ["phrasing", "dynamics", "melody"] }
+    ],
+    commonMistakes: [
+      { id: "mistake.scale-shape-only", symptom: "The pattern can be played but no notes or tonic can be named.", likelyCause: "Location memory has not been connected to musical identity.", adjustment: "Say each note on the next slow repetition and pause on C." },
+      { id: "mistake.scale-race", symptom: "Every note has the same volume and no breath.", likelyCause: "The scale exercise is being mistaken for melody.", adjustment: "Add a written rest and one dynamic destination before replaying." },
+      { id: "mistake.scale-half-step", symptom: "An extra fret appears between E-F or B-C.", likelyCause: "Every letter pair is assumed to be a whole step.", adjustment: "Mark E-F and B-C as adjacent-fret pairs and trace them before playing." }
+    ],
+    knowledgeChecks: [
+      { id: "check.alphabet", prompt: "Which natural-note pairs are one half step apart?", options: ["B-C and E-F", "A-B and C-D", "D-E and F-G"], correctAnswer: "B-C and E-F", explanation: "B-C and E-F are adjacent natural notes with no sharp or flat between them." },
+      { id: "check.tonic", prompt: "What is the tonic in this C major lesson?", options: ["C, the organizing reference pitch", "The fastest note", "Any open string"], correctAnswer: "C, the organizing reference pitch", explanation: "The tonic is the pitch around which the collection and phrase are heard as organized." },
+      { id: "check.melody-scale", prompt: "How does melody differ from merely running a scale?", options: ["Melody uses choices such as rhythm, contour, repetition, rest, and dynamics", "Melody must use every scale note in order", "Melody has no tonic"], correctAnswer: "Melody uses choices such as rhythm, contour, repetition, rest, and dynamics", explanation: "A scale organizes pitch material; melody shapes selected pitches in time." }
+    ],
+    masteryCriteria: [
+      { id: "mastery.melody-theory", description: "Explain the musical alphabet, whole and half steps, tonic, and octave.", verification: "guided-self-check", required: true },
+      { id: "mastery.melody-scale", description: "Play one octave of C major ascending and descending from memory with named notes.", verification: "performance-checklist", required: true },
+      { id: "mastery.melody-sing", description: "Sing and play scale degrees 1-2-3-4-5.", verification: "performance-checklist", required: true },
+      { id: "mastery.melody-perform", description: "Perform the original melody with timed rests, dynamic direction, and a clear tonic arrival.", verification: "performance-checklist", required: true },
+      { id: "mastery.melody-create", description: "Plan and perform an original four-measure melodic answer using the C major collection.", verification: "reflection", required: true }
+    ],
+    reviewRecommendation: "Next session, retrieve C major before viewing the tab and sing 1-5. After one week, begin the original melody on a different scale note while still arriving on C.",
+    optionalExtension: "Add one hammer-on between adjacent scale notes only after the rhythm and dynamic phrase remain stable."
+  },
+  {
+    id: "lesson.power-chords-rock-rhythm",
+    unitId: "unit.power-chords-rock-rhythm",
+    order: 1,
+    title: "Move root-fifth shapes without losing the eighth-note drive",
+    objective: "Explain the root-fifth power-chord shape, move it from strings 6 and 5, control muted and open attacks, and perform an original riff with consistent eighth-note pulse and dynamics.",
+    whyItMatters: "Power chords reduce harmony to a movable root and perfect fifth, making root direction, articulation, muting, and rhythmic intent easy to hear. The simplicity exposes timing rather than hiding it.",
+    estimatedMinutes: 90,
+    priorKnowledge: ["Eighth-note counting", "Tab reading", "Fret-number direction", "Pressure release", "Metronome tempo ladder"],
+    contentBlocks: [
+      { id: "power-root-fifth", type: "text", heading: "The same distance follows the root", paragraphs: ["A power chord contains a root and a perfect fifth. On strings 6 and 5, fret the fifth two frets higher on the next thinner string: a root at string 6 fret 3 pairs with string 5 fret 5. The same geometry works from string 5 to string 4.", "Because the shape omits the third, it does not state major or minor quality by itself. Its musical identity comes from root motion, rhythm, tone, register, dynamics, and the surrounding music."] },
+      { id: "power-riff", type: "tablature", heading: "Original Gate and Path power-chord riff", tempo: 60, events: [
+        { count: "1", notes: [{ string: 6, fret: 0 }, { string: 5, fret: 2 }], duration: "eighth", rest: false },
+        { count: "&", notes: [{ string: 6, fret: 0, technique: "mute" }, { string: 5, fret: 2, technique: "mute" }], duration: "eighth", rest: false },
+        { count: "2", notes: [{ string: 6, fret: 3 }, { string: 5, fret: 5 }], duration: "quarter", rest: false },
+        { count: "3", notes: [], duration: "eighth", rest: true },
+        { count: "&", notes: [{ string: 5, fret: 0 }, { string: 4, fret: 2 }], duration: "eighth", rest: false },
+        { count: "4", notes: [{ string: 5, fret: 3 }, { string: 4, fret: 5 }], duration: "quarter", rest: false },
+        { count: "1", notes: [{ string: 6, fret: 3 }, { string: 5, fret: 5 }], duration: "quarter", rest: false },
+        { count: "2 &", notes: [{ string: 6, fret: 0, technique: "mute" }, { string: 5, fret: 2, technique: "mute" }], duration: "eighth", rest: false },
+        { count: "3", notes: [{ string: 5, fret: 3 }, { string: 4, fret: 5 }], duration: "quarter", rest: false },
+        { count: "4", notes: [], duration: "quarter", rest: true }
+      ], explanation: "The riff moves E5-G5-A5-C5, then G5-E5-C5. Light palm contact near the bridge shortens marked attacks; lift enough for open contrast. Muting should change duration, not add force.", accessibilityDescription: "Power-chord riff: E5 open-position eighth and muted eighth, G5 quarter, eighth rest, A5 eighth, C5 quarter; then G5 quarter, muted E5 eighth pair, C5 quarter, quarter rest." },
+      { id: "power-eighth-grid", type: "rhythm-grid", heading: "Keep the subdivision while articulation changes", meter: "4/4", events: [
+        { count: "1", action: "down", accent: true }, { count: "&", action: "mute", accent: false }, { count: "2", action: "down", accent: false }, { count: "&", action: "hold", accent: false },
+        { count: "3", action: "rest", accent: false }, { count: "&", action: "down", accent: false }, { count: "4", action: "down", accent: true }, { count: "&", action: "hold", accent: false }
+      ], explanation: "Count every eighth-note slot. Muted, held, and rested events occupy time just as clearly as open attacks.", accessibilityDescription: "Count 1 and 2 and 3 and 4 and: accented down on 1, muted and, down on 2 and hold, rest on 3, down on its and, accented down on 4 and hold." },
+      { id: "power-safety", type: "callout", heading: "Palm muting is contact, not pressure", body: "Rest the picking-hand edge near the bridge until the note becomes shorter but keeps a pitch. Do not force the wrist into a sharp angle. Release fretting pressure between moves and stop if either wrist develops pain or numbness.", tone: "safety" },
+      ...learningStages("power-riff-performance", {
+        skill: "a movable power-chord riff with controlled muting",
+        model: ["Trace each root before adding its fifth and name whether the root is on string 6 or 5.", "Clap the riff while saying open, mute, hold, and rest.", "Observe how the hand releases pressure before each larger shift."],
+        guided: ["Loop E5-G5 at 50 BPM until the shape moves together.", "Loop A5-C5 on strings 5 and 4.", "Join the first measure, then add the second with spoken eighth counts."],
+        fade: ["Use only the root names E-G-A-C and the rhythm grid.", "Perform once without palm muting, then add only the marked muted events.", "Raise from 55 to 60 BPM after three clean repetitions."],
+        independent: ["Tune, count in, and perform the complete riff twice without a model.", "Repeat once quieter and once stronger without changing tempo.", "Recover on the next root after any missed shift."],
+        success: ["Root-fifth pairs move together and unwanted strings remain quiet.", "Muted and open attacks contrast without extra tension.", "Eighth-note pulse and dynamics remain stable through two repetitions."]
+      }),
+      { id: "power-write", type: "reflection", heading: "Create contrast with two motives", prompt: "Plan a verse riff using one rhythmic motive twice and a chorus answer with wider root movement. Name roots and articulation.", fieldLabel: "Power-chord riff plan", placeholder: "Verse E5-G5 with muted eighths; chorus A5-C5-G5 with open quarter notes and a beat-4 rest." }
+    ],
+    guidedExercises: [
+      { id: "exercise.power-shape", title: "Root then fifth", purpose: "Verify the interval shape instead of moving an unnamed grip.", instructions: ["Name and play a root on string 6.", "Add the next-string note two frets higher.", "Move both notes to a new root and name it.", "Repeat from a root on string 5."], successCriteria: ["Each fifth is on the adjacent thinner string two frets higher.", "Both notes begin together.", "Unused strings stay quiet."], reduceDifficultyWhen: ["Play roots alone, then add the fifth."], increaseDifficultyWhen: ["Move between string sets without losing the root name."], relatedSkills: ["perfect fifth", "movable shape", "root location"] },
+      { id: "exercise.mute-contrast", title: "Muted and open contrast", purpose: "Control duration independently from tempo and volume.", instructions: ["Play four open E5 eighth notes.", "Repeat with light palm contact.", "Alternate two muted and two open attacks for four measures."], successCriteria: ["Muted attacks keep a recognizable pitch.", "The hand remains comfortable.", "The eighth-note spacing does not change."], reduceDifficultyWhen: ["Use quarter notes on open-position E5."], increaseDifficultyWhen: ["Add planned accents without increasing tempo."], relatedSkills: ["palm muting", "articulation", "dynamics"], startingBpm: 55 }
+    ],
+    commonMistakes: [
+      { id: "mistake.power-shape", symptom: "The interval changes when the root moves.", likelyCause: "Only one finger has tracked the new fret.", adjustment: "Name the root, air-place both fingers as one shape, then press together." },
+      { id: "mistake.power-mute", symptom: "Palm-muted notes lose pitch completely or the wrist hurts.", likelyCause: "The hand is too far from the bridge or pressing too hard.", adjustment: "Move contact toward the bridge, lighten it, and restore a neutral wrist." },
+      { id: "mistake.power-rush", symptom: "Open chorus attacks speed up after muted eighths.", likelyCause: "Articulation is changing the underlying subdivision.", adjustment: "Count every eighth slot and practice the rhythm on one chord before adding movement." }
+    ],
+    knowledgeChecks: [
+      { id: "check.power-fifth", prompt: "From a root on string 6, where is the basic power-chord fifth?", options: ["On string 5, two frets higher", "On string 1, the same fret", "On string 5, one fret lower"], correctAnswer: "On string 5, two frets higher", explanation: "The common root-fifth shape places the fifth on the adjacent thinner string two frets higher." },
+      { id: "check.power-quality", prompt: "Why is a root-fifth power chord not major or minor by itself?", options: ["It omits the third that distinguishes those qualities", "It contains no root", "It can only be played quietly"], correctAnswer: "It omits the third that distinguishes those qualities", explanation: "Major and minor quality depends on the third; the basic power chord contains root and fifth." },
+      { id: "check.palm-mute", prompt: "What should light palm muting change first?", options: ["The note's sustain and articulation", "The underlying tempo", "The fret number"], correctAnswer: "The note's sustain and articulation", explanation: "Muting controls duration and tone while pulse and pitch location remain intentional." }
+    ],
+    masteryCriteria: [
+      { id: "mastery.power-theory", description: "Explain and build the root-fifth shape from roots on strings 6 and 5.", verification: "guided-self-check", required: true },
+      { id: "mastery.power-mute", description: "Contrast muted and open attacks without pain or loss of eighth-note pulse.", verification: "performance-checklist", required: true },
+      { id: "mastery.power-riff", description: "Perform the original power-chord riff twice at 60 BPM with stable roots, muting, and dynamics.", verification: "performance-checklist", required: true },
+      { id: "mastery.power-create", description: "Plan a verse and chorus riff using two rhythmic motives and named roots.", verification: "reflection", required: true }
+    ],
+    reviewRecommendation: "Next session, retrieve the root-fifth shape on both string sets before viewing the tab. After one week, transpose every root two frets higher while preserving rhythm and muting.",
+    optionalExtension: "Perform the riff once with downstrokes and once with alternate picking, comparing sound and tension rather than choosing a universal winner."
+  },
+  {
+    id: "lesson.open-chords-two-form",
+    unitId: "unit.open-chord-vocabulary-two-song-form",
+    order: 1,
+    title: "Use chord color to mark a complete song form",
+    objective: "Add Dm, Fmaj7, and B7 to the open-chord vocabulary, identify phrase and section boundaries, and perform an original intro-verse-chorus-outro study including 4/4 and 6/8 feels.",
+    whyItMatters: "Listeners follow sections through repeated patterns and meaningful changes. New chord colors matter most when they help an intro invite, a verse develop, a chorus arrive, or an ending resolve.",
+    estimatedMinutes: 110,
+    priorKnowledge: ["Five practical open chords", "Verse and chorus contrast", "Eighth-note counting", "Tab and chord-diagram reading"],
+    contentBlocks: [
+      { id: "form-language", type: "text", heading: "Phrase, section, and cadence organize memory", paragraphs: ["A phrase is a musical thought. Repeated or contrasting phrases form sections such as intro, verse, chorus, bridge, and outro. Eight- and sixteen-bar groupings are common, not compulsory laws.", "A cadence is a point of arrival or pause. Chord choice, melody, rhythm, and duration can all strengthen it. B7 often creates directed tension toward Em; Fmaj7 offers a hand-ready F color without pretending to be the only F voicing."] },
+      dmDiagram,
+      fMaj7Diagram,
+      b7Diagram,
+      { id: "form-six-eight", type: "rhythm-grid", heading: "Feel two large pulses inside 6/8", meter: "6/8", events: [
+        { count: "1", action: "down", accent: true }, { count: "2", action: "hold", accent: false }, { count: "3", action: "up", accent: false },
+        { count: "4", action: "down", accent: true }, { count: "5", action: "hold", accent: false }, { count: "6", action: "up", accent: false }
+      ], explanation: "Count all six eighth notes while feeling larger pulses on 1 and 4. Keep the upstrokes lighter than the accented downstrokes.", accessibilityDescription: "Six-eight pattern: accented down on count 1, hold 2, light up on 3, accented down on 4, hold 5, light up on 6." },
+      { id: "form-map", type: "callout", heading: "Original Lantern Form", body: "Intro: Em-B7, two measures each. Verse in 4/4: Em-C-G-D, twice. Chorus in 4/4: C-G-D-Em, twice. Bridge in 6/8: Am-Fmaj7-C-G, one measure each, twice. Outro: Em-B7-Em, with the final Em held for two measures.", tone: "practice" },
+      ...learningStages("complete-form", {
+        skill: "a complete multi-section accompaniment",
+        model: ["Read the form map and mark every section boundary.", "Observe the B7-to-Em arrival and the change from 4/4 to grouped 6/8.", "Listen for the final Em held longer than earlier chords."],
+        guided: ["Loop only the last measure of each section and the first measure of the next.", "Perform intro and verse, stop, then chorus and bridge.", "Join all sections with spoken names during the final measure of each section."],
+        fade: ["Use a one-line map containing only section names and first chords.", "Perform without spoken cues and recover at the next section boundary.", "Remove the map after one successful complete run."],
+        independent: ["Tune and state the form from memory.", "Perform the complete form without a model, including the 6/8 bridge and extended final chord.", "Explain how one chord, rhythm, or duration marks each section."],
+        success: ["Section order remains intact after an imperfect chord.", "The 4/4 and 6/8 feels are distinguishable without a tempo surge.", "The ending communicates a deliberate arrival."]
+      }),
+      { id: "form-write", type: "reflection", heading: "Map a short original song", prompt: "Write an intro, verse, chorus, and outro map. Give each section one contrast in chord order, rhythm, dynamics, or duration.", fieldLabel: "Original song-form map", placeholder: "Intro Em-B7 quiet; verse Em-C-G-D half notes; chorus C-G-D-Em quarter notes; outro Em held eight beats." }
+    ],
+    guidedExercises: [
+      { id: "exercise.boundary-loop", title: "Practice across the boundary", purpose: "Prevent sections from failing at the exact place practice loops usually stop.", instructions: ["Choose one section boundary.", "Begin in the final measure before it.", "Continue through the first two measures after it.", "Repeat three times, then restore the full section."], successCriteria: ["The next section begins on time.", "The first chord and rhythm are prepared before the boundary.", "The transition works inside the full form."], reduceDifficultyWhen: ["Use one strum per measure."], increaseDifficultyWhen: ["Add the intended dynamics and strum feel."], relatedSkills: ["form", "transition", "recovery"], repetitions: 3 },
+      { id: "exercise.hear-form", title: "Hear and count section length", purpose: "Connect structural listening to performance planning.", instructions: ["Play or listen to the original form without looking at the map.", "Raise one finger at each new phrase and name each section change.", "Compare the remembered lengths with the map."], successCriteria: ["Section changes are identified by audible evidence.", "Phrase lengths are counted rather than guessed.", "One boundary receives a specific performance cue."], reduceDifficultyWhen: ["Use intro and verse only."], increaseDifficultyWhen: ["Identify the bridge meter without being told when it begins."], relatedSkills: ["ear training", "phrase length", "form"] }
+    ],
+    commonMistakes: [
+      { id: "mistake.form-loops", symptom: "Individual sections work but the complete form breaks at boundaries.", likelyCause: "Practice has ended at section endings instead of crossing them.", adjustment: "Loop the last measure before and first two measures after each boundary." },
+      { id: "mistake.form-six-eight", symptom: "The 6/8 bridge sounds like six unrelated beats or speeds up.", likelyCause: "Counts 1 and 4 are not felt as larger pulses.", adjustment: "Speak ONE-2-3 FOUR-5-6 and conduct two broad motions before strumming." },
+      { id: "mistake.form-b7", symptom: "B7 creates excessive hand tension and delays Em.", likelyCause: "All four fingers are being forced down at once.", adjustment: "Build fingers 1-3 first, add finger 4 only when relaxed, or omit string 1 during the guided version." }
+    ],
+    knowledgeChecks: [
+      { id: "check.form-phrase", prompt: "What is a phrase?", options: ["A musical thought that can combine into a section", "Any single fret number", "A fixed requirement of exactly sixteen bars"], correctAnswer: "A musical thought that can combine into a section", explanation: "Phrases are perceived musical thoughts; their lengths can vary." },
+      { id: "check.six-eight", prompt: "Where are the two larger pulses commonly felt in 6/8?", options: ["Counts 1 and 4", "Counts 2 and 5 only", "Only after the measure ends"], correctAnswer: "Counts 1 and 4", explanation: "Six eighth notes are commonly grouped as two groups of three, beginning on 1 and 4." },
+      { id: "check.cadence", prompt: "What can strengthen a section-ending cadence?", options: ["Chord direction, melody, rhythm, or duration", "Only playing louder", "Ignoring the final measure"], correctAnswer: "Chord direction, melody, rhythm, or duration", explanation: "Arrival is a combined musical effect, not one universal chord rule." }
+    ],
+    masteryCriteria: [
+      { id: "mastery.form-chords", description: "Form Dm, Fmaj7, and B7 with correct strum ranges and a relaxed modification when needed.", verification: "performance-checklist", required: true },
+      { id: "mastery.form-hear", description: "Identify section changes and count phrase lengths in the original form.", verification: "guided-self-check", required: true },
+      { id: "mastery.form-perform", description: "Perform the complete original multi-section study and recover at section boundaries.", verification: "performance-checklist", required: true },
+      { id: "mastery.form-meter", description: "Distinguish the 4/4 sections from the 6/8 bridge through counting and accent.", verification: "performance-checklist", required: true },
+      { id: "mastery.form-create", description: "Write an original intro-verse-chorus-outro map with planned contrast.", verification: "reflection", required: true }
+    ],
+    reviewRecommendation: "Next session, state the form and retrieve its boundary transitions before a full run. After one week, replace one section's rhythm while preserving its role and length.",
+    optionalExtension: "Add a four-measure bridge that borrows the 6/8 feel, then explain why it belongs between the final verse and chorus."
   }
 ];
 
@@ -523,5 +848,37 @@ export const levelOneReviewPlans: readonly CurriculumReviewPlan[] = [
     nextSessionReview: ["Retrieve three chord shapes and the weakest transition before opening the lesson."],
     oneWeekReview: ["Change the section order or rhythm while preserving the chord vocabulary."],
     longTermReview: ["Use the original study to test recovery whenever a new strum pattern is added."]
+  },
+  {
+    id: "review.reading-rhythm-tablature",
+    unitId: "unit.reading-rhythm-tablature",
+    immediateReview: ["Scan one new two-measure tab and speak string, fret, and rhythm before playing."],
+    nextSessionReview: ["Sight-read a reordered etude without hearing a model."],
+    oneWeekReview: ["Move the same rhythm to different adjacent strings and preserve every rest and tie."],
+    longTermReview: ["Include one unfamiliar short score in a weekly reading session." ]
+  },
+  {
+    id: "review.melody-scales-alphabet",
+    unitId: "unit.melody-scales-musical-alphabet",
+    immediateReview: ["Name and trace C major, then sing degrees 1 through 5."],
+    nextSessionReview: ["Retrieve the scale and original melody before viewing the tab."],
+    oneWeekReview: ["Begin the melody on a different scale note while still arriving on C."],
+    longTermReview: ["Use note names, tonic, contour, and breath when learning each new melody."]
+  },
+  {
+    id: "review.power-chords-rock-rhythm",
+    unitId: "unit.power-chords-rock-rhythm",
+    immediateReview: ["Build root-fifth shapes from one root on string 6 and one on string 5."],
+    nextSessionReview: ["Retrieve the riff rhythm before adding root movement and palm muting."],
+    oneWeekReview: ["Transpose every root two frets while preserving articulation and pulse."],
+    longTermReview: ["Compare muted and open dynamics whenever a new power-chord riff is learned."]
+  },
+  {
+    id: "review.open-chords-two-form",
+    unitId: "unit.open-chord-vocabulary-two-song-form",
+    immediateReview: ["State the complete section order and loop one boundary."],
+    nextSessionReview: ["Retrieve Dm, Fmaj7, B7, and all boundary transitions before a full run."],
+    oneWeekReview: ["Change one section rhythm while preserving its role, length, and cadence."],
+    longTermReview: ["Map phrase lengths and boundary cues for each complete accompaniment piece."]
   }
 ];

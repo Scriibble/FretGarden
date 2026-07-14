@@ -112,7 +112,9 @@ const tablatureEventSchema = z.object({
   count: z.string().min(1),
   notes: z.array(tablatureNoteSchema).max(6),
   duration: z.enum(["whole", "half", "quarter", "eighth"]),
-  rest: z.boolean()
+  rest: z.boolean(),
+  tieToNext: z.boolean().optional(),
+  dotted: z.boolean().optional()
 });
 
 const tablatureBlockSchema = z.object({
