@@ -99,7 +99,7 @@ export function SignupForm() {
     try {
       const supabase = createClient();
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: values.email.trim(),
         password: values.password,
         options: {
@@ -115,10 +115,15 @@ export function SignupForm() {
         return;
       }
 
+      if (data.session) {
+        window.location.assign("/account");
+        return;
+      }
+
       setValues(initialValues);
 
       setStatus(
-        "Check your email to confirm your FretGarden account. After confirmation, you can sign in."
+        "Check your email to confirm your FretGarden account. After confirmation, you can sign in and open your account page."
       );
     } catch (error) {
       console.error("FretGarden signup failed:", error);

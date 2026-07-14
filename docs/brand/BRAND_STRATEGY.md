@@ -53,6 +53,7 @@ Secondary:
 - A low-friction drill tool
 - A lesson-to-practice loop
 - A way to turn note names, chord tones, and scale degrees into playable knowledge
+- An early account experience for identity and future progress sync
 
 ## What FretGarden Is Not Yet
 
@@ -60,7 +61,7 @@ Secondary:
 - A video course platform
 - An ear training app
 - A tuner, recording tool, or backing-track app
-- A cloud account, subscription, or social learning network
+- A cloud-progress, subscription, or social learning network
 
 ## Messaging Pillars
 

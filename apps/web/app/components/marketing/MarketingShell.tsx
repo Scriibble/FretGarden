@@ -2,7 +2,13 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import styles from "./marketing.module.css";
 
-type MarketingPage = "home" | "about" | "signup";
+type MarketingPage =
+  | "home"
+  | "about"
+  | "signup"
+  | "login"
+  | "account"
+  | "accountNotice";
 
 type MarketingShellProps = {
   activePage: MarketingPage;
@@ -12,7 +18,8 @@ type MarketingShellProps = {
 const navigation = [
   { key: "home" as const, href: "/", label: "Home" },
   { key: "about" as const, href: "/about", label: "About Me" },
-  { key: "signup" as const, href: "/signup", label: "Sign Up" }
+  { key: "signup" as const, href: "/signup", label: "Sign Up" },
+  { key: "login" as const, href: "/login", label: "Sign In" }
 ];
 
 export function MarketingShell({ activePage, children }: MarketingShellProps) {
@@ -107,7 +114,7 @@ export function MarketingShell({ activePage, children }: MarketingShellProps) {
 
           <div className={styles.footerMeta}>
             <span>© {new Date().getFullYear()} FretGarden</span>
-            <span>Privacy and terms will be published before accounts launch.</span>
+            <Link href="/account-notice">Early account notice</Link>
           </div>
         </div>
       </footer>

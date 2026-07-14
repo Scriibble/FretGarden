@@ -4,13 +4,42 @@ Use this guide to host a private Pocket.Practice demo on Vercel.
 
 ## Current Fit
 
-Pocket.Practice can be deployed to Vercel without backend setup. The current app is a local-only Next.js demo: lesson progress, drill history, and presets are stored in each browser's `localStorage`.
+FretGarden can be deployed to Vercel as a local-first Next.js app with
+Supabase-backed account creation. Lesson progress, drill history, and presets
+are still stored in each browser's `localStorage`.
 
 This means:
 
-- No environment variables are required for the current demo.
+- Supabase environment variables are required for signup, login, password reset,
+  account, profile editing, and auth callback routes.
 - Testers on different browsers or devices will not share progress.
 - Resetting demo progress only clears the current browser.
+
+Required account environment variables:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-publishable-key"
+```
+
+The waitlist integration is optional and uses the private variables documented
+in `docs/WAITLIST_SETUP.md`.
+
+## Supabase Auth Redirects
+
+Confirm these URLs in the hosted Supabase Auth URL configuration before inviting
+external account testers:
+
+- **Site URL:** the production FretGarden URL when production is ready.
+- **Local development callback:** `http://127.0.0.1:3000/auth/callback`
+- **Localhost callback:** `http://localhost:3000/auth/callback`
+- **Vercel preview callback:** the preview deployment callback URL, or the
+  approved preview wildcard pattern for this project.
+- **Production callback:** `https://<production-domain>/auth/callback`
+
+The checked-in `supabase/config.toml` covers local CLI development only. Hosted
+Supabase redirect settings must be verified in the Supabase dashboard or via
+the project management API.
 
 ## Recommended Vercel Setup
 
@@ -46,6 +75,13 @@ pnpm build
 3. Confirm the first lesson opens.
 4. Confirm the note, chord-tone, and scale-degree drills work.
 5. Confirm the reset button clears local demo progress.
+6. Create a test account, confirm the email if required, sign in, open
+   `/account`, and sign out.
+7. Confirm `/forgot-password`, `/update-password`, and `/account-notice`
+   render correctly. Test a real password reset email before inviting broader
+   account testers.
+8. Confirm the Supabase hosted redirect allow-list includes the local, preview,
+   and production callback URLs listed above.
 
 ## Needed From The Project Owner
 

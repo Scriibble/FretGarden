@@ -10,11 +10,11 @@ The first implementation should keep lessons separate from drills. Drills can re
 
 ## Product Context
 
-- Pocket.Practice is currently a local-only browser-based guitar fretboard practice app.
+- Pocket.Practice/FretGarden is currently a local-first browser-based guitar fretboard practice app with basic Supabase account creation.
 - The current public learning loop is focused on note recognition, chord tones, and scale degrees.
 - Existing lesson pages are intentionally lightweight and currently point into paired drills.
 - Advanced drill areas exist for interval landmarks, CAGED octave shapes, and triad inversion recognition.
-- Longer-term features such as accounts, backend sync, audio, ear training, subscriptions, bass, alternate tunings, and marketplace behavior remain deferred unless the user explicitly asks for them.
+- Longer-term features such as cloud progress sync, audio, ear training, subscriptions, bass, alternate tunings, and marketplace behavior remain deferred unless the user explicitly asks for them.
 
 Before making broad changes, read:
 

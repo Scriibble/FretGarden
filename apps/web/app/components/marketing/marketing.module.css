@@ -798,7 +798,7 @@
 }
 
 .stepGrowth {
-  align-items: end;
+  align-items: flex-end;
   display: flex;
   gap: 0.3rem;
   margin-top: auto;
@@ -1629,6 +1629,68 @@
   color: var(--forest-deep);
 }
 
+.accountDetails {
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0;
+  margin: 0 0 1.2rem;
+  padding: 0.4rem 0;
+}
+
+.accountDetails div {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: minmax(120px, 0.42fr) minmax(0, 1fr);
+  padding: 0.75rem 0;
+}
+
+.accountDetails dt {
+  color: var(--soft-text);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.accountDetails dd {
+  color: var(--forest-deep);
+  font-weight: 800;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.accountFormSection {
+  border-top: 1px solid var(--line);
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+}
+
+.noticeList {
+  display: grid;
+  gap: 1rem;
+}
+
+.noticeList section {
+  background: var(--parchment-soft);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+}
+
+.noticeList h3 {
+  color: var(--forest-deep);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.noticeList p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
 .footer {
   background: #1f3027;
   color: var(--cream-bright);
@@ -1644,7 +1706,7 @@
 }
 
 .footerBrand {
-  align-items: start;
+  align-items: flex-start;
   display: flex;
   gap: 0.9rem;
   max-width: 580px;
@@ -1693,6 +1755,18 @@
   gap: 0.6rem 1.5rem;
   justify-content: space-between;
   padding-top: 1.2rem;
+}
+
+.footerMeta a {
+  color: #e4eddc;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.footerMeta a:hover {
+  color: var(--cream-bright);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .site :is(a, button, input, summary):focus-visible {
