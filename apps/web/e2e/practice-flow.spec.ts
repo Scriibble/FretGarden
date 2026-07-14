@@ -49,24 +49,28 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("shows a focused branded landing page", async ({ page }) => {
+  const primaryNavigation = page.getByLabel("Primary navigation");
+
   await expect(
-    page.getByRole("heading", { name: "Grow your fretboard fluency." })
+    page.getByRole("heading", {
+      name: "Learn the fretboard. Grow your musicianship."
+    })
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: /Practice drills/ })
+    page.getByRole("link", { name: "Open the practice app" })
   ).toHaveAttribute("href", "/practice");
-  await expect(page.getByRole("link", { name: /Lessons/ })).toHaveAttribute(
+  await expect(
+    page.getByRole("link", { name: "Create an account" }).first()
+  ).toHaveAttribute("href", "/signup");
+  await expect(primaryNavigation.getByRole("link", { name: "About Me" })).toHaveAttribute(
     "href",
-    "/lessons"
+    "/about"
   );
-  await expect(page.getByRole("link", { name: "Explore" })).toHaveAttribute(
+  await expect(primaryNavigation.getByRole("link", { name: "Sign In" })).toHaveAttribute(
     "href",
-    "/explore"
+    "/login"
   );
-  await expect(page.getByRole("link", { name: "History" })).toHaveAttribute(
-    "href",
-    "/history"
-  );
+  await expect(page.getByText("Accounts are live; cloud progress sync is planned")).toBeVisible();
 });
 
 test("surfaces the core MVP path while keeping advanced drills available", async ({

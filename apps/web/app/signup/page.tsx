@@ -7,24 +7,24 @@ import styles from "../components/marketing/marketing.module.css";
 export const metadata: Metadata = {
   title: "Create Your Account",
   description:
-    "Create a FretGarden account to save your progress, follow a guided learning path, and keep your practice settings in one place.",
+    "Create a FretGarden account for early account access while practice progress remains local-first.",
 };
 
 const accountBenefits = [
   {
-    title: "Save progress across devices",
+    title: "Create your account identity",
     description:
-      "Keep your lesson history, drill results, and review priorities together.",
+      "Confirm your email and reserve the profile that future sync features will use.",
   },
   {
-    title: "Follow your learning path",
+    title: "Keep practicing locally",
     description:
-      "Pick up where you left off and focus on the skills that need more practice.",
+      "Use the current browser-based drills while local progress continues to work without an account.",
   },
   {
-    title: "Shape your practice sessions",
+    title: "Prepare for cloud progress",
     description:
-      "Save your preferences, session goals, and favorite practice settings.",
+      "Cloud lesson history, drill results, and saved settings are planned for the next account pass.",
   },
 ];
 
@@ -37,15 +37,16 @@ export default function SignupPage() {
             <span className={styles.eyebrow}>Start your practice garden</span>
             <h1 id="signup-title">Create a place for your progress to grow.</h1>
             <p>
-              Build your FretGarden account to track practice, continue lessons,
-              and return each day with a clear next step.
+              Create your FretGarden account now so the foundation is ready for
+              cloud progress sync. The current practice app still stores lesson
+              and drill progress in this browser.
             </p>
 
             <div className={styles.previewNotice}>
               <div>
                 <strong>Grow at your own pace.</strong>
-                Short, focused sessions help you strengthen your fretboard
-                knowledge without turning practice into a grind.
+                Account creation is live, and practice progress remains
+                local-first until the sync layer is built.
               </div>
             </div>
 
@@ -65,7 +66,7 @@ export default function SignupPage() {
             </div>
 
             <Link className={styles.textCta} href="/practice">
-              Explore the practice tools before creating an account.
+              Open the practice tools without creating an account.
             </Link>
           </div>
 
@@ -73,8 +74,8 @@ export default function SignupPage() {
             <div className={styles.signupCardHeader}>
               <h2>Create your FretGarden account</h2>
               <p>
-                Add your details below and begin building a steady practice
-                routine.
+                Add your details below. You may need to confirm your email
+                before signing in.
               </p>
             </div>
             <SignupForm />

@@ -1,6 +1,6 @@
 # Pocket.Practice Demo Test Plan
 
-Use this when sharing the current local-only MVP with a few testers.
+Use this when sharing the current local-first MVP with a few testers.
 
 ## Demo Goal
 
@@ -12,7 +12,8 @@ Validate whether a new learner understands the first practice loop without expla
 4. Try scale degrees.
 5. Notice that local progress updates.
 
-This demo intentionally does not include accounts, cloud sync, audio, payments, or backend features.
+This demo includes basic account creation/sign-in, but it intentionally does
+not include cloud progress sync, audio, payments, or advanced backend features.
 
 ## Before Sharing
 
@@ -61,7 +62,9 @@ Use a short Google Form, Notion form, or direct notes with these questions:
 
 ## Temporary Deployment Notes
 
-The app can be demoed as a static-ish Next app without backend setup because progress is browser-local.
+The practice loop can be demoed without signing in because progress is
+browser-local. Account creation and sign-in require Supabase environment
+variables and a configured Supabase project.
 
 Recommended path:
 
@@ -73,6 +76,9 @@ Recommended path:
 
 Tester caveat: progress is stored only in each browser's localStorage. Different devices and browsers will not share progress.
 
+Account caveat: an account can be created and confirmed, but it will not yet
+move drill history, lesson progress, or presets between devices.
+
 ## Demo Scope Guardrails
 
 Keep feedback focused on the current playable loop:
@@ -82,11 +88,11 @@ Keep feedback focused on the current playable loop:
 - Scale degrees
 - Lessons to practice
 - Local progress
+- Basic account creation/sign-in
 - First-time clarity
 
 Do not evaluate deferred roadmap items yet:
 
-- Accounts
 - Cloud sync
 - Bass
 - Audio

@@ -4,13 +4,25 @@ Use this guide to host a private Pocket.Practice demo on Vercel.
 
 ## Current Fit
 
-Pocket.Practice can be deployed to Vercel without backend setup. The current app is a local-only Next.js demo: lesson progress, drill history, and presets are stored in each browser's `localStorage`.
+FretGarden can be deployed to Vercel as a local-first Next.js app with
+Supabase-backed account creation. Lesson progress, drill history, and presets
+are still stored in each browser's `localStorage`.
 
 This means:
 
-- No environment variables are required for the current demo.
+- Supabase environment variables are required for signup, login, account, and auth callback routes.
 - Testers on different browsers or devices will not share progress.
 - Resetting demo progress only clears the current browser.
+
+Required account environment variables:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-publishable-key"
+```
+
+The waitlist integration is optional and uses the private variables documented
+in `docs/WAITLIST_SETUP.md`.
 
 ## Recommended Vercel Setup
 
@@ -46,6 +58,8 @@ pnpm build
 3. Confirm the first lesson opens.
 4. Confirm the note, chord-tone, and scale-degree drills work.
 5. Confirm the reset button clears local demo progress.
+6. Create a test account, confirm the email if required, sign in, open
+   `/account`, and sign out.
 
 ## Needed From The Project Owner
 

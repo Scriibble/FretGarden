@@ -98,12 +98,12 @@ export default function HomePage() {
                 Open the practice app
               </Link>
               <Link className={styles.secondaryCta} href="/signup">
-                Preview sign up
+                Create an account
               </Link>
             </div>
             <div className={styles.heroStatus} aria-label="Current product status">
               <span>Notes, chord tones, and scale degrees available now</span>
-              <span>Accounts and cloud progress are planned</span>
+              <span>Accounts are live; cloud progress sync is planned</span>
             </div>
           </div>
 
@@ -265,9 +265,9 @@ export default function HomePage() {
               Open a drill and work directly on the fretboard
             </h2>
             <p className={styles.sectionLead}>
-              The present demo is local-first and account-free. Practice notes,
-              chord tones, and scale degrees now; structured accounts and cloud
-              progress will come later.
+              The present practice loop is local-first. Practice notes, chord
+              tones, and scale degrees now; accounts are live while cloud
+              progress sync is still being built.
             </p>
           </div>
 
@@ -317,8 +317,8 @@ export default function HomePage() {
             <span className={styles.sectionEyebrow}>Give your practice room to grow</span>
             <h2 id="final-cta-title">Build stronger fretboard knowledge one focused session at a time.</h2>
             <p>
-              Try the current local practice experience or preview how future
-              FretGarden accounts will support saved progress and learning paths.
+              Try the current local practice experience or create an account
+              while saved cloud progress and learning paths continue to grow.
             </p>
           </div>
           <div className={styles.ctaActions}>
@@ -326,7 +326,7 @@ export default function HomePage() {
               Start practicing
             </Link>
             <Link className={styles.secondaryCta} href="/signup">
-              Preview sign up
+              Create an account
             </Link>
           </div>
         </div>

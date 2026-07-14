@@ -47,5 +47,4 @@ After configuring the webhook, run the app and submit either waitlist form:
 pnpm dev
 ```
 
-The form appears in the Building in Public section on both `/about` and
-`/signup`.
+The form appears in the Building in Public section on `/about`.

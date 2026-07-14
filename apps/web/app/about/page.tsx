@@ -57,7 +57,7 @@ export default function AboutPage() {
                 Explore the current app
               </Link>
               <Link className={styles.secondaryCta} href="/signup">
-                Preview future accounts
+                Create an account
               </Link>
             </div>
           </div>
