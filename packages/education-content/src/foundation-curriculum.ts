@@ -7,6 +7,7 @@ import type {
 } from "./curriculum-schema.js";
 import { levelOneLessons, levelOneReviewPlans } from "./level-one-curriculum.js";
 import { levelTwoLessons, levelTwoReviewPlans } from "./level-two-curriculum.js";
+import { levelThreeLessons, levelThreeReviewPlans } from "./level-three-curriculum.js";
 
 export const FOUNDATION_CURRICULUM_VERSION = "foundation-3";
 
@@ -609,7 +610,8 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
 export const foundationLessons: readonly CurriculumLesson[] = [
   ...openingFoundationLessons,
   ...levelOneLessons,
-  ...levelTwoLessons
+  ...levelTwoLessons,
+  ...levelThreeLessons
 ];
 
 export const foundationAssessments: readonly CurriculumAssessment[] = foundationLessons.map(
@@ -649,7 +651,8 @@ export const foundationReviewPlans: readonly CurriculumReviewPlan[] = [
     longTermReview: ["Log clean tempos by task and revisit timing weaknesses monthly."]
   },
   ...levelOneReviewPlans,
-  ...levelTwoReviewPlans
+  ...levelTwoReviewPlans,
+  ...levelThreeReviewPlans
 ];
 
 export const foundationCurriculum: FoundationCurriculum = {

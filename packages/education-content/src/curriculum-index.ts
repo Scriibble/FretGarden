@@ -283,6 +283,33 @@ const implementedSourceMetadata: Record<number, {
       "Produce short ear-transcription, functional-analysis, and evidence-based reflection artifacts."
     ],
     tags: ["integration", "songwriting", "performance", "arrangement", "transcription"]
+  },
+  17: {
+    estimatedMinutes: 150,
+    outcomes: [
+      "Locate and play one named major chord through all five CAGED regions.",
+      "Name roots, thirds, and fifths while connecting nearby arpeggio and scale tones.",
+      "Revoice a three-section song through at least three neck registers."
+    ],
+    tags: ["CAGED", "fretboard", "voicing", "arrangement"]
+  },
+  18: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Harmonize a major scale as seven triads and connect efficient inversions.",
+      "Explain tonic, predominant, and dominant function.",
+      "Perform four cadence types and write four purpose-built progressions."
+    ],
+    tags: ["diatonic-harmony", "function", "cadences", "triads"]
+  },
+  19: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Construct and compare natural, harmonic, and melodic minor.",
+      "Explain relative and parallel minor plus minor v and major V.",
+      "Perform an original minor verse with a relative-major chorus."
+    ],
+    tags: ["minor-harmony", "minor-scales", "songwriting", "ear-training"]
   }
 };
 
