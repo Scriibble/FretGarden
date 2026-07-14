@@ -15,12 +15,12 @@ This review does not authorize changes to legacy lessons, authentication, Supaba
 | Build or commit | `376a1f3` |
 | Reviewer | Evan Anderson, self-reviewer |
 | Technical preflight | Codex, 2026-07-14 |
-| Review date | Human execution pending |
+| Review date | Limited owner confirmation on 2026-07-14; full execution deferred |
 | Desktop OS/browser | Technical preflight: macOS 13.7.8, Chromium/Playwright 1.61.1 |
-| Screen reader/version | Pending |
+| Screen reader/version | Evan Anderson confirms correct operation; product/version not recorded |
 | Mobile OS/browser | Technical viewport preflight complete; physical mobile run pending |
 | Input methods | Keyboard, pointer, touch, and assistive input as available |
-| Result | **TECHNICAL PREFLIGHT COMPLETE; NAMED HUMAN EXECUTION PENDING** |
+| Result | **LIMITED SCREEN-READER CONFIRMATION; FULL PROTOCOL DEFERRED TO FINAL PROJECT SIGNOFF** |
 
 Retain screenshots, screen-reader notes, exported pilot data used during failure testing, and finding IDs with this record. Do not include learner names, account data, or secrets.
 
@@ -64,8 +64,10 @@ Record each finding as `A11Y-FINDING-NNN` with steps, expected behavior, actual 
 
 | Role | Name | Decision | Date |
 | --- | --- | --- | --- |
-| Accessibility reviewer | Evan Anderson | Pending human execution | Pending |
+| Accessibility reviewer | Evan Anderson | Screen reader works; full protocol deferred under `GOV-004` | 2026-07-14 |
 | Education/product owner | Evan Anderson | Protocol approved | 2026-07-14 |
 | Engineering owner | Evan Anderson | Protocol approved | 2026-07-14 |
 
 Gate 4 accessibility closure requires all required checks to pass, or each remaining Major/Minor finding to have explicit approval, an accountable owner, and an expiration. Blockers cannot be accepted as debt.
+
+`GOV-004` permits implementation work to continue while this evidence is deferred. It does not mark the protocol complete; final project acceptance or release still requires execution and finding resolution.

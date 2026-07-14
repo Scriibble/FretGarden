@@ -2,7 +2,7 @@
 
 Status: Phase 1 staged strategy for Gate 2 review. No migration is authorized by this document.
 
-Current update: Gate 4 implementation is complete, governance owners are assigned, and human protocol execution remains pending. The approved Gate 5A read-only `fretboard-map` rehearsal is implemented and validated in `GATE_5A_VALIDATION_REPORT.md`. It does not authorize conversion, navigation exposure, production persistence, or any later migration step.
+Current update: Gate 4 implementation is complete, governance owners are assigned, and `GOV-004` defers the remaining human protocol evidence until final project signoff. Separately approved implementation work may continue, but final acceptance or release remains blocked by the deferred evidence. The approved Gate 5A read-only `fretboard-map` rehearsal is implemented and validated in `GATE_5A_VALIDATION_REPORT.md`. It does not authorize conversion, navigation exposure, production persistence, or any later migration step.
 
 ## Migration Principles
 

@@ -4,7 +4,7 @@ Date: 2026-07-14
 
 ## Decision
 
-The Gate 4 **implementation closure pass is complete**. Governance owners and the human-review methods are approved. Gate 4 itself remains **pending human protocol execution**. The separately approved Gate 5A read-only rehearsal is implemented and validated, but Gate 5 remains open.
+The Gate 4 **implementation closure pass is complete**. Governance owners and the human-review methods are approved. Under `GOV-004`, remaining human evidence is **deferred until final project signoff** and does not block separately approved implementation work. Gate 4 is not evidentially closed, and final project acceptance or release remains blocked. The separately approved Gate 5A read-only rehearsal is implemented and validated, but Gate 5 remains open.
 
 The isolated pilot now provides observable transfer, authored pulse variation, changed-context delayed review, explicit support/fade states, and learner-visible local persistence recovery. No Supabase, RLS, authentication, deployment, legacy progress, or existing lesson behavior was changed.
 
@@ -18,9 +18,9 @@ The isolated pilot now provides observable transfer, authored pulse variation, c
 | Tempo and retention | Pass | 50/60/70 BPM tasks; delayed pulse review disables source BPM and requires changed context | Local clock remains trusted |
 | Support ceilings | Pass | Guided pulse produces supported evidence; revealed answers produce correction; fresh independent attempts are separate | Human comprehension still requires review |
 | Persistence resilience | Pass for local pilot | Write failure alert preserves in-memory state and offers retry/export; malformed reads retain recovery copy | Browser/device loss remains outside guarantee |
-| Accessibility | Technical preflight pass; pending human signoff | Three findings resolved in `376a1f3`; semantics, contrast, equivalent input, reduced motion, keyboard pulse, and 30-scenario E2E pass | Screen-reader, literal zoom, focus, and assistive-tech protocol not yet executed |
-| Usability | Expert preflight pass; pending human signoff | UX-01 through UX-10 have complete technical paths and a moderated review protocol | Representative learner and educator sessions not yet executed |
-| Migration feasibility | Pass for read-only Gate 5A scope | 20 legacy fixtures, pure parser/mapper/report, unlinked preview, byte-preservation E2E, `GATE_5A_VALIDATION_REPORT.md` | Gate 4 human execution and separate approval for every later migration step remain required |
+| Accessibility | Technical pass; limited owner confirmation; full protocol deferred | Three findings resolved in `376a1f3`; Evan confirms the screen reader works | Detailed screen-reader matrix, literal zoom, focus, and assistive-tech evidence required before final acceptance/release |
+| Usability | Expert preflight pass; participant evidence deferred | UX-01 through UX-10 have complete technical paths and a moderated review protocol | Three representative sessions required before final acceptance/release |
+| Migration feasibility | Pass for read-only Gate 5A scope | 20 legacy fixtures, pure parser/mapper/report, unlinked preview, byte-preservation E2E, `GATE_5A_VALIDATION_REPORT.md` | Human evidence is deferred to final signoff; every later migration step still requires separate approval |
 
 ## Closure Work Implemented
 
@@ -61,7 +61,7 @@ The first full E2E invocation encountered a local port conflict after an older d
 
 ## Gate 4 Human Closure Conditions
 
-Technical and expert preflight results are recorded in `GATE_4_REVIEW_EXECUTION_RECORD.md`. They do not replace the following human evidence:
+Technical and expert preflight results are recorded in `GATE_4_REVIEW_EXECUTION_RECORD.md`. `GOV-004` defers, but does not replace, the following human evidence:
 
 1. Execute `ACCESSIBILITY_REVIEW_PROTOCOL.md`; resolve blockers and record named signoff.
 2. Execute `USABILITY_REVIEW_PROTOCOL.md` with representative learners and a guitar educator/curriculum reviewer; resolve blockers and record named signoff.
@@ -69,7 +69,7 @@ Technical and expert preflight results are recorded in `GATE_4_REVIEW_EXECUTION_
 
 ## Gate 5 Entry Conditions
 
-Gate 5A now demonstrates `fretboard-map` legacy mapping fixtures, parallel reporting, telemetry boundaries, feature isolation, and code-only rollback. `GATE_5A_VALIDATION_REPORT.md` records the implementation evidence. Gate 4 human protocol execution is still required, and production data design remains a separate future approval. Gate 5A does not close or bypass either gate.
+Gate 5A now demonstrates `fretboard-map` legacy mapping fixtures, parallel reporting, telemetry boundaries, feature isolation, and code-only rollback. `GATE_5A_VALIDATION_REPORT.md` records the implementation evidence. The Gate 4 evidence deferral allows separately approved implementation work to continue, while production data design remains a separate future approval. Gate 5A does not authorize production behavior or final project release.
 
 ## Rollback
 

@@ -4,11 +4,11 @@ Date: 2026-07-14
 
 Build: `376a1f3` (`codex/education-pilot-phase-3`)
 
-Status: **TECHNICAL PREFLIGHT COMPLETE; HUMAN EXECUTION PENDING; GATE 4 NOT SIGNED**
+Status: **OWNER-APPROVED HUMAN-EVIDENCE DEFERRAL; FINAL PROJECT SIGNOFF BLOCKED**
 
 ## Evidence Boundary
 
-Codex completed a technical accessibility preflight and an expert heuristic usability walkthrough. Those activities provide supporting evidence only. No screen-reader session was performed by Evan Anderson, and no early learner, returning learner, or guitar educator/curriculum author participated in a moderated session. This record does not invent participant observations or sign Evan Anderson's name.
+Codex completed a technical accessibility preflight and an expert heuristic usability walkthrough. Evan Anderson subsequently confirmed that the screen reader works correctly in the current pilot and authorized the remaining Gate 4 evidence to be deferred until the end of the project. The confirmation does not include a screen-reader version or check-by-check protocol notes, so it is limited human evidence rather than full accessibility signoff. No early learner, returning learner, or guitar educator/curriculum author participated in a moderated session.
 
 ## Technical Environment
 
@@ -21,7 +21,8 @@ Codex completed a technical accessibility preflight and an expert heuristic usab
 | Contrast | Corrected small-text combinations measured at 4.96:1 and 7.43:1 |
 | Storage failure | Automated failed-write path exposed alert, retry, and JSON export while leaving the pilot key unwritten |
 | Delayed review | Automated 60 BPM source review changed to 70 BPM; source tempo remained disabled |
-| Not executed | Screen reader; platform assistive input; touch device; literal 200%/400% browser zoom; human comprehension review |
+| Owner confirmation | Evan Anderson reports that the screen reader works correctly in the current pilot; detailed protocol evidence was not supplied |
+| Not executed | Full screen-reader matrix; platform assistive input; touch device; literal 200%/400% browser zoom; human comprehension review |
 
 ## Accessibility Findings
 
@@ -31,7 +32,7 @@ Codex completed a technical accessibility preflight and an expert heuristic usab
 | A11Y-FINDING-002 | Major | The beat counter was a high-frequency polite live region while sound began off, risking repeated speech interruption and weak nonvisual pulse access. | Removed beat-by-beat live announcements, named the pulse status group, enabled optional sound by default, and aligned timing to the actual initial click. | Reduced-motion, keyboard pulse, tempo, and delayed-review Playwright flows pass; human screen-reader confirmation pending. |
 | A11Y-FINDING-003 | Major | Small eyebrow and muted status text measured below the 4.5:1 target. | Replaced the affected text colors; measured ratios are 7.43:1 and 4.96:1 on their intended backgrounds. | Computed-style assertions pass; human visual/high-contrast review pending. |
 
-All observed technical findings are resolved in `376a1f3`. None is accepted as debt. Human retesting is still required by the protocol.
+All observed technical findings are resolved in `376a1f3`. None of those defects is accepted as debt. The remaining human evidence is accepted as bounded process debt under `GOV-004`.
 
 ## Accessibility Check Status
 
@@ -55,7 +56,7 @@ All observed technical findings are resolved in `376a1f3`. None is accepted as d
 | UX-07, UX-08 | Summary, next action, delayed review, disabled source tempo, and changed context are explicit. | Participants explain what was and was not claimed and why tempo changed. |
 | UX-09 | The failed-write alert states that work is unsaved and offers retry/export without touching legacy history. | Participants understand the consequence and choose a recovery action. |
 
-No representative usability session was run, so no participant pass, failure, quotation, or `UX-FINDING` is claimed.
+No representative usability session was run, so no participant pass, failure, quotation, or `UX-FINDING` is claimed. Execution is deferred under `GOV-004`.
 
 ## Validation
 
@@ -70,7 +71,7 @@ An initial E2E invocation was invalid because a stale repository-local developme
 
 ## Gate Decision
 
-Gate 4 remains pending. Closure requires:
+Gate 4 is not evidentially closed. Under the project-owner exception in `GOV-004`, it no longer blocks separately approved implementation work. Final project acceptance or release remains blocked until:
 
 1. Evan Anderson to execute and sign the screen-reader, zoom, focus, and assistive-input checks in the accessibility protocol.
 2. Three real moderated sessions covering the required early learner, returning learner, and guitar educator/curriculum-author profiles.

@@ -14,9 +14,9 @@ Use this protocol to evaluate whether the isolated education pilot feels like a 
 | Facilitator | Evan Anderson |
 | Education observer | Evan Anderson; external educator input remains recommended |
 | Expert preflight | Codex, 2026-07-14 |
-| Session dates | No moderated human sessions recorded |
+| Session dates | Deferred to final project signoff under `GOV-004` |
 | Participant profile | Early learner, returning learner, and educator/curriculum author all pending |
-| Result | **EXPERT PREFLIGHT COMPLETE; THREE PARTICIPANT SESSIONS PENDING** |
+| Result | **EXPERT PREFLIGHT COMPLETE; OWNER-APPROVED PARTICIPANT-EVIDENCE DEFERRAL** |
 
 Use at least three representative sessions before Gate 4 signoff: one early learner, one returning learner, and one guitar educator or curriculum author. Obtain appropriate consent and do not store names, account identifiers, recordings, or sensitive data in this repository.
 
@@ -71,9 +71,11 @@ Any failed criterion becomes `UX-FINDING-NNN` with severity, evidence, owner, re
 
 | Role | Name | Decision | Date |
 | --- | --- | --- | --- |
-| Usability facilitator | Evan Anderson | Protocol approved; participant execution pending | 2026-07-14 |
+| Usability facilitator | Evan Anderson | Participant execution deferred under `GOV-004` | 2026-07-14 |
 | Guitar education reviewer | Pending | Pending | Pending |
 | Product owner | Evan Anderson | Protocol approved | 2026-07-14 |
 | Engineering owner | Evan Anderson | Protocol approved | 2026-07-14 |
 
 Gate 4 usability closure requires the acceptance criteria to pass or remaining non-blocking findings to be explicitly accepted with a named owner and expiration.
+
+`GOV-004` permits implementation work to continue while the three sessions are deferred. It does not create participant evidence or permit final project acceptance or release without the sessions and resulting finding review.

@@ -10,7 +10,7 @@ Implementation update: the read-only `fretboard-map` mapper, parallel report, un
 
 Use `fretboard-map` as the first limited-migration segment. Begin with a read-only mapping and parallel-report rehearsal. Do not replace, rewrite, or reinterpret the existing lesson or practice flow during the first code slice.
 
-Gate 4 human protocol execution remains open. This plan can be reviewed while that evidence is gathered, but Gate 5 code must not be treated as learner-ready until Gate 4 closes.
+Gate 4 human protocol execution remains open and is deferred under `GOV-004`. Separately approved Gate 5 implementation may continue, but it must not be treated as release-ready until the deferred evidence is completed and resulting findings are resolved.
 
 ## Why `fretboard-map`
 

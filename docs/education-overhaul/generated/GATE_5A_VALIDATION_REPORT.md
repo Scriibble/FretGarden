@@ -12,7 +12,7 @@ The approved read-only `fretboard-map` migration rehearsal is implemented and va
 
 This result does not authorize navigation exposure, learner-facing migration claims, legacy conversion, a second curriculum segment, production persistence, Supabase, RLS, authentication, deployment, or telemetry.
 
-Gate 4 human accessibility and usability execution remains pending. Gate 5 cannot close until that evidence and a later explicitly approved migration step are complete.
+Gate 4 human accessibility and usability execution remains incomplete. `GOV-004` defers that evidence until final project signoff, allowing separately approved implementation work to continue. The deferral does not authorize production behavior or final project release.
 
 ## Implemented Boundary
 
@@ -117,7 +117,7 @@ The only existing runtime module modified is `educationPilotStorage.ts`, where t
 
 ## Remaining Conditions
 
-1. Execute and sign the accessibility protocol.
-2. Execute representative usability sessions and sign the usability protocol.
+1. Execute and sign the deferred accessibility protocol before final project acceptance or release.
+2. Execute the three deferred representative usability sessions before final project acceptance or release.
 3. Record project-owner acknowledgment of this report and the local preview; technical consistency review is complete.
 4. Require a new concrete plan and explicit approval before any navigation exposure, second segment, legacy write, production data path, or learner-facing migration behavior.
