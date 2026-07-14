@@ -24,8 +24,10 @@ test("presents the implemented curriculum without claiming the mapped roadmap is
   await expect(page.getByRole("link", { name: "Level 3 Musicianship Project" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Modes as Sounds, Not Shapes" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Level 4 Creative Portfolio" })).toBeVisible();
-  await expect(page.getByText("The remaining 16 units are source-mapped", { exact: false })).toBeVisible();
-  await expect(page.getByText("Extended Chords and Color Tones")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Extended Chords and Color Tones" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Level 5 Advanced Musicianship Jury" })).toBeVisible();
+  await expect(page.getByText("The remaining 8 units are source-mapped", { exact: false })).toBeVisible();
+  await expect(page.getByText("Songwriting Identity and Constraint")).toHaveCount(0);
 });
 
 test("requires correct knowledge and explicit performance checks before Unit 1 completion", async ({ page }) => {

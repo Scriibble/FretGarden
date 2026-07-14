@@ -41,14 +41,14 @@ The three Markdown-mandated foundation units occupy Units 1-3. The PDF's origina
 | 33 | PDF 30 | Genre Language and Stylistic Authenticity | Implemented |
 | 34 | PDF 31 | Counterpoint and Independent Lines | Implemented |
 | 35 | PDF 32 | Level 4 Creative Portfolio | Implemented |
-| 36 | PDF 33 | Extended Chords and Color Tones | Mapped |
-| 37 | PDF 34 | Chord-Scale Relationships | Mapped |
-| 38 | PDF 35 | Modulation and Key Relationships | Mapped |
-| 39 | PDF 36 | Advanced Melodic and Harmonic Minor | Mapped |
-| 40 | PDF 37 | Advanced Technique as Musical Vocabulary | Mapped |
-| 41 | PDF 38 | Form, Development, and Large-Scale Direction | Mapped |
-| 42 | PDF 39 | Reharmonization and Substitution | Mapped |
-| 43 | PDF 40 | Level 5 Advanced Musicianship Jury | Mapped |
+| 36 | PDF 33 | Extended Chords and Color Tones | Implemented |
+| 37 | PDF 34 | Chord-Scale Relationships | Implemented |
+| 38 | PDF 35 | Modulation and Key Relationships | Implemented |
+| 39 | PDF 36 | Advanced Melodic and Harmonic Minor | Implemented |
+| 40 | PDF 37 | Advanced Technique as Musical Vocabulary | Implemented |
+| 41 | PDF 38 | Form, Development, and Large-Scale Direction | Implemented |
+| 42 | PDF 39 | Reharmonization and Substitution | Implemented |
+| 43 | PDF 40 | Level 5 Advanced Musicianship Jury | Implemented |
 | 44 | PDF 41 | Songwriting Identity and Constraint | Mapped |
 | 45 | PDF 42 | Melody, Prosody, and Lyrics | Mapped |
 | 46 | PDF 43 | Arrangement for Rhythm Section and Ensemble | Mapped |

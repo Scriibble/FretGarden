@@ -2,7 +2,7 @@
 
 Date: 2026-07-14
 
-Status: Units 1-35 implemented; Units 36-51 source-mapped for later authoring review
+Status: Units 1-43 implemented; Units 44-51 source-mapped for later authoring review
 
 ## Graph Rules
 
@@ -73,11 +73,23 @@ Every instrument lesson may be previewed. The learner-facing completion control 
 | 34. Counterpoint and Independent Lines | Unit 33 | Intervals, chord tones, line contour, voice-leading revision | Sing each line separately and revise one collision or parallel passage | Yes |
 | 35. Level 4 Creative Portfolio | Unit 34 | Modal color, chromatic harmony, chord melody, rhythm, style, counterpoint | Use three short artifacts and one complete performance instead of overloading one piece | Yes |
 
+## Level 5 Advanced Musicianship Sequence
+
+| Unit | Required prior unit | Skills assumed | Primary remediation | Preview before completion |
+| --- | --- | --- | --- | --- |
+| 36. Extended Chords and Color Tones | Unit 35 | Seventh shells, guide tones, voice leading, functional harmony | Return to third and seventh before adding one named extension | Yes |
+| 37. Chord-Scale Relationships | Unit 36 | Modes, extensions, dominant color, target tones | Name chord quality and function before selecting a collection | Yes |
+| 38. Modulation and Key Relationships | Unit 37 | Secondary dominants, cadences, pivot thinking, lead sheets | List old key, target key, and shared pivot before writing the transition | Yes |
+| 39. Advanced Melodic and Harmonic Minor | Unit 38 | Minor harmony, altered degrees, chord-scale resolution | Isolate raised 6 or 7 over one tonic before applying full patterns | Yes |
+| 40. Advanced Technique as Musical Vocabulary | Unit 39 | Phrase shape, tone control, rhythm recovery, articulation | Play the phrase plain, then add one technique with a named musical job | Yes |
+| 41. Form, Development, and Large-Scale Direction | Unit 40 | Motif development, arrangement, modulation, portfolio planning | Map section roles before adding detail, then repair one transition | Yes |
+| 42. Reharmonization and Substitution | Unit 41 | Functional substitution, melody analysis, bass motion, extensions | Circle strong melody notes before changing any chord | Yes |
+| 43. Level 5 Advanced Musicianship Jury | Unit 42 | Level 5 harmony, form, technique, reharmonization, reflection | Shorten scope to one complete work plus evidence, then repair the weakest domain | Yes |
+
 ## Remaining Source-Mapped Sequence
 
 | Units | Required sequence | Core capability progression | Primary remediation direction |
 | --- | --- | --- | --- |
-| 36-43 | Each requires the previous unit | Extensions -> chord-scale use -> modulation -> minor systems -> technique -> form -> reharmonization -> jury | Reduce harmonic choices and defend one voice-leading or functional decision |
 | 44-51 | Each requires the previous unit | Artistic identity -> prosody -> ensemble arranging -> tunings -> production -> communication -> teaching -> capstone | Return to a smaller constraint, clearer chart, or single demonstrable artistic choice |
 
 ## Key Conceptual Dependencies
