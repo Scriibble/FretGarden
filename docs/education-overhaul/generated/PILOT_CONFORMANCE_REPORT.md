@@ -10,7 +10,7 @@ Generated from `@pocket-practice/education-content`. Content version: `pilot-1`.
 - Lessons: 4
 - Exercises: 5
 - Review policies: 1
-- Remediation routes: 4
+- Remediation routes: 5
 - Accessibility equivalents: 5
 - Conformance issues: 0
 

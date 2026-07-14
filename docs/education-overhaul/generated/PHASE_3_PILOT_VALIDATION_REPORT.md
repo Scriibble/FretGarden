@@ -1,95 +1,74 @@
-# Phase 3 Pilot Validation Report
+# Phase 3 Gate 4 Closure Validation Report
 
 Date: 2026-07-14
 
 ## Decision
 
-Gate 4 validation is implemented and reviewable. The pilot is **not yet ready for Gate 5 limited migration**.
+The Gate 4 **implementation closure pass is complete**. Gate 4 itself remains **pending human signoff**, and Gate 5 limited migration is not authorized.
 
-The isolated pilot proves the observation-to-evidence architecture, support-aware claims, prerequisite decisions, objective-aware delayed review, remediation routing, equivalent controls, local replay, malformed-data recovery, and legacy-storage isolation. It also exposes educational and governance gaps that must be resolved before current curriculum segments depend on the new path.
-
-## Scope
-
-Phase 3 is interpreted as Gate 4 pilot validation and hardening. It does not authorize Supabase education tables, RLS changes, account sync, legacy progress import, current lesson replacement, or limited curriculum migration.
+The isolated pilot now provides observable transfer, authored pulse variation, changed-context delayed review, explicit support/fade states, and learner-visible local persistence recovery. No Supabase, RLS, authentication, deployment, legacy progress, or existing lesson behavior was changed.
 
 ## Gate 4 Findings
 
 | Area | Result | Evidence | Remaining limit |
 | --- | --- | --- | --- |
-| Educational conformance | Conditional | Generated schema/reference/ownership/review/equivalence report; pure claim tests | Authored note application and transfer are not yet embodied as a distinct learner task |
-| Technical correctness | Pass for pilot scope | Engine, content, runtime, storage, E2E, type, lint, and build checks | Browser storage write failure is returned by the adapter but not yet surfaced in the UI |
-| Usability | Conditional | Complete opening flow, stop path, remediation, specific next action, mobile layout | No moderated learner study or author feedback session has been recorded |
-| Accessibility | Conditional | Semantic form, grid labels, equivalent coordinate selects, keyboard/button pulse, reduced motion, optional sound | No formal screen-reader or external accessibility audit has been recorded |
-| Data integrity | Pass for local pilot | Versioned namespace, idempotent append, malformed payload quarantine/export, legacy isolation | Local device loss and quota failure remain outside the pilot guarantee |
-| Performance | Pass for pilot scope | Static route production build and responsive browser verification | No production telemetry or field performance sample exists |
-| Migration feasibility | Conditional | Additive packages, isolated route, rollback by code reversion | No representative legacy importer or parallel-reporting rehearsal is authorized yet |
-| Authoring feasibility | Conditional | Four objectives validate; deterministic report generation catches drift | One small pilot is insufficient to prove larger curriculum authoring cost |
+| Educational conformance | Pass for pilot scope | Deterministic conformance report; evidence-policy tests; evaluated two-note application | No mastery claim; only four pilot objectives authored |
+| Technical correctness | Pass for pilot scope | Engine/content/runtime/storage tests, Playwright flows, typecheck, lint, and production build | Local pilot only; no production persistence guarantee |
+| Transfer | Pass | Two ordered patterns across strings 6 and 5 produce transfer only when both are correct and independent | Small authored scope, not generalized curriculum transfer |
+| Tempo and retention | Pass | 50/60/70 BPM tasks; delayed pulse review disables source BPM and requires changed context | Local clock remains trusted |
+| Support ceilings | Pass | Guided pulse produces supported evidence; revealed answers produce correction; fresh independent attempts are separate | Human comprehension still requires review |
+| Persistence resilience | Pass for local pilot | Write failure alert preserves in-memory state and offers retry/export; malformed reads retain recovery copy | Browser/device loss remains outside guarantee |
+| Accessibility | Pending human signoff | Semantic controls, equivalent input, reduced motion, keyboard-capable flow, review protocol | Screen-reader, zoom/reflow, and assistive-tech protocol not yet executed |
+| Usability | Pending human signoff | End-to-end automated flows and a moderated review protocol | Representative learner and educator sessions not yet executed |
+| Migration feasibility | Conditional | Additive packages, isolated route, reversible local namespace | Separate Gate 5 plan, owners, mapping fixtures, and rollback rehearsal required |
 
-## Defects Corrected During Validation
+## Closure Work Implemented
 
-1. The practice-plan accessibility equivalent claimed an independent ceiling above its supported evidence requirement. The validator found it and the content ceiling is now `supported_performance`.
-2. Pulse review obligations were scheduled but had no learner completion path. Pulse and note obligations now route to their matching delayed task.
-3. An unsuccessful delayed review lost its source context before retry. Review context now remains until retained evidence is observed.
-4. Early delayed attempts could register a second initial review. Review scheduling now applies only to an immediate independent requirement.
-5. The note summary could use the first scheduled review from another objective. Claim timing is now filtered to the note objective.
-6. Malformed or unknown pilot storage could be overwritten after an in-memory reset. The raw payload is now preserved under a separate recovery key and exposed for export.
-7. Repeated pulse attempts reused an event identity. Every started pulse task now receives a distinct attempt identity.
-8. Reduced-motion mode removed transitions but left the pulse animation active. It now removes the animation while preserving textual beat updates and optional sound.
-9. Multi-page and timed E2E flows competed with dev-server compilation under a 30-second test ceiling. The per-test budget is now 60 seconds while assertion timeouts remain 10 seconds.
+1. Added a distinct `natural-note-application` task that evaluates E–F on string 6 and A–B on string 5. Self-report does not create transfer evidence.
+2. Added 50, 60, and 70 BPM pulse contexts. Selected BPM is stored with each attempt and controls task timing and visual pulse duration.
+3. Required delayed pulse retrieval to use a BPM different from its source attempt. Same-context work is capped at independent evidence and routes to changed-context remediation.
+4. Added explicit model, guided attempt, scaffold fade, and independent attempt states. Guided/revealed work remains below the independent claim ceiling.
+5. Added learner-visible local write failure with retry and JSON export while preserving current in-memory work and legacy-storage isolation.
+6. Expanded Playwright coverage for transfer, tempo variation, delayed context variation, support ceilings, reduced motion, malformed reads, and write failure.
+7. Added executable accessibility and usability protocols with pending named human signoff.
 
-## Authoring Validation Implemented
+## Automated Scenarios
 
-`@pocket-practice/education-content` now checks:
-
-- schema shape and required fields;
-- unique lesson, exercise, policy, remediation, and equivalent identities;
-- objective, prerequisite, placement, and exercise references;
-- required-prerequisite cycles;
-- active objective ownership by both a lesson and an exercise;
-- evidence ownership across objective, exercise, and lesson boundaries;
-- exercise quality dimensions against evidence requirements;
-- delayed evidence, objective review policy, and lesson review alignment;
-- remediation and accessibility references;
-- equivalent-path evaluator consistency and claim-ceiling inflation;
-- strictly increasing review delays.
-
-`pnpm report:education` regenerates `PILOT_CONFORMANCE_REPORT.md`. Tests require the committed file to exactly match the validated registry.
-
-## Validation Scenarios
-
-Automated browser coverage includes:
-
-- complete opening flow and legacy-key isolation;
-- answer revelation limiting the claim and requiring a fresh set;
-- successful delayed natural-note review preserving historical achievement;
-- successful delayed pulse review using its original evidence;
-- malformed pilot payload preservation before fresh-state recovery.
-- reduced-motion pulse behavior with preserved beat text.
+- Complete opening flow through transfer while preserving legacy keys.
+- Guided pulse evidence capped at supported performance, followed by a fresh independent attempt.
+- 50 BPM pulse timing and stored attempt context.
+- Due pulse review changed from a 60 BPM source to 70 BPM and recorded as retained.
+- Same-tempo delayed review capped below retained evidence in policy/runtime tests.
+- Revealed note answer capped as correction and routed through scaffold fade.
+- Revealed two-note pattern capped below transfer.
+- Due natural-note review preserves earlier achievement.
+- Reduced-motion pulse with textual beat state.
+- Malformed local payload quarantine and export path.
+- Local write failure alert, retry behavior, and pending-store export.
 
 ## Technical Results
 
-- `pnpm report:education`: generated report matches the registry exactly.
-- `pnpm test`: 175 tests passed across 19 files.
-- `pnpm test:education`: 36 focused policy, content, runtime, and storage tests.
+- `pnpm report:education`: passed; generated report conforms with 4 objectives, 4 lessons, 5 exercises, 5 remediation routes, 5 accessibility equivalents, and 0 issues.
+- `pnpm test:education`: 41 focused policy, content, runtime, and storage tests passed.
+- `pnpm test`: 180 tests passed across 19 files.
 - `pnpm typecheck`: passed all workspace projects.
 - `pnpm lint`: passed all workspace projects.
-- `pnpm build`: passed; `/education-pilot` is statically generated at 12.7 kB route size.
-- `pnpm test:e2e -- --reporter=line`: 19 browser tests passed.
-- Browser review: 1280x720 and 390x844 layouts had no horizontal overflow or console warnings; equivalent-control activation retained focus.
+- `pnpm build`: passed; `/education-pilot` is statically generated at 15.3 kB route size.
+- `pnpm test:e2e -- --reporter=line`: 22 Playwright tests passed in Chromium.
+- In-app responsive review: 1280×800 and 390×844 showed no horizontal overflow, clipped interactive content, off-screen controls, or console warnings.
 
-The initial plan, pulse, delayed pulse review, malformed recovery, fretboard equivalent controls, summary, and reduced-motion behavior are automated or covered by the browser review. A formal external accessibility audit remains outstanding.
+The first full E2E invocation encountered a local port conflict after an older development server became unhealthy during the production build. No application assertion was accepted from that run. After stopping only the stale local server and letting Playwright own port 3000, all 22 tests passed.
+
+## Gate 4 Human Closure Conditions
+
+1. Execute `ACCESSIBILITY_REVIEW_PROTOCOL.md`; resolve blockers and record named signoff.
+2. Execute `USABILITY_REVIEW_PROTOCOL.md` with representative learners and a guitar educator/curriculum reviewer; resolve blockers and record named signoff.
+3. Name educational-debt and constitutional-interpretation owners and update unresolved decisions 30–31.
 
 ## Gate 5 Entry Conditions
 
-Gate 5 remains blocked until:
-
-1. The musical-application and transfer step is implemented or the authored transfer claim is removed.
-2. Pulse tempo variation is implemented or the objective scope is narrowed from 50–70 BPM to the observed 60 BPM task.
-3. A learner-visible response to storage write failure is approved and implemented.
-4. A formal accessibility review and at least one representative learner/usability review are recorded.
-5. Educational-debt and constitutional-interpretation owners are named.
-6. A separate limited-migration plan defines the selected curriculum segment, legacy mapping fixtures, parallel reporting, telemetry boundaries, and rollback rehearsal.
+After Gate 4 human closure, a separate approved limited-migration plan must identify the curriculum segment, legacy mapping fixtures, parallel reporting, telemetry boundaries, authoring effort, production data design, and rollback rehearsal. This closure pass does not satisfy or bypass that gate.
 
 ## Rollback
 
-Phase 3 remains additive. Rollback removes the validation additions and restores the Phase 2 route behavior. No production schema, auth, deployment, or legacy education record was changed.
+The work remains additive and local to the education pilot. Revert the Gate 4 closure commit to restore the previous pilot behavior. No production schema, auth, deployment, legacy education record, or existing lesson route requires rollback.
