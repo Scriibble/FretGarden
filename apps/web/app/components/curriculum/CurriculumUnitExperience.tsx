@@ -366,6 +366,11 @@ export function CurriculumUnitExperience({
           <ReviewColumn title="Long term" items={reviewPlan.longTermReview} />
         </div>
         <p><strong>Optional extension:</strong> {lesson.optionalExtension}</p>
+        {lesson.reinforcement ? (
+          <Link className={styles.secondaryButton} href={lesson.reinforcement.href}>
+            {lesson.reinforcement.label}
+          </Link>
+        ) : null}
       </section>
 
       <nav className={styles.sequenceNav} aria-label="Curriculum sequence">

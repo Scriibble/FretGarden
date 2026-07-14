@@ -112,7 +112,7 @@ const chordDiagramBlockSchema = z.object({
 const tablatureNoteSchema = z.object({
   string: guitarStringNumberSchema,
   fret: z.number().int().min(0).max(24),
-  technique: z.enum(["pick", "hammer-on", "pull-off", "slide", "mute"]).optional()
+  technique: z.enum(["pick", "hammer-on", "pull-off", "slide", "bend", "vibrato", "mute"]).optional()
 });
 
 const tablatureEventSchema = z.object({
@@ -332,7 +332,11 @@ export const curriculumLessonSchema = z.object({
   masteryCriteria: z.array(curriculumMasteryCriterionSchema).min(1),
   reviewRecommendation: z.string().min(1),
   optionalExtension: z.string().min(1),
-  interactive: z.enum(["practice-identity", "focus-timer", "metronome"]).optional()
+  interactive: z.enum(["practice-identity", "focus-timer", "metronome"]).optional(),
+  reinforcement: z.object({
+    label: z.string().min(1),
+    href: z.string().regex(/^\/practice(?:\?|#|$)/)
+  }).optional()
 });
 
 export const curriculumAssessmentSchema = z.object({

@@ -211,6 +211,33 @@ const implementedLevelOneMetadata: Record<number, {
       "Use musical evidence to identify one successful choice and one next practice exercise."
     ],
     tags: ["integration", "performance", "composition", "reflection"]
+  },
+  9: {
+    estimatedMinutes: 120,
+    outcomes: [
+      "Use sustainable partial and full movable major and minor shapes.",
+      "Explain major/minor triad formulas and enharmonic roots.",
+      "Perform I-IV-V-vi in three keys using movable harmony."
+    ],
+    tags: ["barre-chords", "transposition", "movable-harmony", "safety"]
+  },
+  10: {
+    estimatedMinutes: 125,
+    outcomes: [
+      "Play and name A minor pentatonic degrees with controlled articulation.",
+      "Track I-IV-V through a 12-bar blues form.",
+      "Improvise two call-and-response choruses with space and endings."
+    ],
+    tags: ["minor-pentatonic", "blues", "improvisation", "ear-training"]
+  },
+  11: {
+    estimatedMinutes: 105,
+    outcomes: [
+      "Find natural notes on strings 6 and 5 within five seconds.",
+      "Derive octave locations while naming pitch identity.",
+      "Create a riff using named roots in two registers."
+    ],
+    tags: ["fretboard", "note-names", "octaves", "roots"]
   }
 };
 
