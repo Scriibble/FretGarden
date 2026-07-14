@@ -33,14 +33,14 @@ The three Markdown-mandated foundation units occupy Units 1-3. The PDF's origina
 | 25 | PDF 22 | Chord-Tone Improvisation | Implemented |
 | 26 | PDF 23 | Arrangement and Multiple Guitar Parts | Implemented |
 | 27 | PDF 24 | Level 3 Musicianship Project | Implemented |
-| 28 | PDF 25 | Modes as Sounds, Not Shapes | Mapped |
-| 29 | PDF 26 | Secondary Dominants and Tonicization | Mapped |
-| 30 | PDF 27 | Borrowed Chords and Modal Mixture | Mapped |
-| 31 | PDF 28 | Voice Leading and Chord Melody | Mapped |
-| 32 | PDF 29 | Advanced Rhythm and Meter | Mapped |
-| 33 | PDF 30 | Genre Language and Stylistic Authenticity | Mapped |
-| 34 | PDF 31 | Counterpoint and Independent Lines | Mapped |
-| 35 | PDF 32 | Level 4 Creative Portfolio | Mapped |
+| 28 | PDF 25 | Modes as Sounds, Not Shapes | Implemented |
+| 29 | PDF 26 | Secondary Dominants and Tonicization | Implemented |
+| 30 | PDF 27 | Borrowed Chords and Modal Mixture | Implemented |
+| 31 | PDF 28 | Voice Leading and Chord Melody | Implemented |
+| 32 | PDF 29 | Advanced Rhythm and Meter | Implemented |
+| 33 | PDF 30 | Genre Language and Stylistic Authenticity | Implemented |
+| 34 | PDF 31 | Counterpoint and Independent Lines | Implemented |
+| 35 | PDF 32 | Level 4 Creative Portfolio | Implemented |
 | 36 | PDF 33 | Extended Chords and Color Tones | Mapped |
 | 37 | PDF 34 | Chord-Scale Relationships | Mapped |
 | 38 | PDF 35 | Modulation and Key Relationships | Mapped |

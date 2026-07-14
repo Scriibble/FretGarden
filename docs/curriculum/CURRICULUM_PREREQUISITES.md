@@ -2,7 +2,7 @@
 
 Date: 2026-07-14
 
-Status: Units 1-27 implemented; Units 28-51 source-mapped for later authoring review
+Status: Units 1-35 implemented; Units 36-51 source-mapped for later authoring review
 
 ## Graph Rules
 
@@ -60,11 +60,23 @@ Every instrument lesson may be previewed. The learner-facing completion control 
 | 26. Arrangement and Multiple Guitar Parts | Unit 25 | Lead sheets, triads, rhythm roles, phrase contrast | Separate register, rhythm, and density roles before adding parts | Yes |
 | 27. Level 3 Musicianship Project | Unit 26 | Level 3 harmony, melody, arrangement, improvisation, analysis, recovery | Shorten the project form and repair one weak domain with measurable evidence | Yes |
 
+## Level 4 Creative Sequence
+
+| Unit | Required prior unit | Skills assumed | Primary remediation | Preview before completion |
+| --- | --- | --- | --- | --- |
+| 28. Modes as Sounds, Not Shapes | Unit 27 | Major/minor scale systems, tonal center, vamps, motif writing | Return to drone, center, and one characteristic degree before full patterns | Yes |
+| 29. Secondary Dominants and Tonicization | Unit 28 | Dominant sevenths, functional harmony, guide-tone resolution | Name the target chord first, then build and resolve its V7 | Yes |
+| 30. Borrowed Chords and Modal Mixture | Unit 29 | Parallel major/minor, Roman numerals, voice leading | Compare IV and borrowed iv over the same tonic before adding more colors | Yes |
+| 31. Voice Leading and Chord Melody | Unit 30 | Triad inversions, seventh shells, melody placement, voice leading | Put melody on top and add one lower guide tone before full voicings | Yes |
+| 32. Advanced Rhythm and Meter | Unit 31 | Stable pulse, subdivision, groove recovery, form counting | Clap or mute groupings before adding pitch, then practice re-entry points | Yes |
+| 33. Genre Language and Stylistic Authenticity | Unit 32 | Rhythm roles, articulation, tone, harmony, reflective listening | Isolate one style variable and create an original study from observations | Yes |
+| 34. Counterpoint and Independent Lines | Unit 33 | Intervals, chord tones, line contour, voice-leading revision | Sing each line separately and revise one collision or parallel passage | Yes |
+| 35. Level 4 Creative Portfolio | Unit 34 | Modal color, chromatic harmony, chord melody, rhythm, style, counterpoint | Use three short artifacts and one complete performance instead of overloading one piece | Yes |
+
 ## Remaining Source-Mapped Sequence
 
 | Units | Required sequence | Core capability progression | Primary remediation direction |
 | --- | --- | --- | --- |
-| 28-35 | Each requires the previous unit | Modes -> chromatic harmony -> voice leading -> advanced rhythm -> style -> counterpoint -> portfolio | Return to a stable tonal center, simpler meter, or one independent line |
 | 36-43 | Each requires the previous unit | Extensions -> chord-scale use -> modulation -> minor systems -> technique -> form -> reharmonization -> jury | Reduce harmonic choices and defend one voice-leading or functional decision |
 | 44-51 | Each requires the previous unit | Artistic identity -> prosody -> ensemble arranging -> tunings -> production -> communication -> teaching -> capstone | Return to a smaller constraint, clearer chart, or single demonstrable artistic choice |
 
