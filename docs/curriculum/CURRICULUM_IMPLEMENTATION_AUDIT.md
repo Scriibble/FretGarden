@@ -1,62 +1,88 @@
-# Curriculum Phase 1 Implementation Audit
+# Curriculum Implementation Audit
 
 Date: 2026-07-14
 
 Branch: `codex/curriculum-foundations`
 
-Status: Implemented and validated
+Status: Phase 2 implemented; automated validation complete
 
-## Delivered Scope
+## Current Boundary
 
-- Established a validated 51-unit curriculum index with stable identifiers, prerequisites, source provenance, level, strand, and implementation status.
-- Fully authored and exposed Unit 1, Tending the Practice Garden; Unit 2, Focused Practice and the Pomodoro Technique; and Unit 3, Using and Practicing With a Metronome.
-- Replaced the active `/lessons` catalog and lesson-detail experience with the new curriculum path.
-- Preserved the existing drill engines and all legacy lesson, learning-progress, and drill-progress storage without conversion or deletion.
-- Redirected the eight replaced lesson-detail slugs to `/lessons`; their independent practice drills remain reachable through Practice.
-- Added versioned local curriculum progress under `fretgarden:curriculum-progress:v1`. The reader rejects unreadable records without overwriting them.
-- Added a command-line curriculum validator. `pnpm validate:curriculum` reports 51 units, 3 implemented, and 48 source-mapped.
+FretGarden now contains 51 stable curriculum units. Units 1-11 are fully authored and learner-facing. Units 12-51 remain explicitly source-mapped and cannot be opened as implemented lessons.
 
-## Educational Structure
+- Units 1-3 teach sustainable practice, focused work/rest cycles, and metronome use.
+- Units 4-11 complete the source curriculum's Level 1 sequence: setup and sound, pulse and first chords, open chords, rhythm and tab reading, melody and scales, power chords, song form, and an integration project.
+- The eight replaced legacy lesson records remain outside the active curriculum catalog. Their local history is preserved and their independent drills remain usable.
 
-Each implemented unit includes:
+## Phase 2 Educational Delivery
 
-- an observable objective, rationale, prior knowledge, and estimated time;
-- original explanatory content, playable tasks, reflection, and accessible text equivalents;
-- guided exercises with success criteria and explicit ways to reduce or increase difficulty;
-- symptom, likely-cause, and adjustment guidance for common mistakes;
-- attempted knowledge checks with answer-specific feedback;
-- explicit mastery criteria and honest verification labels;
-- immediate, next-session, one-week, and long-term review prompts;
-- an optional extension that does not block lesson completion.
+Every Unit 4-11 lesson includes:
 
-Physical guitar actions remain guided self-checks. The UI explicitly avoids claiming that unmeasured playing was automatically evaluated.
+- a measurable objective, rationale, prerequisite list, and time estimate;
+- original explanatory, guitar, rhythm, tab, chord, melodic, or form material;
+- explicit model, guided attempt, scaffold fade, and independent attempt stages;
+- at least two guided exercises with success, reduction, and increase criteria;
+- observable mistake symptoms, likely causes, and specific adjustments;
+- attempted knowledge checks with explanatory feedback;
+- honest self-check or recorded mastery criteria;
+- immediate, next-session, one-week, and long-term review;
+- a changed-context application or optional extension.
 
-## Functional Learning Tools
+The curriculum never claims that physical playing was heard automatically. Chord, tuning, performance, ear, and project criteria use guided self-check or performance checklist labels.
 
-Unit 1 adds a practice-identity builder, realistic schedule target, frustration plan, and garden log. Unit 2 adds 10/5 and 25/5 presets, custom work and rest durations, break announcements, cycle tracking, a session goal, and reflection. Unit 3 adds a Web Audio metronome with a shared audio/visual scheduler, 30-240 BPM control, subdivisions, optional one- or two-measure count-in, beat-one accent, elapsed time, clean-repetition tracking, and a timing observation log.
+## Structured Music Content
 
-Timer, metronome, completion, and persistence transformations are separated into pure, unit-tested logic where practical.
+The education-content schema is version 2 and adds validated block types for:
 
-## Validation Record
+- six-string chord diagrams with muted, open, and fretted states, note names, fingering, and strum range;
+- tablature events with string, fret, duration, rest, tie, dot, and technique data;
+- rhythm grids with meter, count, action, and accent;
+- instrument setup with specific physical self-checks and a safety note;
+- model, guided, scaffold-fade, and independent learning stages.
+
+Visual renderers provide visible or semantic text equivalents. Validation rejects duplicate chord strings, muted starting strings, contradictory tab rests, duplicate simultaneous tab strings, and missing or reordered learning stages.
+
+## Level 1 Outcomes
+
+| Unit | Implemented application and assessment |
+| ---: | --- |
+| 4 | External tuning guidance, five clear notes, three-note riff, high/low and rhythm echo |
+| 5 | Em-Asus2, whole/half/quarter values, rests, one-minute uninterrupted loop |
+| 6 | Em/Am/C/G/D diagrams, string diagnosis, verse-chorus study, recovery |
+| 7 | Unfamiliar tab scan, eighth notes, rests, ties, dots, eight-measure sight-read |
+| 8 | C major note names and scale degrees, original phrased melody, melodic variation |
+| 9 | Root-fifth shapes on two string sets, palm muting, original power-chord riff |
+| 10 | Dm/Fmaj7/B7, phrase and cadence, 4/4 and 6/8, multi-section form |
+| 11 | Three contrasting snapshots, 60-120 second original piece, aural equivalent, repair plan |
+
+## Progress and Prerequisites
+
+Curriculum progress remains isolated under `fretgarden:curriculum-progress:v1`. No legacy or production data is converted. Malformed curriculum data remains byte-for-byte unchanged.
+
+All implemented lessons may be previewed. A unit cannot be marked complete until its required prior unit has a completed record. Completion still requires every correct knowledge response and every required explicit criterion.
+
+## Automated Validation Record
 
 | Check | Result |
 | --- | --- |
-| `pnpm validate:curriculum` | Passed: 51 units, 3 implemented, 48 mapped |
-| `pnpm report:education` | Passed: pilot conformance report regenerated with zero issues |
-| `pnpm test` | Passed: 257 tests across the workspace; 213 web tests |
+| `pnpm validate:curriculum` | Passed: 51 units, 11 implemented, 40 mapped |
+| Content validation | Passed schema, references, music-block integrity, and stage progression |
+| Focused curriculum unit tests | Passed |
+| Focused curriculum Playwright | Passed 10 scenarios |
+| 320px responsive routes | Passed catalog plus all 11 implemented units |
+| `pnpm report:education` | Passed; pilot conformance regenerated with zero issues |
+| `pnpm test` | Passed: 259 workspace tests, including 214 web tests |
 | `pnpm typecheck` | Passed |
 | `pnpm lint` | Passed |
-| `pnpm build` | Passed; all three implemented lesson routes statically generated |
-| `pnpm test:e2e` | Passed: 44 Chromium scenarios |
-| Responsive checks | Passed at 320px for the catalog and all three lesson routes |
-| Storage isolation | Passed for curriculum, legacy learning, legacy drill, and malformed curriculum records |
+| `pnpm build` | Passed; all 11 lesson routes statically generated |
+| `pnpm test:e2e` | Passed: 47 Chromium scenarios |
 
-## Acceptance Boundary
+## Exclusions and Human Gate
 
-Phase 1 does not claim that Units 4-51 contain lessons. They have identities and source mappings only. It also does not add production persistence, account sync, telemetry, microphone input, automatic physical-performance evaluation, Supabase changes, RLS changes, authentication changes, or deployment changes.
+Phase 2 adds no microphone permission, tuner input, audio recording upload, automatic performance diagnosis, Supabase schema, RLS, authentication, deployment, environment configuration, production telemetry, legacy conversion, copyrighted tablature, or Units 12-51 lessons.
 
-Gate 4 human evidence remains deferred under `GOV-004` and still blocks final project acceptance or release. The earlier screen-reader confirmation is recorded elsewhere but is not a substitute for the complete human protocols.
+Gate 4 human accessibility and usability evidence remains deferred under `GOV-004`. The earlier screen-reader confirmation remains recorded, but the complete human protocols still block final project acceptance or release.
 
 ## Rollback
 
-Revert commits `cb780e9` and `f3186a5` to restore the former active lesson catalog and remove the new curriculum contracts. No data cleanup is required. The new curriculum storage key is isolated, and no legacy or production record was rewritten.
+Revert the four Phase 2 commits beginning with `7bf2666`. Curriculum storage is isolated and no production or legacy cleanup is required. Reverting Phase 2 restores the validated three-unit Phase 1 checkpoint.

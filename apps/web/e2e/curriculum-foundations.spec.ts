@@ -184,6 +184,9 @@ test("keeps later units previewable while enforcing the completion prerequisite"
 
 test("supports a keyboard knowledge-check path in the instrument sequence", async ({ page }) => {
   await page.goto("/lessons/meet-the-guitar");
+  await expect
+    .poll(() => page.evaluate((key) => window.localStorage.getItem(key), CURRICULUM_KEY))
+    .not.toBeNull();
 
   const answer = page.getByLabel("E-A-D-G-B-E");
   await answer.press("Space");

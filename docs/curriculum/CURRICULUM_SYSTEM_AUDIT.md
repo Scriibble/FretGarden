@@ -4,7 +4,7 @@ Date: 2026-07-14
 
 Branch: `codex/curriculum-foundations`
 
-Status: Phase 1 implementation baseline
+Status: Phase 1 baseline; superseded for implementation status by `CURRICULUM_IMPLEMENTATION_AUDIT.md`
 
 ## Sources Reviewed
 
@@ -107,4 +107,3 @@ The existing constitutional evidence model is stricter than the example curricul
 Phase 1 implements and exposes only Units 1-3. Units 4-51 are mapped with stable identities and source provenance but remain explicitly unimplemented. Existing eight lesson records are removed from the active catalog; their stored completion and drill records are not rewritten or deleted.
 
 No Supabase, RLS, authentication, deployment, environment, production telemetry, or production education persistence change is authorized.
-

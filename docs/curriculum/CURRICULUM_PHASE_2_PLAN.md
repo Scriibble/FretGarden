@@ -2,7 +2,7 @@
 
 Date: 2026-07-14
 
-Status: Proposed; requires explicit implementation approval
+Status: Implemented; automated validation complete
 
 ## Goal
 
@@ -38,12 +38,12 @@ Complete the first playable guitar sequence, Units 4-11, so a new guitarist move
 - Commit 3: Units 7-10 and tab, rhythm, melody, power-chord, and form experiences.
 - Commit 4: Unit 11 integration project, delayed review, browser coverage, and documentation.
 
-## Decisions Requiring Approval
+## Approved Decisions
 
-- Approve Units 4-11 as one Phase 2 scope rather than splitting after Unit 6.
-- Approve original chord, rhythm, tab, and melody examples authored in the repository.
-- Confirm that external-tuner guidance without microphone access is the correct Unit 4 boundary.
-- Confirm continued local-only curriculum persistence for Phase 2.
+- Units 4-11 were implemented as one Phase 2 scope with four logical checkpoints.
+- All chord, rhythm, tab, riff, melody, and project examples are original repository content.
+- Unit 4 uses external-tuner guidance without microphone access.
+- Curriculum persistence remains local-only and isolated from legacy progress.
 
 ## Exclusions
 

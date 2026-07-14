@@ -2,7 +2,7 @@
 
 Date: 2026-07-14
 
-Status: Foundation graph implemented; Units 4-51 source-mapped for later authoring review
+Status: Units 1-11 implemented; Units 12-51 source-mapped for later authoring review
 
 ## Graph Rules
 
@@ -19,11 +19,25 @@ Status: Foundation graph implemented; Units 4-51 source-mapped for later authori
 | 2. Focused Practice and Pomodoro | Unit 1 | Sustainable commitment; constructive response plan | Shorten the cycle; narrow the goal to one action and one quality | Yes |
 | 3. Using a Metronome | Unit 2 | Measurable goal; intentional stop/rest; reflection | Lower BPM; return to quarter-note counting; shorten the task | Yes |
 
-## Source-Mapped Sequence
+## Level 1 Instrument Sequence
+
+| Unit | Required prior unit | Skills assumed | Primary remediation | Preview before completion |
+| --- | --- | --- | --- | --- |
+| 4. Meet the Guitar | Unit 3 | Sustainable practice; quarter-note pulse | Stabilize support; reduce pressure; retune one identified string | Yes |
+| 5. Pulse and First Chords | Unit 4 | Clear sound; string names; tuning | Return to whole-note counting or one silent chord move | Yes |
+| 6. Open Chords I | Unit 5 | Em-Asus2 loop; beat values; recovery | Audit one string or loop one chord pair at slower tempo | Yes |
+| 7. Rhythm and Tablature | Unit 6 | String/fret orientation; quarter notes; basic picking | Speak string/fret; clap rhythm; read two measures only | Yes |
+| 8. Melody and Alphabet | Unit 7 | Tab; eighth notes; alternate picking | Use five notes; name letters; restore phrase rests | Yes |
+| 9. Power Chords | Unit 8 | Fret direction; eighth-note grid; pressure release | Play roots alone; add fifth; separate rhythm from movement | Yes |
+| 10. Open Chords II and Form | Unit 9 | Chord recovery; riff rhythm; section contrast | Simplify strum and loop across one section boundary | Yes |
+| 11. Level 1 Project | Unit 10 | Chords; riff; melody; reading; form; reflection | Remove optional material; repair one observed boundary | Yes |
+
+Every instrument lesson may be previewed. The learner-facing completion control remains unavailable until the immediately required prior unit has a completed curriculum self-check.
+
+## Remaining Source-Mapped Sequence
 
 | Units | Required sequence | Core capability progression | Primary remediation direction |
 | --- | --- | --- | --- |
-| 4-11 | Each requires the previous unit | Instrument comfort -> pulse/chords -> reading -> melody -> riffs -> song form -> integration | Return to clear sound, counting, or the smallest playable movement |
 | 12-19 | Each requires the previous unit | Movable harmony -> improvisation -> fretboard -> major scale -> groove -> triads -> charts -> project | Reduce shape load, key count, note count, or rhythmic density |
 | 20-27 | Each requires the previous unit | CAGED -> diatonic/minor harmony -> seventh chords -> motifs -> chord-tone soloing -> arranging -> project | Return to note, interval, triad, or guide-tone ownership |
 | 28-35 | Each requires the previous unit | Modes -> chromatic harmony -> voice leading -> advanced rhythm -> style -> counterpoint -> portfolio | Return to a stable tonal center, simpler meter, or one independent line |
@@ -47,4 +61,3 @@ These dependencies remain required even when a teacher varies repertoire:
 - Basic aural matching before harmonic dictation and production-layer analysis.
 
 The structured index stores stable required-unit references. Objective-level prerequisites will be added as each mapped unit moves to `implemented`.
-

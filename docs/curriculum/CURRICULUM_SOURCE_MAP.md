@@ -4,19 +4,19 @@ Date: 2026-07-14
 
 The three Markdown-mandated foundation units occupy Units 1-3. The PDF's original Units 1-48 map unchanged in sequence to FretGarden Units 4-51.
 
-| FretGarden unit | Source | Title | Phase 1 status |
+| FretGarden unit | Source | Title | Current status |
 | ---: | --- | --- | --- |
 | 1 | Overhaul specification | Tending the Practice Garden | Implemented |
 | 2 | Overhaul specification | Focused Practice and the Pomodoro Technique | Implemented |
 | 3 | Overhaul specification | Using and Practicing With a Metronome | Implemented |
-| 4 | PDF 1 | Meet the Guitar and Produce a Clear Sound | Mapped |
-| 5 | PDF 2 | Pulse, Subdivision, and First Chords | Mapped |
-| 6 | PDF 3 | Open-Chord Vocabulary I | Mapped |
-| 7 | PDF 4 | Reading Rhythm and Tablature | Mapped |
-| 8 | PDF 5 | Melody, Scales, and Musical Alphabet | Mapped |
-| 9 | PDF 6 | Power Chords and Rock Rhythm | Mapped |
-| 10 | PDF 7 | Open-Chord Vocabulary II and Song Form | Mapped |
-| 11 | PDF 8 | Level 1 Integration Project | Mapped |
+| 4 | PDF 1 | Meet the Guitar and Produce a Clear Sound | Implemented |
+| 5 | PDF 2 | Pulse, Subdivision, and First Chords | Implemented |
+| 6 | PDF 3 | Open-Chord Vocabulary I | Implemented |
+| 7 | PDF 4 | Reading Rhythm and Tablature | Implemented |
+| 8 | PDF 5 | Melody, Scales, and Musical Alphabet | Implemented |
+| 9 | PDF 6 | Power Chords and Rock Rhythm | Implemented |
+| 10 | PDF 7 | Open-Chord Vocabulary II and Song Form | Implemented |
+| 11 | PDF 8 | Level 1 Integration Project | Implemented |
 | 12 | PDF 9 | Barre Chords and Movable Harmony | Mapped |
 | 13 | PDF 10 | Minor Pentatonic and Blues Language | Mapped |
 | 14 | PDF 11 | Fretboard Notes and Octave Shapes | Mapped |
@@ -72,4 +72,3 @@ The three Markdown-mandated foundation units occupy Units 1-3. The PDF's origina
 | Intervals | Distributed before Units 17 and 23 | Removed from active catalog; drill remains available |
 
 No legacy progress record is deleted, renamed, or converted by this disposition.
-
