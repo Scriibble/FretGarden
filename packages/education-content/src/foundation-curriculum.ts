@@ -5,10 +5,11 @@ import type {
   CurriculumReviewPlan,
   FoundationCurriculum
 } from "./curriculum-schema.js";
+import { levelOneLessons, levelOneReviewPlans } from "./level-one-curriculum.js";
 
 export const FOUNDATION_CURRICULUM_VERSION = "foundation-2";
 
-export const foundationLessons: readonly CurriculumLesson[] = [
+const openingFoundationLessons: readonly CurriculumLesson[] = [
   {
     id: "lesson.practice-garden-foundations",
     unitId: "unit.practice-garden",
@@ -604,6 +605,11 @@ export const foundationLessons: readonly CurriculumLesson[] = [
   }
 ];
 
+export const foundationLessons: readonly CurriculumLesson[] = [
+  ...openingFoundationLessons,
+  ...levelOneLessons
+];
+
 export const foundationAssessments: readonly CurriculumAssessment[] = foundationLessons.map(
   (lesson) => ({
     id: `assessment.${lesson.unitId.replace("unit.", "")}`,
@@ -639,7 +645,8 @@ export const foundationReviewPlans: readonly CurriculumReviewPlan[] = [
     nextSessionReview: ["Retrieve the clean tempo before trying to increase it."],
     oneWeekReview: ["Change the task or click density while keeping the same pulse skill."],
     longTermReview: ["Log clean tempos by task and revisit timing weaknesses monthly."]
-  }
+  },
+  ...levelOneReviewPlans
 ];
 
 export const foundationCurriculum: FoundationCurriculum = {

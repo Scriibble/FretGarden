@@ -48,7 +48,7 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
           <p className={styles.eyebrow}>Foundation path</p>
           <h2 id="foundation-path-title">{currentUnit?.title ?? "Foundation self-checks complete"}</h2>
           <p>
-            The first three units build a sustainable practice process before the instrument sequence begins.
+            The opening three units build a sustainable practice process before the instrument sequence begins.
             The remaining {mappedUnitCount} units are source-mapped and will appear as they are fully authored and validated.
           </p>
         </div>

@@ -135,9 +135,44 @@ function levelForSourceUnit(sourceUnit: number): CurriculumIndexEntry["level"] {
   return "advanced";
 }
 
+const implementedLevelOneMetadata: Record<number, {
+  estimatedMinutes: number;
+  outcomes: string[];
+  tags: string[];
+}> = {
+  1: {
+    estimatedMinutes: 55,
+    outcomes: [
+      "Identify essential guitar parts and standard string names.",
+      "Use an external tuner safely and produce five clear fretted notes.",
+      "Perform an original three-note riff in steady quarter-note time."
+    ],
+    tags: ["instrument", "setup", "tone", "tuning"]
+  },
+  2: {
+    estimatedMinutes: 70,
+    outcomes: [
+      "Distinguish beat from whole, half, and quarter-note rhythm values.",
+      "Form Em and Asus2 with intentional strum ranges.",
+      "Maintain a two-chord progression for one minute without stopping."
+    ],
+    tags: ["rhythm", "open-chords", "recovery"]
+  },
+  3: {
+    estimatedMinutes: 95,
+    outcomes: [
+      "Read and form a practical family of open chords.",
+      "Diagnose unclear strings and prepare efficient chord changes.",
+      "Perform an original verse-chorus study with steady pulse and recovery."
+    ],
+    tags: ["open-chords", "song-form", "accompaniment"]
+  }
+};
+
 const mappedUnits: CurriculumIndexEntry[] = mappedSourceUnits.map((unit) => {
   const order = unit.sourceUnit + 3;
   const previousId = order === 4 ? "unit.metronome-foundations" : `unit.${mappedSourceUnits[unit.sourceUnit - 2]!.slug}`;
+  const implementedMetadata = implementedLevelOneMetadata[unit.sourceUnit];
 
   return {
     id: `unit.${unit.slug}`,
@@ -146,13 +181,13 @@ const mappedUnits: CurriculumIndexEntry[] = mappedSourceUnits.map((unit) => {
     title: unit.title,
     level: levelForSourceUnit(unit.sourceUnit),
     sourceUnit: unit.sourceUnit,
-    status: "mapped",
+    status: implementedMetadata ? "implemented" : "mapped",
     summary: unit.summary,
-    estimatedMinutes: unit.sourceUnit % 8 === 0 ? 180 : 90,
+    estimatedMinutes: implementedMetadata?.estimatedMinutes ?? (unit.sourceUnit % 8 === 0 ? 180 : 90),
     requiredPriorUnitIds: [previousId],
     recommendedPriorUnitIds: [],
-    outcomes: [`Complete the source curriculum outcomes for ${unit.title}.`],
-    tags: ["source-mapped", levelForSourceUnit(unit.sourceUnit)]
+    outcomes: implementedMetadata?.outcomes ?? [`Complete the source curriculum outcomes for ${unit.title}.`],
+    tags: implementedMetadata?.tags ?? ["source-mapped", levelForSourceUnit(unit.sourceUnit)]
   };
 });
 
