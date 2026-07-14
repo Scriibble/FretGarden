@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fretgarden.local/schemas/education-content.schema.json",
+  "title": "FretGarden Education Content",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "objectives",
+    "lessons"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/objective"
+      }
+    },
+    "lessons": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/lesson"
+      }
+    }
+  },
+  "$defs": {
+    "objective": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "domain",
+        "capability",
+        "contentScope",
+        "conditions",
+        "qualityStandard",
+        "independenceLevel",
+        "evidenceRequirements",
+        "reviewPolicy"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "domain": {
+          "enum": [
+            "orientation",
+            "perception",
+            "knowledge_retrieval",
+            "conceptual_reasoning",
+            "fretboard_navigation",
+            "physical_execution",
+            "temporal_control",
+            "musical_application_creation",
+            "metacognitive_practice",
+            "cross_domain"
+          ]
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contentScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conditions": {
+          "type": "object"
+        },
+        "qualityStandard": {
+          "type": "object"
+        },
+        "independenceLevel": {
+          "enum": [
+            "modeled",
+            "guided",
+            "prompted",
+            "independent"
+          ]
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "objectiveId",
+              "relationship"
+            ],
+            "properties": {
+              "objectiveId": {
+                "type": "string"
+              },
+              "relationship": {
+                "enum": [
+                  "required",
+                  "strongly_recommended",
+                  "supporting",
+                  "corequisite",
+                  "enrichment"
+                ]
+              }
+            }
+          }
+        },
+        "evidenceRequirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidenceRequirement"
+          }
+        },
+        "reviewPolicy": {
+          "type": "object"
+        },
+        "masteryPolicy": {
+          "type": "object"
+        }
+      }
+    },
+    "evidenceRequirement": {
+      "type": "object",
+      "required": [
+        "action",
+        "conditions",
+        "qualityDimensions",
+        "claimSupported"
+      ],
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "conditions": {
+          "type": "object"
+        },
+        "qualityDimensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "claimSupported": {
+          "enum": [
+            "exposure",
+            "performance",
+            "learning",
+            "retention",
+            "transfer",
+            "fluency",
+            "mastery",
+            "readiness"
+          ]
+        },
+        "delay": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "noveltyRequirement": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "maxSupportLevel": {
+          "enum": [
+            "modeled",
+            "guided",
+            "prompted",
+            "independent"
+          ]
+        }
+      }
+    },
+    "lesson": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "title",
+        "primaryObjectiveIds",
+        "entryConditions",
+        "phases",
+        "exitEvidence",
+        "delayedReview"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string"
+        },
+        "primaryObjectiveIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "secondaryObjectiveIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "entryConditions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "phases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "activities"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "position",
+                  "activate",
+                  "encounter",
+                  "attend",
+                  "model",
+                  "attempt",
+                  "interpret",
+                  "adjust",
+                  "fade",
+                  "retrieve",
+                  "vary",
+                  "apply",
+                  "consolidate",
+                  "exit",
+                  "return"
+                ]
+              },
+              "activities": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "exitEvidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceRequirement"
+          }
+        },
+        "delayedReview": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "remediationRoutes": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "accessibilityEquivalents": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

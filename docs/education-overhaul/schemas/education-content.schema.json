@@ -1,0 +1,268 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fretgarden.local/schemas/education-content.schema.json",
+  "title": "FretGarden Versioned Education Content",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contentVersion",
+    "objectives",
+    "lessons",
+    "exercises",
+    "reviewPolicies",
+    "remediationRoutes",
+    "accessibilityEquivalents"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "contentVersion": { "type": "string", "minLength": 1 },
+    "objectives": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/objective" }
+    },
+    "lessons": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/lesson" }
+    },
+    "exercises": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/exercise" }
+    },
+    "reviewPolicies": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/reviewPolicy" }
+    },
+    "remediationRoutes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/remediationRoute" }
+    },
+    "accessibilityEquivalents": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/accessibilityEquivalent" }
+    }
+  },
+  "$defs": {
+    "versionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "supportLevel": {
+      "enum": ["modeled", "guided", "prompted", "independent"]
+    },
+    "evidenceKind": {
+      "enum": [
+        "exposure",
+        "supported_performance",
+        "independent_performance",
+        "retained_performance",
+        "transfer"
+      ]
+    },
+    "evidenceRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "claimSupported",
+        "qualityDimensions",
+        "maxSupportLevel"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "claimSupported": { "$ref": "#/$defs/evidenceKind" },
+        "qualityDimensions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "maxSupportLevel": { "$ref": "#/$defs/supportLevel" },
+        "minimumDelayMs": { "type": "integer", "minimum": 0 },
+        "requiresVariedContext": { "type": "boolean" },
+        "minimumValidSamples": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "prerequisite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective", "relationship", "minimumKind"],
+      "properties": {
+        "objective": { "$ref": "#/$defs/versionRef" },
+        "relationship": {
+          "enum": ["required", "strongly_recommended", "supporting", "corequisite", "enrichment"]
+        },
+        "minimumKind": {
+          "enum": ["supported_performance", "independent_performance", "retained_performance", "transfer"]
+        },
+        "placementExerciseId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "status",
+        "domain",
+        "capability",
+        "contentScope",
+        "conditions",
+        "qualityStandards",
+        "targetIndependence",
+        "prerequisites",
+        "evidenceRequirements"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["draft", "active", "retired"] },
+        "domain": {
+          "enum": ["orientation", "fretboard_navigation", "temporal_control", "metacognitive_practice"]
+        },
+        "capability": { "type": "string", "minLength": 1 },
+        "contentScope": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "conditions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "qualityStandards": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "targetIndependence": { "$ref": "#/$defs/supportLevel" },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/prerequisite" } },
+        "evidenceRequirements": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/evidenceRequirement" } },
+        "reviewPolicyId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "activityIds"],
+      "properties": {
+        "type": {
+          "enum": [
+            "position",
+            "activate",
+            "encounter",
+            "attend",
+            "model",
+            "attempt",
+            "interpret",
+            "adjust",
+            "fade",
+            "retrieve",
+            "vary",
+            "apply",
+            "consolidate",
+            "exit",
+            "return"
+          ]
+        },
+        "activityIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "lesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "title",
+        "summary",
+        "primaryObjectives",
+        "phases",
+        "exitEvidenceRequirementIds",
+        "delayedReviewPolicyIds",
+        "remediationRouteIds",
+        "accessibilityEquivalentIds"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "primaryObjectives": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/versionRef" } },
+        "phases": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/phase" } },
+        "exitEvidenceRequirementIds": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "delayedReviewPolicyIds": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "remediationRouteIds": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "accessibilityEquivalentIds": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "exercise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "objective",
+        "kind",
+        "evaluatorId",
+        "responseContract",
+        "qualityDimensions",
+        "variationAxes",
+        "invalidationConditions",
+        "supportFade",
+        "evidenceRequirementIds"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "integer", "minimum": 1 },
+        "objective": { "$ref": "#/$defs/versionRef" },
+        "kind": { "enum": ["practice_plan", "pulse_tapping", "coordinate_selection", "note_retrieval"] },
+        "evaluatorId": { "type": "string", "minLength": 1 },
+        "responseContract": { "type": "string", "minLength": 1 },
+        "qualityDimensions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "variationAxes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "invalidationConditions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "supportFade": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/supportLevel" } },
+        "evidenceRequirementIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "reviewPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "delaysMs", "dueWindowMs", "maximumMixedSessionShare"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "integer", "minimum": 1 },
+        "delaysMs": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 1 } },
+        "dueWindowMs": { "type": "integer", "minimum": 1 },
+        "maximumMixedSessionShare": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "remediationRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "trigger", "instructionalChange", "preservedCapability", "exitCondition"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "trigger": { "type": "string", "minLength": 1 },
+        "instructionalChange": { "type": "string", "minLength": 1 },
+        "preservedCapability": { "type": "string", "minLength": 1 },
+        "exitCondition": { "type": "string", "minLength": 1 }
+      }
+    },
+    "accessibilityEquivalent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "exerciseId", "alternateModality", "unchangedCapability", "responseContract", "evaluatorId", "evidenceCeiling"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "exerciseId": { "type": "string", "minLength": 1 },
+        "alternateModality": { "type": "string", "minLength": 1 },
+        "unchangedCapability": { "type": "string", "minLength": 1 },
+        "responseContract": { "type": "string", "minLength": 1 },
+        "evaluatorId": { "type": "string", "minLength": 1 },
+        "evidenceCeiling": { "$ref": "#/$defs/evidenceKind" }
+      }
+    }
+  }
+}
