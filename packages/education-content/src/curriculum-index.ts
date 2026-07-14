@@ -499,6 +499,78 @@ const implementedSourceMetadata: Record<number, {
       "Write a four-week next-study plan from the weakest evidence."
     ],
     tags: ["jury", "portfolio", "advanced-musicianship", "performance", "analysis"]
+  },
+  41: {
+    estimatedMinutes: 150,
+    outcomes: [
+      "Use constraints and influence boundaries to define a songwriting process.",
+      "Create an original constrained sketch with revision evidence.",
+      "Explain identity choices and future study direction."
+    ],
+    tags: ["songwriting", "identity", "constraint", "reflection"]
+  },
+  42: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Align speech stress, melody, contour, lyric rhythm, and phrase endings.",
+      "Revise prosody conflicts in an original melody.",
+      "Document lyric or instrumental phrase evidence."
+    ],
+    tags: ["melody", "prosody", "lyrics", "phrasing"]
+  },
+  43: {
+    estimatedMinutes: 155,
+    outcomes: [
+      "Arrange guitar inside a rhythm-section or ensemble texture.",
+      "Map roles, registers, cues, and collisions.",
+      "Revise one part to serve the ensemble."
+    ],
+    tags: ["ensemble", "arrangement", "rhythm-section", "charts"]
+  },
+  44: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Use alternate tuning or capo choices as compositional tools.",
+      "Document sounding key, setup, drones, and safety checks.",
+      "Translate the idea back into standard-tuning language."
+    ],
+    tags: ["alternate-tunings", "capo", "composition", "guitar-specific"]
+  },
+  45: {
+    estimatedMinutes: 150,
+    outcomes: [
+      "Plan production-aware guitar demos with part priority and tone decisions.",
+      "Use listening notes to revise arrangement layers.",
+      "Explain demo decisions without requiring upload or automated audio judgment."
+    ],
+    tags: ["demo", "production", "arrangement", "tone"]
+  },
+  46: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Prepare readable rehearsal charts with roadmap, setup, cues, and revision notes.",
+      "Communicate form and responsibilities to other musicians.",
+      "Adapt or transpose charts for another player."
+    ],
+    tags: ["charts", "communication", "rehearsal", "notation"]
+  },
+  47: {
+    estimatedMinutes: 150,
+    outcomes: [
+      "Design an independent study question with evidence criteria.",
+      "Teach one concept with examples, misconceptions, and remediation.",
+      "Revise the explanation from observed confusion."
+    ],
+    tags: ["independent-study", "teaching", "remediation", "metacognition"]
+  },
+  48: {
+    estimatedMinutes: 320,
+    outcomes: [
+      "Assemble a complete artist portfolio with performance, analysis, chart, process, and reflection evidence.",
+      "Connect artistic identity to finished and supporting artifacts.",
+      "Write a future study plan from portfolio evidence."
+    ],
+    tags: ["capstone", "artist-portfolio", "identity", "reflection", "future-study"]
   }
 };
 

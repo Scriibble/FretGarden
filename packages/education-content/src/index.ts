@@ -5,6 +5,7 @@ export * from "./foundation-curriculum.js";
 export * from "./level-five-curriculum.js";
 export * from "./level-one-curriculum.js";
 export * from "./level-four-curriculum.js";
+export * from "./level-six-curriculum.js";
 export * from "./level-two-curriculum.js";
 export * from "./level-three-curriculum.js";
 export * from "./pilot.js";

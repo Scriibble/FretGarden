@@ -9,6 +9,7 @@ import { levelOneLessons, levelOneReviewPlans } from "./level-one-curriculum.js"
 import { levelFourLessons, levelFourReviewPlans } from "./level-four-curriculum.js";
 import { levelFiveLessons, levelFiveReviewPlans } from "./level-five-curriculum.js";
 import { levelTwoLessons, levelTwoReviewPlans } from "./level-two-curriculum.js";
+import { levelSixLessons, levelSixReviewPlans } from "./level-six-curriculum.js";
 import { levelThreeLessons, levelThreeReviewPlans } from "./level-three-curriculum.js";
 
 export const FOUNDATION_CURRICULUM_VERSION = "foundation-3";
@@ -615,7 +616,8 @@ export const foundationLessons: readonly CurriculumLesson[] = [
   ...levelTwoLessons,
   ...levelThreeLessons,
   ...levelFourLessons,
-  ...levelFiveLessons
+  ...levelFiveLessons,
+  ...levelSixLessons
 ];
 
 export const foundationAssessments: readonly CurriculumAssessment[] = foundationLessons.map(
@@ -658,7 +660,8 @@ export const foundationReviewPlans: readonly CurriculumReviewPlan[] = [
   ...levelTwoReviewPlans,
   ...levelThreeReviewPlans,
   ...levelFourReviewPlans,
-  ...levelFiveReviewPlans
+  ...levelFiveReviewPlans,
+  ...levelSixReviewPlans
 ];
 
 export const foundationCurriculum: FoundationCurriculum = {
