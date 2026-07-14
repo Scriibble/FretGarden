@@ -310,6 +310,51 @@ const implementedSourceMetadata: Record<number, {
       "Perform an original minor verse with a relative-major chorus."
     ],
     tags: ["minor-harmony", "minor-scales", "songwriting", "ear-training"]
+  },
+  20: {
+    estimatedMinutes: 150,
+    outcomes: [
+      "Build and identify major seventh, minor seventh, dominant seventh, half-diminished, and diminished seventh qualities.",
+      "Target guide tones and chord tones through a changing progression.",
+      "Explain one functional seventh-chord resolution."
+    ],
+    tags: ["seventh-chords", "arpeggios", "guide-tones", "improvisation"]
+  },
+  21: {
+    estimatedMinutes: 135,
+    outcomes: [
+      "Create a recognizable motif and transform it through multiple development techniques.",
+      "Compose and perform a coherent sixteen-bar melody.",
+      "Explain phrase contour, climax, and resolution."
+    ],
+    tags: ["motif", "melody", "composition", "phrase"]
+  },
+  22: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Choose chord-tone targets through a progression.",
+      "Use approach, passing, neighbor, anticipation, or suspension tones deliberately.",
+      "Perform and audit an eight-bar solo that follows the harmony."
+    ],
+    tags: ["chord-tone-improvisation", "soloing", "voice-leading", "analysis"]
+  },
+  23: {
+    estimatedMinutes: 140,
+    outcomes: [
+      "Design complementary guitar parts with distinct register, rhythm, density, and articulation roles.",
+      "Resolve texture collisions through arrangement choices.",
+      "Document a two- or three-part arrangement map."
+    ],
+    tags: ["arrangement", "texture", "multi-guitar", "voicing"]
+  },
+  24: {
+    estimatedMinutes: 240,
+    outcomes: [
+      "Perform or document a complete Level 3 musicianship project.",
+      "Produce matching analysis, transcription, arrangement, reflection, and practice-plan evidence.",
+      "Create a four-week plan for the weakest domain."
+    ],
+    tags: ["integration", "portfolio", "performance", "analysis", "transcription"]
   }
 };
 
