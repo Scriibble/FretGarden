@@ -377,6 +377,7 @@ export function EducationPilot() {
       <nav className={styles.progress} aria-label="Pilot progress">
         {stageOrder.map((item, index) => (
           <span
+            aria-current={item === stage ? "step" : undefined}
             className={index === currentIndex ? styles.currentStep : index < currentIndex ? styles.pastStep : ""}
             key={item}
           >

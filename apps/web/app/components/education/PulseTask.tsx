@@ -41,16 +41,16 @@ export function PulseTask({
   const [beat, setBeat] = useState(0);
   const [taps, setTaps] = useState<number[]>([]);
   const [hiddenDuringTask, setHiddenDuringTask] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const audioContextRef = useRef<AudioContext | null>(null);
   const attemptNumberRef = useRef(0);
   const startedAtRef = useRef(0);
   const intervalMs = Math.round(60_000 / tempo);
   const guided = phase === "guided";
 
-  function playPulseClick(): void {
+  function playPulseClick(): number {
     if (!soundEnabled) {
-      return;
+      return performance.now();
     }
 
     const context = audioContextRef.current ?? new AudioContext();
@@ -66,6 +66,7 @@ export function PulseTask({
     gain.connect(context.destination);
     oscillator.start(startAt);
     oscillator.stop(startAt + 0.05);
+    return performance.now();
   }
 
   useEffect(() => {
@@ -99,12 +100,11 @@ export function PulseTask({
   function start(): void {
     onRetry();
     attemptNumberRef.current += 1;
-    startedAtRef.current = performance.now();
     setTaps([]);
     setBeat(0);
     setHiddenDuringTask(false);
+    startedAtRef.current = playPulseClick();
     setRunning(true);
-    playPulseClick();
   }
 
   function tap(): void {
@@ -203,7 +203,11 @@ export function PulseTask({
 
       {phase === "guided" || phase === "independent" ? (
         <div className={styles.pulseWorkspace}>
-          <div className={styles.pulseMeter} aria-live="polite">
+          <div
+            aria-label={`${tempo} BPM pulse status`}
+            className={styles.pulseMeter}
+            role="group"
+          >
             <span
               className={running ? styles.pulseActive : ""}
               data-testid="pilot-pulse-indicator"

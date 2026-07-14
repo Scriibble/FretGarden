@@ -232,6 +232,10 @@ test("removes pulse animation while preserving beat text for reduced motion", as
   await page.goto("/education-pilot");
   await page.getByRole("button", { name: "Start this session" }).click();
   await page.getByRole("button", { name: "Begin guided attempt" }).click();
+  await expect(page.getByLabel("Sound")).toBeChecked();
+  await expect(
+    page.getByRole("group", { name: "60 BPM pulse status" })
+  ).not.toHaveAttribute("aria-live");
   await page.getByRole("button", { name: "Start pulse" }).click();
 
   await expect(page.getByText("Beat 2")).toBeVisible({ timeout: 2_500 });
@@ -239,6 +243,77 @@ test("removes pulse animation while preserving beat text for reduced motion", as
     "animation-name",
     "none"
   );
+});
+
+test("exposes current progress and contrast-safe review labels", async ({
+  page
+}) => {
+  await page.goto("/education-pilot");
+
+  const progress = page.getByRole("navigation", { name: "Pilot progress" });
+  await expect(progress.locator('[aria-current="step"]')).toContainText(
+    "Set the session"
+  );
+  await expect(page.getByText("Education pilot", { exact: true })).toHaveCSS(
+    "color",
+    "rgb(122, 69, 45)"
+  );
+  await expect(progress.locator("span").filter({ hasText: "Retrieve notes" })).toHaveCSS(
+    "color",
+    "rgb(104, 95, 80)"
+  );
+
+  await page.getByRole("button", { name: "Start this session" }).click();
+  await expect(progress.locator('[aria-current="step"]')).toContainText(
+    "Meet the pulse"
+  );
+});
+
+test("registers every guided pulse tap through keyboard activation", async ({
+  page
+}) => {
+  await page.goto("/education-pilot");
+
+  const startSession = page.getByRole("button", { name: "Start this session" });
+  await startSession.focus();
+  await startSession.press("Enter");
+
+  const beginGuided = page.getByRole("button", { name: "Begin guided attempt" });
+  await beginGuided.focus();
+  await beginGuided.press("Enter");
+
+  const tempo = page.getByRole("button", { name: "50 BPM" });
+  await tempo.focus();
+  await tempo.press("Enter");
+
+  const startPulse = page.getByRole("button", { name: "Start pulse" });
+  await startPulse.focus();
+  await startPulse.press("Enter");
+
+  const tap = page.getByTestId("pilot-pulse-tap");
+  const startedAt = await page.evaluate(() => performance.now());
+  await tap.focus();
+  for (let index = 1; index <= 8; index += 1) {
+    const waitMs = await page.evaluate(
+      ({ start, targetIndex }) =>
+        Math.max(0, start + targetIndex * 1_200 - performance.now()),
+      { start: startedAt, targetIndex: index }
+    );
+    await page.waitForTimeout(waitMs);
+    await tap.press("Space");
+  }
+
+  const keyboardStore = await readPilotStore(page);
+  const keyboardAttempt = keyboardStore.attempts.find(
+    ({ taskId }) => taskId === "pulse-tapping"
+  );
+  expect(keyboardAttempt).toMatchObject({
+    supportLevel: "guided",
+    response: { tempoBpm: 50 }
+  });
+  expect(
+    (keyboardAttempt?.response as { tapsMs?: unknown[] } | undefined)?.tapsMs
+  ).toHaveLength(8);
 });
 
 test("varies pulse tempo while keeping guided evidence below the independent ceiling", async ({

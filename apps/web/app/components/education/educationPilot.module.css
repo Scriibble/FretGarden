@@ -33,7 +33,7 @@
 }
 
 .eyebrow {
-  color: var(--color-clay);
+  color: #7a452d;
   font-size: 0.78rem;
   font-weight: 850;
   letter-spacing: 0.08em;
@@ -119,7 +119,7 @@
 
 .progress span {
   align-items: center;
-  color: var(--color-soft-text);
+  color: #685f50;
   display: flex;
   font-size: 0.82rem;
   font-weight: 750;
@@ -437,7 +437,7 @@
 
 .promptRow span,
 .nextAction span {
-  color: var(--color-soft-text);
+  color: #685f50;
   display: block;
   font-size: 0.78rem;
   font-weight: 800;
@@ -567,7 +567,7 @@
 }
 
 .summaryGrid span {
-  color: var(--color-soft-text);
+  color: #685f50;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
