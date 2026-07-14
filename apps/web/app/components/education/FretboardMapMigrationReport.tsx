@@ -6,19 +6,12 @@ import type {
   CapabilityClaim,
   ReviewObligation
 } from "@pocket-practice/education-engine";
-import {
-  parseEducationPilotStore
-} from "../../lib/education/storage/educationPilotStorage";
 import type {
   FretboardMapParallelReport,
   HistoricalEducationRecord,
   LegacyMappingDiagnostic
 } from "../../lib/education/migration/contracts";
-import {
-  inspectFretboardMapLegacySources,
-  mapFretboardMapLegacyHistory
-} from "../../lib/education/migration/fretboardMapLegacyMapping";
-import { buildFretboardMapParallelReport } from "../../lib/education/migration/fretboardMapParallelReport";
+import { createFretboardMapParallelReport } from "../../lib/education/migration/fretboardMapReportOrchestration";
 import {
   readFretboardMapMigrationInputs,
   type FretboardMapMigrationInputs
@@ -38,16 +31,7 @@ export function FretboardMapMigrationReport() {
     try {
       const before = readFretboardMapMigrationInputs(window.localStorage);
       const now = new Date().toISOString();
-      const historical = mapFretboardMapLegacyHistory(
-        inspectFretboardMapLegacySources(before)
-      );
-      const parsedPilot = parseEducationPilotStore(before.educationPilotRaw, now);
-      const report = buildFretboardMapParallelReport({
-        historical,
-        educationStore: parsedPilot.store,
-        educationStoreState: parsedPilot.state,
-        now
-      });
+      const report = createFretboardMapParallelReport({ raw: before, now });
       const after = readFretboardMapMigrationInputs(window.localStorage);
       setState({ report, storageUnchanged: rawInputsEqual(before, after) });
     } catch {
