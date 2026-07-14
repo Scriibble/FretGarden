@@ -171,14 +171,34 @@ describe("education pilot runtime", () => {
 
   it("supports a real delayed pulse review without registering a duplicate review", () => {
     const delayed = evaluatePulseTaps({
+      tapsMs: [857, 1714, 2571, 3428, 4285, 5142, 5999, 6856],
+      pulseStartedAtMs: 0,
+      intervalMs: 857,
+      sessionId: "pulse-review",
+      now: "2026-07-14T12:00:00.000Z",
+      sourceEvidenceAt: now,
+      tempoBpm: 70,
+      sourceTempoBpm: 60
+    });
+    expect(delayed.evidence.kind).toBe("retained_performance");
+    expect(delayed.attempt.variedContext).toBe(true);
+    expect(delayed.review).toBeNull();
+  });
+
+  it("caps delayed pulse evidence when the tempo context is unchanged", () => {
+    const unchanged = evaluatePulseTaps({
       tapsMs: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000],
       pulseStartedAtMs: 0,
       intervalMs: 1000,
-      sessionId: "pulse-review",
+      sessionId: "pulse-review-same-tempo",
       now: "2026-07-14T12:00:00.000Z",
-      sourceEvidenceAt: now
+      sourceEvidenceAt: now,
+      tempoBpm: 60,
+      sourceTempoBpm: 60
     });
-    expect(delayed.evidence.kind).toBe("retained_performance");
-    expect(delayed.review).toBeNull();
+    expect(unchanged.evidence.kind).toBe("independent_performance");
+    expect(unchanged.evidence.reasons).toContain("variation_requirement_not_met");
+    expect(unchanged.remediation.route).toBe("vary_context_then_retrieve");
+    expect(unchanged.review).toBeNull();
   });
 });

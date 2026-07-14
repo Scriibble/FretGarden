@@ -79,6 +79,8 @@ export interface PulseEvaluation {
   errors: ObservableError[];
 }
 
+export type PulseTempoBpm = 50 | 60 | 70;
+
 export interface PilotEvaluationResult {
   attempt: AttemptRecord;
   evidence: EvidenceRecord;
@@ -303,10 +305,21 @@ export function evaluatePulseTaps(input: {
   documentHidden?: boolean;
   supportLevel?: SupportLevel;
   sourceEvidenceAt?: string;
+  tempoBpm?: PulseTempoBpm;
+  sourceTempoBpm?: PulseTempoBpm;
 }): PilotEvaluationResult & { timing: PulseEvaluation } {
   const timing = analyzePulseTaps(input);
   const requirementId = input.sourceEvidenceAt ? "pulse-retained" : "pulse-independent";
   const supportLevel = input.supportLevel ?? "independent";
+  const tempoBpm = input.tempoBpm ?? 60;
+  const variedContext =
+    input.sourceEvidenceAt !== undefined &&
+    input.sourceTempoBpm !== undefined &&
+    input.sourceTempoBpm !== tempoBpm;
+  const errors = [...timing.errors];
+  if (input.sourceEvidenceAt !== undefined && !variedContext) {
+    errors.push("context_not_varied");
+  }
   const invalidReason = timing.valid ? {} : { invalidReason: "timing_task_invalid" };
   const attemptInput = {
     id: `${input.sessionId}:${requirementId}`,
@@ -314,11 +327,12 @@ export function evaluatePulseTaps(input: {
     taskId: "pulse-tapping",
     objective: PULSE_OBJECTIVE,
     now: input.now,
-    response: input.tapsMs,
+    response: { tapsMs: input.tapsMs, tempoBpm },
     supportLevel,
     supportsUsed: supportLevel === "independent" ? [] : ["visual_subdivision"],
     valid: timing.valid,
     ...invalidReason,
+    variedContext,
     observations: [
       { dimension: "minimum_samples", passed: timing.sampleCount >= 8, value: timing.sampleCount },
       { dimension: "median_offset", passed: timing.medianAbsoluteOffsetMs <= 180, value: timing.medianAbsoluteOffsetMs },
@@ -330,7 +344,14 @@ export function evaluatePulseTaps(input: {
       ? attemptInput
       : { ...attemptInput, sourceEvidenceAt: input.sourceEvidenceAt }
   );
-  return { ...result(attempt, requirement("rhythm.external-pulse.basic", requirementId), timing.errors), timing };
+  return {
+    ...result(
+      attempt,
+      requirement("rhythm.external-pulse.basic", requirementId),
+      errors
+    ),
+    timing
+  };
 }
 
 export function analyzePulseTaps(input: {

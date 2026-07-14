@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import {
   evaluatePulseTaps,
-  type PilotEvaluationResult
+  type PilotEvaluationResult,
+  type PulseTempoBpm
 } from "../../lib/education/pilotRuntime";
 import styles from "./educationPilot.module.css";
 
@@ -11,21 +12,31 @@ interface PulseTaskProps {
   sessionId: string;
   outcome: PilotEvaluationResult | null;
   reviewSourceAt?: string;
+  reviewSourceTempo?: PulseTempoBpm;
   onComplete: (result: PilotEvaluationResult) => void;
   onContinue: () => void;
   onRetry: () => void;
 }
 
-const INTERVAL_MS = 1000;
+type PulsePhase = "model" | "guided" | "fade" | "independent";
+
+const TEMPOS: PulseTempoBpm[] = [50, 60, 70];
 
 export function PulseTask({
   sessionId,
   outcome,
   reviewSourceAt,
+  reviewSourceTempo,
   onComplete,
   onContinue,
   onRetry
 }: PulseTaskProps) {
+  const [phase, setPhase] = useState<PulsePhase>(
+    reviewSourceAt ? "independent" : "model"
+  );
+  const [tempo, setTempo] = useState<PulseTempoBpm>(() =>
+    reviewSourceAt ? changedTempo(reviewSourceTempo ?? 60) : 60
+  );
   const [running, setRunning] = useState(false);
   const [beat, setBeat] = useState(0);
   const [taps, setTaps] = useState<number[]>([]);
@@ -34,6 +45,8 @@ export function PulseTask({
   const audioContextRef = useRef<AudioContext | null>(null);
   const attemptNumberRef = useRef(0);
   const startedAtRef = useRef(0);
+  const intervalMs = Math.round(60_000 / tempo);
+  const guided = phase === "guided";
 
   function playPulseClick(): void {
     if (!soundEnabled) {
@@ -70,7 +83,7 @@ export function PulseTask({
     const interval = window.setInterval(() => {
       setBeat((current) => current + 1);
       playPulseClick();
-    }, INTERVAL_MS);
+    }, intervalMs);
     const visibility = () => {
       if (document.hidden) {
         setHiddenDuringTask(true);
@@ -81,7 +94,7 @@ export function PulseTask({
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [running, soundEnabled]);
+  }, [intervalMs, running, soundEnabled]);
 
   function start(): void {
     onRetry();
@@ -106,11 +119,18 @@ export function PulseTask({
         evaluatePulseTaps({
           tapsMs: next,
           pulseStartedAtMs: startedAtRef.current,
-          intervalMs: INTERVAL_MS,
+          intervalMs,
+          tempoBpm: tempo,
+          supportLevel: guided ? "guided" : "independent",
           sessionId: `${sessionId}:pulse-${attemptNumberRef.current}`,
           now: new Date().toISOString(),
           documentHidden: hiddenDuringTask,
-          ...(reviewSourceAt === undefined ? {} : { sourceEvidenceAt: reviewSourceAt })
+          ...(reviewSourceAt === undefined
+            ? {}
+            : {
+                sourceEvidenceAt: reviewSourceAt,
+                sourceTempoBpm: reviewSourceTempo ?? 60
+              })
         })
       );
     }
@@ -119,12 +139,22 @@ export function PulseTask({
   const passed =
     outcome?.evidence.kind === "independent_performance" ||
     outcome?.evidence.kind === "retained_performance";
+  const guidedPassed =
+    guided && outcome?.evidence.kind === "supported_performance";
 
   return (
     <section className={styles.lessonBand} aria-labelledby="pulse-title">
       <div className={styles.bandHeading}>
         <p className={styles.eyebrow}>
-          {reviewSourceAt ? "Delayed pulse retrieval" : "Model, attempt, interpret"}
+          {reviewSourceAt
+            ? "Delayed pulse retrieval"
+            : phase === "model"
+              ? "Model"
+              : phase === "guided"
+                ? "Guided attempt"
+                : phase === "fade"
+                  ? "Fade the scaffold"
+                  : "Independent attempt"}
         </p>
         <h2 id="pulse-title">
           {reviewSourceAt
@@ -132,58 +162,146 @@ export function PulseTask({
             : "Meet a steady quarter-note pulse."}
         </h2>
         <p>
-          Start the pulse, listen or watch, then make eight taps. The task records
-          timing only while this page stays active.
+          Listen or watch, then make eight taps. The task records timing only while
+          this page stays active.
         </p>
       </div>
-      <div className={styles.pulseWorkspace}>
-        <div className={styles.pulseMeter} aria-live="polite">
-          <span
-            className={running ? styles.pulseActive : ""}
-            data-testid="pilot-pulse-indicator"
-            aria-hidden="true"
-          />
-          <strong>{running ? `Beat ${beat + 1}` : "60 BPM"}</strong>
-          <small>{taps.length} of 8 taps</small>
-        </div>
-        <div className={styles.actionRow}>
-          <label className={styles.soundToggle}>
-            <input
-              checked={soundEnabled}
-              onChange={(event) => setSoundEnabled(event.target.checked)}
-              type="checkbox"
-            />
-            Sound
-          </label>
-          <button className={styles.secondaryButton} onClick={start} type="button">
-            {running ? "Restart pulse" : "Start pulse"}
-          </button>
+
+      {phase === "model" ? (
+        <div className={styles.modelPanel}>
+          <strong>First, notice what stays steady.</strong>
+          <p>
+            The pulse marks equal spaces. A guided beat rail will show where eight
+            taps belong; it will be removed before the independent attempt.
+          </p>
           <button
-            className={styles.tapButton}
-            data-testid="pilot-pulse-tap"
-            disabled={!running}
-            onClick={tap}
+            className={styles.primaryButton}
+            onClick={() => setPhase("guided")}
             type="button"
           >
-            Tap
+            Begin guided attempt
           </button>
         </div>
-      </div>
+      ) : null}
+
+      {phase === "fade" ? (
+        <div className={styles.modelPanel}>
+          <strong>The beat rail is coming away.</strong>
+          <p>
+            The external pulse remains, but the eight-position guide will not appear
+            in the next task.
+          </p>
+          <button
+            className={styles.primaryButton}
+            onClick={() => setPhase("independent")}
+            type="button"
+          >
+            Begin independent attempt
+          </button>
+        </div>
+      ) : null}
+
+      {phase === "guided" || phase === "independent" ? (
+        <div className={styles.pulseWorkspace}>
+          <div className={styles.pulseMeter} aria-live="polite">
+            <span
+              className={running ? styles.pulseActive : ""}
+              data-testid="pilot-pulse-indicator"
+              aria-hidden="true"
+              style={{ animationDuration: `${intervalMs}ms` }}
+            />
+            <strong>{running ? `Beat ${beat + 1}` : `${tempo} BPM`}</strong>
+            <small>{taps.length} of 8 taps</small>
+            {guided ? (
+              <div className={styles.beatGuide} aria-label="Eight-position beat guide">
+                {Array.from({ length: 8 }, (_, index) => (
+                  <i className={index < taps.length ? styles.beatGuidePast : ""} key={index} />
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <div className={styles.pulseControls}>
+            <fieldset className={styles.tempoControl}>
+              <legend>{reviewSourceAt ? "Changed review tempo" : "Tempo"}</legend>
+              <div className={styles.segmented}>
+                {TEMPOS.map((candidate) => (
+                  <button
+                    aria-pressed={tempo === candidate}
+                    className={tempo === candidate ? styles.selectedSegment : ""}
+                    disabled={
+                      running ||
+                      (reviewSourceAt !== undefined &&
+                        candidate === (reviewSourceTempo ?? 60))
+                    }
+                    key={candidate}
+                    onClick={() => setTempo(candidate)}
+                    type="button"
+                  >
+                    {candidate} BPM
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <div className={styles.actionRow}>
+              <label className={styles.soundToggle}>
+                <input
+                  checked={soundEnabled}
+                  onChange={(event) => setSoundEnabled(event.target.checked)}
+                  type="checkbox"
+                />
+                Sound
+              </label>
+              <button className={styles.secondaryButton} onClick={start} type="button">
+                {running ? "Restart pulse" : "Start pulse"}
+              </button>
+              <button
+                className={styles.tapButton}
+                data-interval-ms={intervalMs}
+                data-testid="pilot-pulse-tap"
+                disabled={!running}
+                onClick={tap}
+                type="button"
+              >
+                Tap
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {outcome ? (
-        <div className={passed ? styles.feedbackSuccess : styles.feedbackNeedsWork} role="status">
+        <div
+          className={passed || guidedPassed ? styles.feedbackSuccess : styles.feedbackNeedsWork}
+          role="status"
+        >
           <strong>
-            {passed
-              ? outcome.evidence.kind === "retained_performance"
-                ? "Retrieved after a delay"
-                : "Shown independently"
-              : "Try a changed pulse task"}
+            {guidedPassed
+              ? "Practiced with support"
+              : passed
+                ? outcome.evidence.kind === "retained_performance"
+                  ? "Retrieved after a delay"
+                  : "Shown independently"
+                : "Try a changed pulse task"}
           </strong>
           <p>
-            {passed
-              ? "Eight valid taps met the current offset and stability conditions."
-              : outcome.remediation.nextAction}
+            {guidedPassed
+              ? "Eight valid taps met the timing conditions with the beat rail visible."
+              : passed
+                ? `Eight valid taps met the timing conditions at ${tempo} BPM.`
+                : outcome.remediation.nextAction}
           </p>
-          {!passed ? (
+          {guidedPassed ? (
+            <button
+              className={styles.primaryButton}
+              onClick={() => {
+                onRetry();
+                setPhase("fade");
+              }}
+              type="button"
+            >
+              Fade the guide
+            </button>
+          ) : !passed ? (
             <button className={styles.secondaryButton} onClick={start} type="button">
               Try again
             </button>
@@ -196,4 +314,8 @@ export function PulseTask({
       ) : null}
     </section>
   );
+}
+
+function changedTempo(source: PulseTempoBpm): PulseTempoBpm {
+  return source === 70 ? 50 : 70;
 }

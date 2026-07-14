@@ -21,7 +21,8 @@ import {
   evaluatePracticePlan,
   notePrompts,
   type PilotEvaluationResult,
-  type PracticePlanResponse
+  type PracticePlanResponse,
+  type PulseTempoBpm
 } from "../../lib/education/pilotRuntime";
 import {
   appendPilotEvaluation,
@@ -67,6 +68,8 @@ export function EducationPilot() {
   const [reviewObligation, setReviewObligation] = useState<ReviewObligation | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
   const [recovery, setRecovery] = useState<EducationPilotRecovery | null>(null);
+  const [pendingPersistence, setPendingPersistence] =
+    useState<EducationPilotStore | null>(null);
 
   useEffect(() => {
     const now = new Date().toISOString();
@@ -120,7 +123,28 @@ export function EducationPilot() {
 
   function persist(next: EducationPilotStore): void {
     setStore(next);
-    writeEducationPilotStore(window.localStorage, next);
+    setPendingPersistence(
+      writeEducationPilotStore(window.localStorage, next) ? null : next
+    );
+  }
+
+  function retryPersistence(): void {
+    if (
+      pendingPersistence &&
+      writeEducationPilotStore(window.localStorage, pendingPersistence)
+    ) {
+      setPendingPersistence(null);
+    }
+  }
+
+  function exportPendingPersistence(): void {
+    if (!pendingPersistence) {
+      return;
+    }
+    exportJson(
+      JSON.stringify(pendingPersistence, null, 2),
+      `fretgarden-unsaved-pilot-${pendingPersistence.updatedAt.replaceAll(":", "-")}.json`
+    );
   }
 
   function saveEvaluation(result: PilotEvaluationResult): void {
@@ -243,13 +267,10 @@ export function EducationPilot() {
     if (!recovery) {
       return;
     }
-    const blob = new Blob([recovery.raw], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `fretgarden-pilot-recovery-${recovery.capturedAt.replaceAll(":", "-")}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    exportJson(
+      recovery.raw,
+      `fretgarden-pilot-recovery-${recovery.capturedAt.replaceAll(":", "-")}.json`
+    );
   }
 
   function dismissRecovery(): void {
@@ -272,6 +293,10 @@ export function EducationPilot() {
   const sourceEvidence = reviewObligation
     ? store.evidence.find(({ id }) => id === reviewObligation.sourceEvidenceId)
     : undefined;
+  const sourceAttempt = sourceEvidence
+    ? store.attempts.find(({ id }) => id === sourceEvidence.attemptId)
+    : undefined;
+  const sourcePulseTempo = readPulseTempo(sourceAttempt?.response) ?? 60;
 
   return (
     <main className={styles.shell}>
@@ -315,6 +340,40 @@ export function EducationPilot() {
         </section>
       ) : null}
 
+      {pendingPersistence ? (
+        <section
+          className={`${styles.recoveryNotice} ${styles.persistenceNotice}`}
+          aria-labelledby="pilot-persistence-title"
+          role="alert"
+        >
+          <div>
+            <strong id="pilot-persistence-title">
+              This pilot activity is not saved yet.
+            </strong>
+            <p>
+              Your current work remains on this screen. Retry local saving or export
+              the pending pilot record; lesson and practice history are untouched.
+            </p>
+          </div>
+          <div className={styles.actionRow}>
+            <button
+              className={styles.secondaryButton}
+              onClick={retryPersistence}
+              type="button"
+            >
+              Retry save
+            </button>
+            <button
+              className={styles.primaryButton}
+              onClick={exportPendingPersistence}
+              type="button"
+            >
+              Export session data
+            </button>
+          </div>
+        </section>
+      ) : null}
+
       <nav className={styles.progress} aria-label="Pilot progress">
         {stageOrder.map((item, index) => (
           <span
@@ -335,7 +394,10 @@ export function EducationPilot() {
           outcome={outcome}
           {...(sourceEvidence?.observedAt === undefined
             ? {}
-            : { reviewSourceAt: sourceEvidence.observedAt })}
+            : {
+                reviewSourceAt: sourceEvidence.observedAt,
+                reviewSourceTempo: sourcePulseTempo
+              })}
           onComplete={handlePulseComplete}
           onContinue={() => {
             const completedReview = reviewMode;
@@ -537,4 +599,22 @@ function formatReview(reviews: ReviewObligation[]): string {
 
 function createId(prefix: string): string {
   return `${prefix}:${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
+}
+
+function readPulseTempo(response: unknown): PulseTempoBpm | null {
+  if (typeof response !== "object" || response === null || !("tempoBpm" in response)) {
+    return null;
+  }
+  const tempo = response.tempoBpm;
+  return tempo === 50 || tempo === 60 || tempo === 70 ? tempo : null;
+}
+
+function exportJson(contents: string, filename: string): void {
+  const blob = new Blob([contents], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }

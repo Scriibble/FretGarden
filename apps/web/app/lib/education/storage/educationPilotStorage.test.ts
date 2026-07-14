@@ -94,6 +94,15 @@ describe("education pilot storage", () => {
     discardEducationPilotRecovery(storage);
     expect(readEducationPilotRecovery(storage)).toBeNull();
   });
+
+  it("reports a local write failure without throwing", () => {
+    const storage = {
+      setItem(): void {
+        throw new Error("quota unavailable");
+      }
+    };
+    expect(writeEducationPilotStore(storage, createEmptyPilotStore(now))).toBe(false);
+  });
 });
 
 class MemoryStorage implements Storage {

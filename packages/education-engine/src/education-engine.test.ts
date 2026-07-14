@@ -192,6 +192,9 @@ describe("constitutional education invariants", () => {
     expect(selectRemediation(["coordinate_confusion"]).route).toBe(
       "coordinate_orientation"
     );
+    expect(selectRemediation(["context_not_varied"]).route).toBe(
+      "vary_context_then_retrieve"
+    );
   });
 
   it("registers delayed review and prevents early satisfaction", () => {

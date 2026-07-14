@@ -44,6 +44,9 @@ export function FretboardTask({
   const [selectedFret, setSelectedFret] = useState(0);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const [instructionState, setInstructionState] = useState<
+    "model" | "fade" | "independent"
+  >(reviewSourceAt ? "independent" : "model");
   const prompt = orderedPrompts[index];
 
   if (!prompt) {
@@ -111,12 +114,21 @@ export function FretboardTask({
     setFeedback(null);
     setRevealed(false);
     setControl("grid");
+    setInstructionState("fade");
   }
 
   return (
     <section className={styles.lessonBand} aria-labelledby="fretboard-task-title">
       <div className={styles.bandHeading}>
-        <p className={styles.eyebrow}>{kind === "coordinate" ? "Placement and readiness" : reviewSourceAt ? "Delayed retrieval" : "Fade, retrieve, vary"}</p>
+        <p className={styles.eyebrow}>
+          {reviewSourceAt
+            ? "Delayed retrieval"
+            : instructionState === "model"
+              ? "Model"
+              : instructionState === "fade"
+                ? "Scaffold fade"
+                : "Independent attempt"}
+        </p>
         <h2 id="fretboard-task-title">
           {kind === "coordinate" ? "Show the coordinate before moving on." : reviewSourceAt ? "Retrieve the same region after a delay." : "Find each note without an answer cue."}
         </h2>
@@ -127,7 +139,43 @@ export function FretboardTask({
         </p>
       </div>
 
-      {!outcome ? (
+      {instructionState === "model" ? (
+        <div className={styles.modelPanel}>
+          <strong>
+            {kind === "coordinate"
+              ? "A coordinate names one string and one fret."
+              : "A note name points to one location in this region."}
+          </strong>
+          <p>
+            {kind === "coordinate"
+              ? "For example, string 6 open is the leftmost location on the lower row."
+              : "For example, F on string 6 is fret 1, beside the open E."}
+            {" "}This model records no evidence.
+          </p>
+          <button
+            className={styles.primaryButton}
+            onClick={() => setInstructionState("independent")}
+            type="button"
+          >
+            {kind === "coordinate" ? "Begin placement" : "Begin retrieval"}
+          </button>
+        </div>
+      ) : instructionState === "fade" ? (
+        <div className={styles.modelPanel}>
+          <strong>The answer support is now removed.</strong>
+          <p>
+            The corrected set stays capped as supported practice. The next set uses
+            fresh prompt order and can produce independent evidence.
+          </p>
+          <button
+            className={styles.primaryButton}
+            onClick={() => setInstructionState("independent")}
+            type="button"
+          >
+            Begin fresh independent set
+          </button>
+        </div>
+      ) : !outcome ? (
         <div className={styles.fretWorkspace}>
           <div className={styles.promptRow}>
             <div>
@@ -204,7 +252,7 @@ export function FretboardTask({
           {passed ? (
             <button className={styles.primaryButton} onClick={onContinue} type="button">Continue</button>
           ) : (
-            <button className={styles.secondaryButton} onClick={retry} type="button">Try a fresh set</button>
+            <button className={styles.secondaryButton} onClick={retry} type="button">Fade support and retry</button>
           )}
         </div>
       )}

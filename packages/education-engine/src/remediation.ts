@@ -23,6 +23,15 @@ export function selectRemediation(errors: ObservableError[]): RemediationDecisio
     );
   }
 
+  if (errors.includes("context_not_varied")) {
+    return decision(
+      "vary_context_then_retrieve",
+      "independent",
+      "The review repeated the original context, so it cannot establish changed-context retrieval.",
+      "Choose a different tempo, then complete a new independent pulse task."
+    );
+  }
+
   if (errors.includes("coordinate_confusion")) {
     return decision(
       "coordinate_orientation",

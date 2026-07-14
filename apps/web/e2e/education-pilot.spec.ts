@@ -74,6 +74,7 @@ test("limits a revealed answer and routes to a fresh unsupported set", async ({
 }) => {
   await seedPilot(page, buildPilotSeed("notes"));
   await page.goto("/education-pilot");
+  await page.getByRole("button", { name: "Begin retrieval" }).click();
 
   await page.getByRole("button", { name: "Show answer" }).click();
   await page.getByRole("gridcell", { name: "String 6, fret 1" }).click();
@@ -88,7 +89,11 @@ test("limits a revealed answer and routes to a fresh unsupported set", async ({
   ], { string: 5, fret: 3 });
 
   await expect(page.getByText("Corrected with support")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Try a fresh set" })).toBeVisible();
+  await page.getByRole("button", { name: "Fade support and retry" }).click();
+  await expect(page.getByText("The answer support is now removed.")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Begin fresh independent set" })
+  ).toBeVisible();
   const reviews = await page.evaluate((storageKey) => {
     const raw = window.localStorage.getItem(storageKey);
     return raw ? (JSON.parse(raw) as { reviews: unknown[] }).reviews : [];
@@ -158,6 +163,11 @@ test("completes a due pulse review against its original evidence", async ({ page
   await expect(
     page.getByRole("heading", { name: "Meet the pulse again after a delay." })
   ).toBeVisible();
+  await expect(page.getByRole("button", { name: "60 BPM" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "70 BPM" })).toHaveAttribute(
+    "aria-pressed",
+    "true"
+  );
   await completePulse(page, "Retrieved after a delay");
   await page.getByRole("button", { name: "Continue" }).click();
 
@@ -170,6 +180,15 @@ test("completes a due pulse review against its original evidence", async ({ page
       expect.objectContaining({
         requirementId: "pulse-retained",
         kind: "retained_performance"
+      })
+    ])
+  );
+  expect(stored.attempts).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        taskId: "pulse-tapping",
+        variedContext: true,
+        response: expect.objectContaining({ tempoBpm: 70 })
       })
     ])
   );
@@ -212,6 +231,7 @@ test("removes pulse animation while preserving beat text for reduced motion", as
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/education-pilot");
   await page.getByRole("button", { name: "Start this session" }).click();
+  await page.getByRole("button", { name: "Begin guided attempt" }).click();
   await page.getByRole("button", { name: "Start pulse" }).click();
 
   await expect(page.getByText("Beat 2")).toBeVisible({ timeout: 2_500 });
@@ -221,10 +241,86 @@ test("removes pulse animation while preserving beat text for reduced motion", as
   );
 });
 
+test("varies pulse tempo while keeping guided evidence below the independent ceiling", async ({
+  page
+}) => {
+  await page.goto("/education-pilot");
+  await page.getByRole("button", { name: "Start this session" }).click();
+  await page.getByRole("button", { name: "Begin guided attempt" }).click();
+  await page.getByRole("button", { name: "50 BPM" }).click();
+  await tapPulse(page);
+
+  await expect(page.getByText("Practiced with support", { exact: true })).toBeVisible();
+  const guided = await readPilotStore(page);
+  expect(guided.evidence).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        requirementId: "pulse-independent",
+        kind: "supported_performance",
+        claimCeiling: "supported_performance"
+      })
+    ])
+  );
+  expect(guided.reviews).toEqual([]);
+
+  await page.getByRole("button", { name: "Fade the guide" }).click();
+  await page.getByRole("button", { name: "Begin independent attempt" }).click();
+  await tapPulse(page);
+  await expect(page.getByText("Shown independently", { exact: true })).toBeVisible();
+
+  const independent = await readPilotStore(page);
+  expect(independent.attempts).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        supportLevel: "independent",
+        response: expect.objectContaining({ tempoBpm: 50 })
+      })
+    ])
+  );
+  expect(independent.reviews).toHaveLength(1);
+});
+
+test("surfaces local write failure and allows retry or export", async ({ page }) => {
+  await page.addInitScript((pilotKey) => {
+    const originalSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function setItem(key: string, value: string): void {
+      if (key === pilotKey) {
+        throw new DOMException("Storage unavailable", "QuotaExceededError");
+      }
+      originalSetItem.call(this, key, value);
+    };
+  }, PILOT_STORAGE_KEY);
+  await page.goto("/education-pilot");
+  await page.getByRole("button", { name: "Start this session" }).click();
+
+  await expect(page.getByText("This pilot activity is not saved yet.")).toBeVisible();
+  await page.getByRole("button", { name: "Retry save" }).click();
+  await expect(page.getByText("This pilot activity is not saved yet.")).toBeVisible();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export session data" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^fretgarden-unsaved-pilot-/);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), PILOT_STORAGE_KEY)).toBeNull();
+});
+
 async function completePulse(
   page: Page,
   expectedStatus = "Shown independently"
 ): Promise<void> {
+  const guidedStart = page.getByRole("button", { name: "Begin guided attempt" });
+  if (await guidedStart.isVisible().catch(() => false)) {
+    await guidedStart.click();
+    await tapPulse(page);
+    await expect(page.getByText("Practiced with support", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Fade the guide" }).click();
+    await page.getByRole("button", { name: "Begin independent attempt" }).click();
+  }
+  await tapPulse(page);
+  await expect(page.getByText(expectedStatus, { exact: true })).toBeVisible();
+}
+
+async function tapPulse(page: Page): Promise<void> {
   await page.getByRole("button", { name: "Start pulse" }).click();
   await page.evaluate(async () => {
     const tapButton = document.querySelector<HTMLButtonElement>(
@@ -233,21 +329,28 @@ async function completePulse(
     if (!tapButton) {
       throw new Error("Pulse tap control was not found.");
     }
+    const intervalMs = Number(tapButton.dataset.intervalMs);
     const startedAt = performance.now();
     for (let index = 1; index <= 8; index += 1) {
       await new Promise((resolve) =>
-        window.setTimeout(resolve, Math.max(0, startedAt + index * 1000 - performance.now()))
+        window.setTimeout(
+          resolve,
+          Math.max(0, startedAt + index * intervalMs - performance.now())
+        )
       );
       tapButton.click();
     }
   });
-  await expect(page.getByText(expectedStatus, { exact: true })).toBeVisible();
 }
 
 async function completeGridSet(
   page: Page,
   answers: Array<{ string: 5 | 6; fret: number }>
 ): Promise<void> {
+  const begin = page.getByRole("button", { name: "Begin placement" });
+  if (await begin.isVisible().catch(() => false)) {
+    await begin.click();
+  }
   for (const [index, answer] of answers.entries()) {
     await page
       .getByRole("gridcell", { name: `String ${answer.string}, fret ${answer.fret}` })
@@ -265,6 +368,10 @@ async function completeNoteSet(
   gridAnswers: Array<{ string: 5 | 6; fret: number }>,
   explicitAnswer: { string: 5 | 6; fret: number }
 ): Promise<void> {
+  const begin = page.getByRole("button", { name: "Begin retrieval" });
+  if (await begin.isVisible().catch(() => false)) {
+    await begin.click();
+  }
   for (const answer of gridAnswers) {
     await page
       .getByRole("gridcell", { name: `String ${answer.string}, fret ${answer.fret}` })
@@ -311,6 +418,20 @@ async function seedPilot(page: Page, store: unknown): Promise<void> {
     ({ key, value }) => window.localStorage.setItem(key, JSON.stringify(value)),
     { key: PILOT_STORAGE_KEY, value: store }
   );
+}
+
+async function readPilotStore(page: Page): Promise<{
+  attempts: Array<Record<string, unknown>>;
+  evidence: Array<Record<string, unknown>>;
+  reviews: Array<Record<string, unknown>>;
+}> {
+  return page.evaluate((storageKey) => {
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw) {
+      throw new Error("Pilot store was not found.");
+    }
+    return JSON.parse(raw);
+  }, PILOT_STORAGE_KEY);
 }
 
 function buildPilotSeed(

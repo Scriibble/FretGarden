@@ -139,6 +139,7 @@ export type ObservableError =
   | "timing_early"
   | "timing_late"
   | "timing_unstable"
+  | "context_not_varied"
   | "support_dependency"
   | "task_invalid";
 
@@ -148,6 +149,7 @@ export interface RemediationDecision {
     | "coordinate_orientation"
     | "contrast_and_fade"
     | "slower_shorter_pulse"
+    | "vary_context_then_retrieve"
     | "remodel_then_novel_retrieval"
     | "independent_retrieval"
     | "none";

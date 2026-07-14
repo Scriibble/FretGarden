@@ -84,6 +84,30 @@
   margin-top: 0.25rem;
 }
 
+.persistenceNotice {
+  background: #fff1e7;
+  border-color: var(--color-brick);
+}
+
+.modelPanel {
+  align-content: center;
+  background: var(--color-surface-muted);
+  border-left: 4px solid var(--color-ochre);
+  display: grid;
+  gap: 0.75rem;
+  min-height: 11rem;
+  padding: 1rem;
+}
+
+.modelPanel p {
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.modelPanel button {
+  justify-self: start;
+}
+
 .progress {
   background: var(--color-surface-muted);
   border: 1px solid var(--color-line);
@@ -278,6 +302,30 @@
   grid-template-columns: minmax(180px, 0.7fr) minmax(240px, 1.3fr);
 }
 
+.pulseControls,
+.tempoControl {
+  display: grid;
+  gap: 1rem;
+}
+
+.tempoControl {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.tempoControl legend {
+  color: var(--color-olive-strong);
+  font-size: 0.82rem;
+  font-weight: 850;
+  margin-bottom: 0.45rem;
+}
+
+.tempoControl button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .pulseMeter {
   align-items: center;
   background: var(--color-ink);
@@ -322,6 +370,26 @@
 .pulseMeter strong,
 .pulseMeter small {
   color: var(--color-surface);
+}
+
+.beatGuide {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: repeat(8, 0.7rem);
+  min-height: 0.7rem;
+}
+
+.beatGuide i {
+  background: var(--color-surface);
+  border-radius: 50%;
+  height: 0.7rem;
+  opacity: 0.35;
+  width: 0.7rem;
+}
+
+.beatGuide .beatGuidePast {
+  background: var(--color-ochre);
+  opacity: 1;
 }
 
 .pulseWorkspace .actionRow {

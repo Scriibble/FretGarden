@@ -15,7 +15,7 @@ describe("pilot education content", () => {
         lessons: 4,
         exercises: 5,
         reviewPolicies: 1,
-        remediationRoutes: 4,
+        remediationRoutes: 5,
         accessibilityEquivalents: 5
       }
     });

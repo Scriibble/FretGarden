@@ -61,7 +61,8 @@ export const pilotEducationContent = {
           qualityDimensions: ["minimum_samples", "median_offset", "timing_variability"],
           maxSupportLevel: "independent",
           minimumDelayMs: DAY,
-          minimumValidSamples: 8
+          minimumValidSamples: 8,
+          requiresVariedContext: true
         }
       ],
       reviewPolicyId: "pilot-spaced-review"
@@ -184,7 +185,7 @@ export const pilotEducationContent = {
       ],
       exitEvidenceRequirementIds: ["pulse-independent"],
       delayedReviewPolicyIds: ["pilot-spaced-review"],
-      remediationRouteIds: ["pulse-slower-shorter"],
+      remediationRouteIds: ["pulse-slower-shorter", "pulse-change-tempo"],
       accessibilityEquivalentIds: ["pulse-multimodal-input"]
     },
     {
@@ -323,6 +324,13 @@ export const pilotEducationContent = {
       instructionalChange: "use a slower pulse, count-in, and four-tap group before fading support",
       preservedCapability: "synchronization to an external pulse",
       exitCondition: "one stable supported group followed by a new independent task"
+    },
+    {
+      id: "pulse-change-tempo",
+      trigger: "delayed pulse review repeats the original tempo",
+      instructionalChange: "select a different authored tempo before independent retrieval",
+      preservedCapability: "synchronization to an external pulse",
+      exitCondition: "valid independent pulse task at a changed tempo"
     },
     {
       id: "coordinate-orientation",
