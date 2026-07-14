@@ -24,7 +24,7 @@ test("exposes shared product navigation on every approved surface", async ({ pag
     ["/practice", "Practice"],
     ["/explore", "Explore"],
     ["/lessons", "Lessons"],
-    ["/lessons/fretboard-map", "Lessons"],
+    ["/lessons/tending-the-practice-garden", "Lessons"],
     ["/history", "History"],
     ["/education-pilot", "Progress"],
     [PROGRESS_ROUTE, "Progress"]

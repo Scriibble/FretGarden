@@ -1,0 +1,70 @@
+.page {
+  background: #f4f7f5;
+  min-height: 100vh;
+}
+
+.inner {
+  display: grid;
+  gap: 1rem;
+  margin: 0 auto;
+  max-width: 1120px;
+  padding: 1rem;
+  width: 100%;
+}
+
+.pageHeader {
+  align-items: end;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 1.25rem 0 1.5rem;
+}
+
+.pageHeader > div {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.pageHeader span {
+  color: #8a472e;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.pageHeader h1 {
+  color: #172d2b;
+  font-size: 2.65rem;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+.pageHeader p {
+  color: #485b54;
+  line-height: 1.6;
+  max-width: 760px;
+}
+
+.pageHeader a,
+.lessonNav a {
+  color: #173f43;
+  font-weight: 800;
+}
+
+.lessonNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+
+@media (max-width: 700px) {
+  .pageHeader {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
+  .pageHeader h1 {
+    font-size: 2.15rem;
+  }
+}

@@ -12,7 +12,8 @@
     "test": "pnpm build:packages && pnpm -r test",
     "test:education": "pnpm --filter @pocket-practice/education-engine test && pnpm --filter @pocket-practice/education-content test && pnpm --filter @pocket-practice/web test:education",
     "test:e2e": "pnpm --filter @pocket-practice/web test:e2e",
-    "typecheck": "pnpm build:packages && pnpm -r typecheck"
+    "typecheck": "pnpm build:packages && pnpm -r typecheck",
+    "validate:curriculum": "pnpm --filter @pocket-practice/education-content validate:curriculum"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

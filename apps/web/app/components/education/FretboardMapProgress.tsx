@@ -162,8 +162,8 @@ function ProgressLinks({ primaryLabel }: { primaryLabel: string }) {
       <Link className={styles.primaryLink} href="/education-pilot">
         {primaryLabel}
       </Link>
-      <Link className={styles.secondaryLink} href="/lessons/fretboard-map">
-        Open fretboard map lesson
+      <Link className={styles.secondaryLink} href="/lessons">
+        Open foundation lessons
       </Link>
       <Link
         className={styles.secondaryLink}

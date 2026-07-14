@@ -149,11 +149,14 @@ test("surfaces the core MVP path while keeping advanced drills available", async
   await expect(page.getByText("Explore mode")).toHaveCount(0);
 });
 
-test("links a lesson into its matching practice drill", async ({ page }) => {
+test("redirects replaced lesson content while preserving its practice drill", async ({ page }) => {
   await page.goto("/lessons/fretboard-map");
-  await page.getByRole("link", { name: "Start reinforcement drill" }).click();
+  await expect(page).toHaveURL(/\/lessons$/);
+  await expect(
+    page.getByRole("heading", { name: "Learn to practice before you rush to collect facts" })
+  ).toBeVisible();
 
-  await expect(page).toHaveURL(/\/practice/);
+  await page.goto("/practice?drill=note&lesson=fretboard-map#practice");
   await expect(page).toHaveURL(/drill=note/);
   await expect(page).toHaveURL(/lesson=fretboard-map/);
   await expect(
