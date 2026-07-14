@@ -20,8 +20,10 @@ test("presents the implemented curriculum without claiming the mapped roadmap is
   await expect(page.getByRole("link", { name: "Level 1 Integration Project" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Lead-Sheet Literacy and Transposition" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Level 2 Band and Songwriting Project" })).toBeVisible();
-  await expect(page.getByText("The remaining 32 units are source-mapped", { exact: false })).toBeVisible();
-  await expect(page.getByText("CAGED System and Fretboard Integration")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "CAGED System and Fretboard Integration" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Level 3 Musicianship Project" })).toBeVisible();
+  await expect(page.getByText("The remaining 24 units are source-mapped", { exact: false })).toBeVisible();
+  await expect(page.getByText("Modes as Sounds, Not Shapes")).toHaveCount(0);
 });
 
 test("requires correct knowledge and explicit performance checks before Unit 1 completion", async ({ page }) => {

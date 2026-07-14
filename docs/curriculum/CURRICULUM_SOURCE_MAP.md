@@ -25,14 +25,14 @@ The three Markdown-mandated foundation units occupy Units 1-3. The PDF's origina
 | 17 | PDF 14 | Triads in Open and Movable Contexts | Implemented |
 | 18 | PDF 15 | Lead-Sheet Literacy and Transposition | Implemented |
 | 19 | PDF 16 | Level 2 Band and Songwriting Project | Implemented |
-| 20 | PDF 17 | CAGED System and Fretboard Integration | Mapped |
-| 21 | PDF 18 | Diatonic Harmony in Major Keys | Mapped |
-| 22 | PDF 19 | Relative Minor and Minor-Key Harmony | Mapped |
-| 23 | PDF 20 | Seventh Chords and Arpeggio Soloing | Mapped |
-| 24 | PDF 21 | Melodic Development and Motif | Mapped |
-| 25 | PDF 22 | Chord-Tone Improvisation | Mapped |
-| 26 | PDF 23 | Arrangement and Multiple Guitar Parts | Mapped |
-| 27 | PDF 24 | Level 3 Musicianship Project | Mapped |
+| 20 | PDF 17 | CAGED System and Fretboard Integration | Implemented |
+| 21 | PDF 18 | Diatonic Harmony in Major Keys | Implemented |
+| 22 | PDF 19 | Relative Minor and Minor-Key Harmony | Implemented |
+| 23 | PDF 20 | Seventh Chords and Arpeggio Soloing | Implemented |
+| 24 | PDF 21 | Melodic Development and Motif | Implemented |
+| 25 | PDF 22 | Chord-Tone Improvisation | Implemented |
+| 26 | PDF 23 | Arrangement and Multiple Guitar Parts | Implemented |
+| 27 | PDF 24 | Level 3 Musicianship Project | Implemented |
 | 28 | PDF 25 | Modes as Sounds, Not Shapes | Mapped |
 | 29 | PDF 26 | Secondary Dominants and Tonicization | Mapped |
 | 30 | PDF 27 | Borrowed Chords and Modal Mixture | Mapped |

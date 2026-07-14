@@ -2,7 +2,7 @@
 
 Date: 2026-07-14
 
-Status: Units 1-19 implemented; Units 20-51 source-mapped for later authoring review
+Status: Units 1-27 implemented; Units 28-51 source-mapped for later authoring review
 
 ## Graph Rules
 
@@ -47,11 +47,23 @@ Every instrument lesson may be previewed. The learner-facing completion control 
 | 18. Lead-Sheet Literacy and Transposition | Unit 17 | Chord quality; triads; form; interval transposition | Scan one section, label function, and transpose I-IV-V only | Yes |
 | 19. Level 2 Band and Songwriting Project | Unit 18 | Level 2 harmony, rhythm, melody, chart, listening, and recovery | Shorten the form, separate roles, and repair one transition before a complete run | Yes |
 
+## Level 3 Musicianship Sequence
+
+| Unit | Required prior unit | Skills assumed | Primary remediation | Preview before completion |
+| --- | --- | --- | --- | --- |
+| 20. CAGED System and Fretboard Integration | Unit 19 | Level 2 fretboard roots, movable chords, triads, register awareness | Rebuild one CAGED region from root, third, and fifth before using a full form | Yes |
+| 21. Diatonic Harmony in Major Keys | Unit 20 | Major scale, triads, inversions, Roman numerals | Sing roots, stack scale-only thirds, and compare one cadence pair | Yes |
+| 22. Relative Minor and Minor-Key Harmony | Unit 21 | Diatonic function, minor scale degrees, dominant resolution | Compare natural, harmonic, and melodic minor over one tonic before adding progression work | Yes |
+| 23. Seventh Chords and Arpeggio Soloing | Unit 22 | Triad formulas, minor/major function, fretboard roots | Retrieve quality formulas and target thirds and sevenths at a slow tempo | Yes |
+| 24. Melodic Development and Motif | Unit 23 | Scale degrees, phrase rhythm, chord-tone awareness | Change one motif variable at a time and label the transformation | Yes |
+| 25. Chord-Tone Improvisation | Unit 24 | Seventh arpeggios, guide tones, motif development | Choose beat-1 targets before adding approach or passing tones | Yes |
+| 26. Arrangement and Multiple Guitar Parts | Unit 25 | Lead sheets, triads, rhythm roles, phrase contrast | Separate register, rhythm, and density roles before adding parts | Yes |
+| 27. Level 3 Musicianship Project | Unit 26 | Level 3 harmony, melody, arrangement, improvisation, analysis, recovery | Shorten the project form and repair one weak domain with measurable evidence | Yes |
+
 ## Remaining Source-Mapped Sequence
 
 | Units | Required sequence | Core capability progression | Primary remediation direction |
 | --- | --- | --- | --- |
-| 20-27 | Each requires the previous unit | CAGED -> diatonic/minor harmony -> seventh chords -> motifs -> chord-tone soloing -> arranging -> project | Return to note, interval, triad, or guide-tone ownership |
 | 28-35 | Each requires the previous unit | Modes -> chromatic harmony -> voice leading -> advanced rhythm -> style -> counterpoint -> portfolio | Return to a stable tonal center, simpler meter, or one independent line |
 | 36-43 | Each requires the previous unit | Extensions -> chord-scale use -> modulation -> minor systems -> technique -> form -> reharmonization -> jury | Reduce harmonic choices and defend one voice-leading or functional decision |
 | 44-51 | Each requires the previous unit | Artistic identity -> prosody -> ensemble arranging -> tunings -> production -> communication -> teaching -> capstone | Return to a smaller constraint, clearer chart, or single demonstrable artistic choice |
