@@ -50,3 +50,16 @@ Evan Anderson, acting as project owner, authorizes the remaining Gate 4 human ac
 Evan Anderson reports that the screen reader works correctly in the current pilot. This is recorded as limited human confirmation, not as completion of every `A11Y-01` through `A11Y-13` procedure because the screen-reader version, check-by-check observations, zoom review, focus review, and assistive-input results were not supplied.
 
 The three representative usability sessions have not occurred. The deferral does not convert missing evidence into a pass, authorize fabricated observations, waive a future Blocker, or authorize production deployment, production data migration, or release. `ED-005` remains bounded educational debt and must be resolved before final project acceptance or release.
+
+## GOV-005: Gate 5B Read-Only Learner Bridge
+
+- Status: APPROVED AND IMPLEMENTED
+- Approved by: Evan Anderson
+- Approval date: 2026-07-14
+- Validation: `GATE_5B_VALIDATION_REPORT.md`
+
+Expose the validated `fretboard-map` comparison through a learner-facing `/progress` page and shared product navigation. Preserve legacy lesson and drill history separately from current evaluated evidence, retain the unlinked reviewer route, and keep all reads within the five Gate 5A-approved local-storage keys.
+
+This approval authorizes the source-level learner-bridge switch, read-only orchestration/view-model code, learner UI, navigation, tests, validation report, and rollback rehearsal. It does not authorize conversion, a migration writer, imported records, acceptance markers, telemetry, network requests, production persistence, Supabase, RLS, authentication, deployment, environment changes, legacy behavior changes, or a second curriculum segment.
+
+Gate 5 remains open after Gate 5B. `GOV-004` remains the final-acceptance and release blocker.

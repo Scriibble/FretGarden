@@ -4,7 +4,9 @@ Date: 2026-07-14
 
 Status: **IMPLEMENTATION VALIDATED; GATE 5 REMAINS OPEN**
 
-Technical review: **REVIEWED AGAINST CURRENT BRANCH ON 2026-07-14; PROJECT-OWNER ACKNOWLEDGMENT PENDING**
+Technical review: **REVIEWED AND ACKNOWLEDGED BY PROJECT OWNER ON 2026-07-14**
+
+Successor checkpoint: Gate 5B learner-facing read-only exposure is separately approved and validated in `GATE_5B_VALIDATION_REPORT.md`. Gate 5A's original no-navigation boundary remains the historical boundary of this report.
 
 ## Decision
 
@@ -119,5 +121,5 @@ The only existing runtime module modified is `educationPilotStorage.ts`, where t
 
 1. Execute and sign the deferred accessibility protocol before final project acceptance or release.
 2. Execute the three deferred representative usability sessions before final project acceptance or release.
-3. Record project-owner acknowledgment of this report and the local preview; technical consistency review is complete.
-4. Require a new concrete plan and explicit approval before any navigation exposure, second segment, legacy write, production data path, or learner-facing migration behavior.
+3. Project-owner acknowledgment is complete; retain this report as the Gate 5A baseline.
+4. Gate 5B separately authorizes learner navigation exposure. Require another concrete plan and explicit approval before a second segment, legacy write, conversion, telemetry, production data path, or any later migration behavior.

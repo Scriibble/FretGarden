@@ -12,9 +12,10 @@ Updated: 2026-07-14
 | ED-006 | RESOLVED | Educational-debt and constitutional-interpretation owners were unnamed | P0 | Evan Anderson now owns both responsibilities; concentration of authority is recorded in `GOVERNANCE_DECISION_LOG.md` | Evan Anderson | Closed 2026-07-14 |
 | ED-007 | OPEN | Review timing trusts the local device clock | P2 | Define clock and conflict policy in the separately approved production persistence design | Engineering | Before production persistence |
 | ED-008 | RESOLVED | Representative limited-migration authoring effort had not been measured | P2 | Gate 5A implemented one `fretboard-map` rehearsal with 20 fixtures and recorded file, line, test, bundle, and rollback effort in `GATE_5A_VALIDATION_REPORT.md` | Evan Anderson | Closed 2026-07-14 |
+| ED-009 | RESOLVED | Validated parallel reporting was reviewer-only and unavailable as learner-facing progress | P1 | Gate 5B adds a read-only `/progress` bridge with separate history/evidence regions, deterministic learner language, no-write storage checks, responsive navigation, and code-only rollback evidence in `GATE_5B_VALIDATION_REPORT.md` | Evan Anderson | Closed 2026-07-14 |
 
 ## Gate Effect
 
-The Gate 4 implementation debts, governance-owner debt, and Gate 5A authoring-measurement debt are resolved. `ED-005` is bounded process debt: it does not block separately approved implementation work, but it blocks final project acceptance or release until resolved. Gate 5 remains open, and this register does not authorize conversion or later migration work.
+The Gate 4 implementation debts, governance-owner debt, Gate 5A authoring-measurement debt, and Gate 5B learner-visibility debt are resolved. `ED-005` is bounded process debt: it does not block separately approved implementation work, but it blocks final project acceptance or release until resolved. Gate 5 remains open, and this register does not authorize conversion or later migration work.
 
 Open items with an unassigned accountable person cannot be accepted as bounded debt.
