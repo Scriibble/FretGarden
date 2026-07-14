@@ -3,6 +3,7 @@ export * from "./curriculum-schema.js";
 export * from "./curriculum-validate.js";
 export * from "./foundation-curriculum.js";
 export * from "./level-one-curriculum.js";
+export * from "./level-four-curriculum.js";
 export * from "./level-two-curriculum.js";
 export * from "./level-three-curriculum.js";
 export * from "./pilot.js";

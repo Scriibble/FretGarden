@@ -355,6 +355,78 @@ const implementedSourceMetadata: Record<number, {
       "Create a four-week plan for the weakest domain."
     ],
     tags: ["integration", "portfolio", "performance", "analysis", "transcription"]
+  },
+  25: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Hear modes as centered sounds rather than parent-scale fingerings.",
+      "Emphasize characteristic degrees over drones or vamps.",
+      "Compose and explain short Dorian and Mixolydian studies."
+    ],
+    tags: ["modes", "modal-color", "ear-training", "composition"]
+  },
+  26: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Build secondary dominants from target chords.",
+      "Resolve altered guide tones intentionally.",
+      "Write a progression with temporary tonicization inside one key."
+    ],
+    tags: ["secondary-dominants", "tonicization", "functional-harmony", "voice-leading"]
+  },
+  27: {
+    estimatedMinutes: 140,
+    outcomes: [
+      "Identify borrowed chords from the parallel mode.",
+      "Use modal mixture for section color without losing tonic.",
+      "Explain changed scale degrees and voice-leading effects."
+    ],
+    tags: ["modal-mixture", "borrowed-chords", "songwriting", "analysis"]
+  },
+  28: {
+    estimatedMinutes: 155,
+    outcomes: [
+      "Arrange melody-forward chord voicings with compact shells.",
+      "Trace melody and inner voices through a progression.",
+      "Perform a short chord-melody passage with clear function."
+    ],
+    tags: ["chord-melody", "voice-leading", "shell-voicings", "arrangement"]
+  },
+  29: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Perform odd-grouped rhythm with stable accents and recovery.",
+      "Move between complex grouping and simpler release sections.",
+      "Explain subdivision, grouping, and re-entry strategy."
+    ],
+    tags: ["advanced-rhythm", "meter", "subdivision", "recovery"]
+  },
+  30: {
+    estimatedMinutes: 135,
+    outcomes: [
+      "Analyze style through rhythm, tone, articulation, harmony, role, and context.",
+      "Create an original style study without copying recorded phrases.",
+      "Explain musical vocabulary and respectful context."
+    ],
+    tags: ["genre", "style", "listening", "context", "arrangement"]
+  },
+  31: {
+    estimatedMinutes: 150,
+    outcomes: [
+      "Compose two independent lines with singable contour.",
+      "Use contrary, oblique, and parallel motion intentionally.",
+      "Prepare and resolve dissonance inside a clear harmonic frame."
+    ],
+    tags: ["counterpoint", "independent-lines", "voice-leading", "composition"]
+  },
+  32: {
+    estimatedMinutes: 260,
+    outcomes: [
+      "Create Level 4 artifacts across harmonic color, rhythm or style, and line writing.",
+      "Complete one two-to-four-minute performance or arrangement.",
+      "Produce matching analysis, reflection, and a weak-domain practice plan."
+    ],
+    tags: ["portfolio", "integration", "performance", "analysis", "reflection"]
   }
 };
 
