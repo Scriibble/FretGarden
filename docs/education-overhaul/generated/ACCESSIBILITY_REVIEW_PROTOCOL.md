@@ -12,14 +12,14 @@ This review does not authorize changes to legacy lessons, authentication, Supaba
 
 | Field | Value |
 | --- | --- |
-| Build or commit | Pending reviewer entry |
-| Reviewer | Pending assignment |
+| Build or commit | Pending execution entry |
+| Reviewer | Evan Anderson, self-reviewer |
 | Review date | Pending |
 | Desktop OS/browser | Pending |
 | Screen reader/version | Pending |
 | Mobile OS/browser | Pending |
 | Input methods | Keyboard, pointer, touch, and assistive input as available |
-| Result | **PENDING HUMAN SIGNOFF** |
+| Result | **PROTOCOL APPROVED; EXECUTION EVIDENCE PENDING** |
 
 Retain screenshots, screen-reader notes, exported pilot data used during failure testing, and finding IDs with this record. Do not include learner names, account data, or secrets.
 
@@ -63,8 +63,8 @@ Record each finding as `A11Y-FINDING-NNN` with steps, expected behavior, actual 
 
 | Role | Name | Decision | Date |
 | --- | --- | --- | --- |
-| Accessibility reviewer | Pending | Pending | Pending |
-| Education/product owner | Pending | Pending | Pending |
-| Engineering owner | Pending | Pending | Pending |
+| Accessibility reviewer | Evan Anderson | Pending execution | Pending |
+| Education/product owner | Evan Anderson | Protocol approved | 2026-07-14 |
+| Engineering owner | Evan Anderson | Protocol approved | 2026-07-14 |
 
 Gate 4 accessibility closure requires all required checks to pass, or each remaining Major/Minor finding to have explicit approval, an accountable owner, and an expiration. Blockers cannot be accepted as debt.

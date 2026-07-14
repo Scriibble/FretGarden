@@ -17,7 +17,7 @@ The table below records proposed Gate 2 defaults. `PROPOSED` means the Phase 1 a
 | 19-22 | PROPOSED | Add separate education policy and content workspace packages; adapt the starter schema into typed runtime contracts plus synchronized JSON Schema; keep pilot content in versioned TypeScript registries; verify conformance in CI and commit the pilot report. |
 | 23-25 | PROPOSED | Use semantic-grid and explicit coordinate response equivalents; do not claim visual substitutes are equivalent to auditory discrimination; measure pulse with keyboard/pointer/button taps against an optional audiovisual pulse, without audio-input diagnosis. |
 | 26-29 | PROPOSED | Add `pnpm test:education`; retain legacy tests as control-path coverage; require all test layers relevant to the pilot plus migration-isolation fixtures; write the detailed manual QA script during Phase 2 alongside the implemented flow. |
-| 30-31 | BLOCKED | Educational-debt approval and final constitutional interpretation require named human owners; no owner can be inferred from the repository. These do not block pure foundations but must be assigned before Gate 3 pilot validation. |
+| 30-31 | RESOLVED | Evan Anderson is the educational-debt approver and final constitutional-interpretation owner. The sole-developer concentration of authority is recorded in `GOVERNANCE_DECISION_LOG.md`. |
 | 32 | PROPOSED | Require a decision-log entry for changes to objective meaning, evidence/claim policy, progression, review timing, accessibility equivalence, migration semantics, or an approved architecture boundary. Use inline notes only for behavior-preserving implementation detail. |
 
 The detailed rationale, risks, alternatives, tests, and migration consequences are in the five Phase 1 artifacts. Approval may accept, amend, or reject each proposed default independently.
@@ -74,6 +74,6 @@ The detailed rationale, risks, alternatives, tests, and migration consequences a
 
 ## Governance
 
-30. Who approves educational debt items and expiration dates?
-31. Who owns final constitutional interpretation when a product goal conflicts with a chapter requirement?
+30. Who approves educational debt items and expiration dates? **Resolved: Evan Anderson, Product and Curriculum Owner.**
+31. Who owns final constitutional interpretation when a product goal conflicts with a chapter requirement? **Resolved: Evan Anderson, Product and Education Owner.**
 32. What changes require a decision log entry versus an inline implementation note?

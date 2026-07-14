@@ -10,12 +10,12 @@ Use this protocol to evaluate whether the isolated education pilot feels like a 
 
 | Field | Value |
 | --- | --- |
-| Build or commit | Pending facilitator entry |
-| Facilitator | Pending assignment |
-| Education observer | Pending assignment |
+| Build or commit | Pending execution entry |
+| Facilitator | Evan Anderson |
+| Education observer | Evan Anderson; external educator input remains recommended |
 | Session dates | Pending |
 | Participant profile | Pending; record only role-relevant characteristics |
-| Result | **PENDING HUMAN SIGNOFF** |
+| Result | **PROTOCOL APPROVED; PARTICIPANT EVIDENCE PENDING** |
 
 Use at least three representative sessions before Gate 4 signoff: one early learner, one returning learner, and one guitar educator or curriculum author. Obtain appropriate consent and do not store names, account identifiers, recordings, or sensitive data in this repository.
 
@@ -70,9 +70,9 @@ Any failed criterion becomes `UX-FINDING-NNN` with severity, evidence, owner, re
 
 | Role | Name | Decision | Date |
 | --- | --- | --- | --- |
-| Usability facilitator | Pending | Pending | Pending |
+| Usability facilitator | Evan Anderson | Protocol approved; execution pending | 2026-07-14 |
 | Guitar education reviewer | Pending | Pending | Pending |
-| Product owner | Pending | Pending | Pending |
-| Engineering owner | Pending | Pending | Pending |
+| Product owner | Evan Anderson | Protocol approved | 2026-07-14 |
+| Engineering owner | Evan Anderson | Protocol approved | 2026-07-14 |
 
 Gate 4 usability closure requires the acceptance criteria to pass or remaining non-blocking findings to be explicitly accepted with a named owner and expiration.

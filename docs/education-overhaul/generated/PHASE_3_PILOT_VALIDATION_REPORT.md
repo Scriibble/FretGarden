@@ -4,7 +4,7 @@ Date: 2026-07-14
 
 ## Decision
 
-The Gate 4 **implementation closure pass is complete**. Gate 4 itself remains **pending human signoff**, and Gate 5 limited migration is not authorized.
+The Gate 4 **implementation closure pass is complete**. Governance owners and the human-review methods are approved. Gate 4 itself remains **pending human protocol execution**, and Gate 5 limited migration code is not authorized.
 
 The isolated pilot now provides observable transfer, authored pulse variation, changed-context delayed review, explicit support/fade states, and learner-visible local persistence recovery. No Supabase, RLS, authentication, deployment, legacy progress, or existing lesson behavior was changed.
 
@@ -20,7 +20,7 @@ The isolated pilot now provides observable transfer, authored pulse variation, c
 | Persistence resilience | Pass for local pilot | Write failure alert preserves in-memory state and offers retry/export; malformed reads retain recovery copy | Browser/device loss remains outside guarantee |
 | Accessibility | Pending human signoff | Semantic controls, equivalent input, reduced motion, keyboard-capable flow, review protocol | Screen-reader, zoom/reflow, and assistive-tech protocol not yet executed |
 | Usability | Pending human signoff | End-to-end automated flows and a moderated review protocol | Representative learner and educator sessions not yet executed |
-| Migration feasibility | Conditional | Additive packages, isolated route, reversible local namespace | Separate Gate 5 plan, owners, mapping fixtures, and rollback rehearsal required |
+| Migration feasibility | Planned, not implemented | `GATE_5_LIMITED_MIGRATION_PLAN.md`, fixture matrix, exact code plan, additive packages, isolated route | Gate 4 human execution and separate Gate 5A code approval remain required |
 
 ## Closure Work Implemented
 
@@ -63,11 +63,11 @@ The first full E2E invocation encountered a local port conflict after an older d
 
 1. Execute `ACCESSIBILITY_REVIEW_PROTOCOL.md`; resolve blockers and record named signoff.
 2. Execute `USABILITY_REVIEW_PROTOCOL.md` with representative learners and a guitar educator/curriculum reviewer; resolve blockers and record named signoff.
-3. Name educational-debt and constitutional-interpretation owners and update unresolved decisions 30–31.
+3. Governance ownership is complete: Evan Anderson owns educational-debt approval and final constitutional interpretation.
 
 ## Gate 5 Entry Conditions
 
-After Gate 4 human closure, a separate approved limited-migration plan must identify the curriculum segment, legacy mapping fixtures, parallel reporting, telemetry boundaries, authoring effort, production data design, and rollback rehearsal. This closure pass does not satisfy or bypass that gate.
+The docs-only Gate 5 plan now identifies `fretboard-map`, legacy mapping fixtures, parallel reporting, telemetry boundaries, feature isolation, and rollback rehearsal. `GATE_5_CODE_IMPLEMENTATION_PLAN.md` remains proposed and requires explicit approval after review. Gate 4 human protocol execution is still required, and production data design remains a separate future approval. This planning work does not satisfy or bypass either gate.
 
 ## Rollback
 
