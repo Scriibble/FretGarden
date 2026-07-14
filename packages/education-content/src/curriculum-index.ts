@@ -427,6 +427,78 @@ const implementedSourceMetadata: Record<number, {
       "Produce matching analysis, reflection, and a weak-domain practice plan."
     ],
     tags: ["portfolio", "integration", "performance", "analysis", "reflection"]
+  },
+  33: {
+    estimatedMinutes: 155,
+    outcomes: [
+      "Voice extended chords with clear guide tones and intentional omissions.",
+      "Use ninths, elevenths, thirteenths, and altered colors by function.",
+      "Resolve or sustain color tones deliberately."
+    ],
+    tags: ["extended-chords", "color-tones", "voicing", "guide-tones"]
+  },
+  34: {
+    estimatedMinutes: 150,
+    outcomes: [
+      "Choose chord-scale collections from chord quality and function.",
+      "Target chord tones before adding scale color.",
+      "Explain tension and resolution decisions."
+    ],
+    tags: ["chord-scales", "improvisation", "dominant-color", "analysis"]
+  },
+  35: {
+    estimatedMinutes: 155,
+    outcomes: [
+      "Plan modulations using pivot chords, common tones, or dominant preparation.",
+      "Confirm a new key through cadence or phrase behavior.",
+      "Analyze old-key and new-key functions."
+    ],
+    tags: ["modulation", "key-relationships", "pivot-chords", "cadence"]
+  },
+  36: {
+    estimatedMinutes: 150,
+    outcomes: [
+      "Use harmonic and melodic minor colors in minor ii-V-i contexts.",
+      "Name raised sixth and seventh degree choices.",
+      "Resolve altered dominant color into tonic minor."
+    ],
+    tags: ["harmonic-minor", "melodic-minor", "minor-ii-v-i", "altered-dominant"]
+  },
+  37: {
+    estimatedMinutes: 145,
+    outcomes: [
+      "Use advanced technique as phrasing vocabulary.",
+      "Control timing, tone, release, and articulation.",
+      "Perform an etude with named technique purposes."
+    ],
+    tags: ["technique", "phrasing", "tone", "etude"]
+  },
+  38: {
+    estimatedMinutes: 160,
+    outcomes: [
+      "Design larger forms with development, contrast, and return.",
+      "Use motif, density, register, and harmonic pacing across sections.",
+      "Revise transitions for long-range direction."
+    ],
+    tags: ["form", "development", "composition", "arrangement"]
+  },
+  39: {
+    estimatedMinutes: 160,
+    outcomes: [
+      "Reharmonize melodies with functional substitutions.",
+      "Account for melody notes and bass direction over changed chords.",
+      "Perform original and reharmonized routes."
+    ],
+    tags: ["reharmonization", "substitution", "melody", "harmony"]
+  },
+  40: {
+    estimatedMinutes: 280,
+    outcomes: [
+      "Present a complete advanced musicianship jury performance or arrangement.",
+      "Provide matching harmonic, form, technique, and substitution evidence.",
+      "Write a four-week next-study plan from the weakest evidence."
+    ],
+    tags: ["jury", "portfolio", "advanced-musicianship", "performance", "analysis"]
   }
 };
 
