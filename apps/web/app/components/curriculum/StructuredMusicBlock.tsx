@@ -15,6 +15,7 @@ export function StructuredMusicBlock({ block }: StructuredMusicBlockProps) {
         <div className={styles.chordLayout}>
           <div className={styles.chordDiagram} aria-hidden="true">
             <strong>{block.chordName}</strong>
+            {block.baseFret ? <small>Position begins at fret {block.baseFret}</small> : null}
             <div className={styles.chordStrings}>
               {strings.map((string) => (
                 <div key={string.string}>
@@ -24,6 +25,11 @@ export function StructuredMusicBlock({ block }: StructuredMusicBlockProps) {
                 </div>
               ))}
             </div>
+            {block.barres?.map((barre) => (
+              <small key={`${barre.fret}-${barre.fromString}-${barre.toString}`}>
+                Finger {barre.finger} barres fret {barre.fret}, strings {barre.fromString}-{barre.toString}
+              </small>
+            ))}
           </div>
           <div>
             <p>{block.explanation}</p>
@@ -113,6 +119,92 @@ export function StructuredMusicBlock({ block }: StructuredMusicBlockProps) {
         <ol>{block.instructions.map((instruction) => <li key={instruction}>{instruction}</li>)}</ol>
         {block.supports.length > 0 ? <p><strong>Support available:</strong> {block.supports.join(" · ")}</p> : <p><strong>Support:</strong> Complete without prompts or a model.</p>}
         <ul>{block.successCriteria.map((criterion) => <li key={criterion}>{criterion}</li>)}</ul>
+      </section>
+    );
+  }
+
+  if (block.type === "fretboard-map") {
+    const frets = Array.from(
+      { length: block.fretEnd - block.fretStart + 1 },
+      (_, index) => block.fretStart + index
+    );
+    return (
+      <section className={styles.musicBlock} aria-labelledby={`${block.id}-title`}>
+        <p className={styles.eyebrow}>Fretboard map</p>
+        <h2 id={`${block.id}-title`}>{block.heading}</h2>
+        <div className={styles.tableScroller}>
+          <table className={styles.fretboardTable}>
+            <caption>{block.accessibilityDescription}</caption>
+            <thead><tr><th scope="col">String</th>{frets.map((fret) => <th key={fret} scope="col">{fret}</th>)}</tr></thead>
+            <tbody>{[1, 2, 3, 4, 5, 6].map((string) => (
+              <tr key={string}><th scope="row">{string}</th>{frets.map((fret) => {
+                const position = block.positions.find((candidate) => candidate.string === string && candidate.fret === fret);
+                return <td className={position ? styles[`map-${position.emphasis}`] : undefined} key={fret}>{position?.label ?? ""}</td>;
+              })}</tr>
+            ))}</tbody>
+          </table>
+        </div>
+        <p>{block.explanation}</p>
+      </section>
+    );
+  }
+
+  if (block.type === "scale-pattern") {
+    return (
+      <section className={styles.musicBlock} aria-labelledby={`${block.id}-title`}>
+        <p className={styles.eyebrow}>Scale formula</p>
+        <h2 id={`${block.id}-title`}>{block.heading}</h2>
+        <dl className={styles.formulaGrid}>
+          <div><dt>Collection</dt><dd>{block.root} {block.collectionName}</dd></div>
+          <div><dt>Degrees</dt><dd>{block.degrees.join(" · ")}</dd></div>
+          <div><dt>Notes</dt><dd>{block.notes.join(" · ")}</dd></div>
+          <div><dt>Semitones</dt><dd>{block.formulaSemitones.join(" · ")}</dd></div>
+        </dl>
+        <div className={styles.positionList} aria-label={block.accessibilityDescription}>
+          {block.positions.map((position, index) => (
+            <span key={`${position.string}-${position.fret}-${index}`}>S{position.string} F{position.fret} <strong>{position.degree}</strong></span>
+          ))}
+        </div>
+        <p>{block.explanation}</p>
+      </section>
+    );
+  }
+
+  if (block.type === "progression-chart") {
+    return (
+      <section className={styles.musicBlock} aria-labelledby={`${block.id}-title`}>
+        <p className={styles.eyebrow}>Progression · Key {block.key} · {block.meter}</p>
+        <h2 id={`${block.id}-title`}>{block.heading}</h2>
+        <div className={styles.chartGrid} aria-label={block.accessibilityDescription}>
+          {block.measures.map((measure, index) => (
+            <div key={`${measure.label}-${index}`}>
+              <small>{measure.label}</small><strong>{measure.chord}</strong>
+              <span>{measure.romanNumeral} · {measure.nashvilleNumber}</span>
+            </div>
+          ))}
+        </div>
+        <p>{block.explanation}</p>
+      </section>
+    );
+  }
+
+  if (block.type === "lead-sheet") {
+    return (
+      <section className={styles.musicBlock} aria-labelledby={`${block.id}-title`}>
+        <p className={styles.eyebrow}>Lead sheet · Key {block.key} · {block.meter} · {block.tempo} BPM</p>
+        <h2 id={`${block.id}-title`}>{block.songTitle}: {block.heading}</h2>
+        <p><strong>Capo:</strong> {block.capo === 0 ? "None" : `Fret ${block.capo}`}</p>
+        <div className={styles.leadSheet} aria-label={block.accessibilityDescription}>
+          {block.sections.map((section) => (
+            <section key={section.name}>
+              <h3>{section.name} × {section.repeatCount}</h3>
+              <div>{section.measures.map((measure, index) => (
+                <span key={`${measure.chord}-${index}`}><strong>{measure.chord}</strong><small>{measure.cue}</small></span>
+              ))}</div>
+            </section>
+          ))}
+        </div>
+        <p>{block.explanation}</p>
       </section>
     );
   }

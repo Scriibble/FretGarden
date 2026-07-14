@@ -477,6 +477,109 @@
   background: #e5eeea;
 }
 
+.fretboardTable {
+  border-collapse: collapse;
+  min-width: 680px;
+  width: 100%;
+}
+
+.fretboardTable caption {
+  color: #465a53;
+  padding-bottom: 0.65rem;
+  text-align: left;
+}
+
+.fretboardTable th,
+.fretboardTable td {
+  border: 1px solid #b9c8c2;
+  height: 42px;
+  min-width: 48px;
+  padding: 0.35rem;
+  text-align: center;
+}
+
+.fretboardTable th {
+  background: #e5eeea;
+}
+
+.map-root { background: #cbe3dc; font-weight: 850; }
+.map-target { background: #f5dacd; font-weight: 850; }
+.map-context { background: #eef1e8; }
+
+.formulaGrid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.formulaGrid div {
+  border-left: 3px solid #39786e;
+  display: grid;
+  gap: 0.25rem;
+  padding-left: 0.75rem;
+}
+
+.formulaGrid dt {
+  color: #6b584d;
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.formulaGrid dd { color: #263d38; margin: 0; }
+
+.positionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.positionList span {
+  background: #eef3f0;
+  border: 1px solid #bdcbc5;
+  border-radius: 6px;
+  color: #314a43;
+  padding: 0.45rem 0.55rem;
+}
+
+.chartGrid {
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+}
+
+.chartGrid > div {
+  border: 1px solid #b7c7c0;
+  border-radius: 6px;
+  display: grid;
+  gap: 0.25rem;
+  min-height: 100px;
+  padding: 0.65rem;
+}
+
+.chartGrid strong { color: #173f43; font-size: 1.2rem; }
+.chartGrid span,
+.chartGrid small { color: #5a6762; }
+
+.leadSheet {
+  border: 1px solid #aebfb8;
+  display: grid;
+}
+
+.leadSheet > section {
+  border-bottom: 1px solid #c8d3ce;
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.85rem;
+}
+
+.leadSheet > section:last-child { border-bottom: 0; }
+.leadSheet h3 { color: #173f43; letter-spacing: 0; }
+.leadSheet section > div { display: grid; gap: 0.4rem; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+.leadSheet span { background: #f2f6f4; display: grid; gap: 0.2rem; padding: 0.55rem; }
+.leadSheet small { color: #5a6762; }
+
 .structuredRhythm {
   display: grid;
   gap: 0.4rem;
@@ -936,6 +1039,10 @@
   .timerLayout,
   .metronomeLayout,
   .chordLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .formulaGrid {
     grid-template-columns: 1fr;
   }
 

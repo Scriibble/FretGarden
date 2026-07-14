@@ -212,7 +212,11 @@ export function CurriculumUnitExperience({
             block.type === "tablature" ||
             block.type === "rhythm-grid" ||
             block.type === "instrument-setup" ||
-            block.type === "learning-stage"
+            block.type === "learning-stage" ||
+            block.type === "fretboard-map" ||
+            block.type === "scale-pattern" ||
+            block.type === "progression-chart" ||
+            block.type === "lead-sheet"
           ) {
             return <StructuredMusicBlock block={block} key={block.id} />;
           }

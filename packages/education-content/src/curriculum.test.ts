@@ -105,4 +105,37 @@ describe("foundation curriculum", () => {
     expect(issues).toContainEqual(expect.objectContaining({ code: "invalid_chord_strings" }));
     expect(issues).toContainEqual(expect.objectContaining({ code: "invalid_tab_event" }));
   });
+
+  it("validates fretboard positions and scale formulas against the pure engines", () => {
+    const invalid = structuredClone(foundationCurriculum);
+    invalid.lessons[0]!.contentBlocks.push(
+      {
+        id: "bad-map",
+        type: "fretboard-map",
+        heading: "Bad fretboard map",
+        fretStart: 0,
+        fretEnd: 3,
+        positions: [{ string: 6, fret: 0, note: "C", label: "C", emphasis: "root" }],
+        explanation: "The label does not match standard tuning.",
+        accessibilityDescription: "String 6 open is incorrectly labeled C."
+      },
+      {
+        id: "bad-scale",
+        type: "scale-pattern",
+        heading: "Bad scale",
+        root: "C",
+        collectionName: "test collection",
+        formulaSemitones: [0, 2],
+        notes: ["C", "E"],
+        degrees: ["1", "2"],
+        positions: [{ string: 5, fret: 3, degree: "1" }, { string: 4, fret: 2, degree: "2" }],
+        explanation: "The second note does not match two semitones from C.",
+        accessibilityDescription: "A deliberately invalid two-note formula."
+      }
+    );
+
+    const issues = validateFoundationCurriculum(invalid).issues;
+    expect(issues).toContainEqual(expect.objectContaining({ code: "invalid_fretboard_position" }));
+    expect(issues).toContainEqual(expect.objectContaining({ code: "invalid_scale_note" }));
+  });
 });

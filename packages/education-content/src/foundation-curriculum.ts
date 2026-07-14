@@ -7,7 +7,7 @@ import type {
 } from "./curriculum-schema.js";
 import { levelOneLessons, levelOneReviewPlans } from "./level-one-curriculum.js";
 
-export const FOUNDATION_CURRICULUM_VERSION = "foundation-2";
+export const FOUNDATION_CURRICULUM_VERSION = "foundation-3";
 
 const openingFoundationLessons: readonly CurriculumLesson[] = [
   {
@@ -650,7 +650,7 @@ export const foundationReviewPlans: readonly CurriculumReviewPlan[] = [
 ];
 
 export const foundationCurriculum: FoundationCurriculum = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   contentVersion: FOUNDATION_CURRICULUM_VERSION,
   units: [...curriculumUnitIndex],
   lessons: [...foundationLessons],

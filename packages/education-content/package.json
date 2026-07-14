@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@pocket-practice/education-engine": "workspace:*",
+    "@pocket-practice/fretboard-engine": "workspace:*",
+    "@pocket-practice/music-theory-engine": "workspace:*",
     "zod": "^3.25.0"
   },
   "devDependencies": {

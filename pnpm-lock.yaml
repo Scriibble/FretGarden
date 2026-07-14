@@ -75,6 +75,12 @@ importers:
       '@pocket-practice/education-engine':
         specifier: workspace:*
         version: link:../education-engine
+      '@pocket-practice/fretboard-engine':
+        specifier: workspace:*
+        version: link:../fretboard-engine
+      '@pocket-practice/music-theory-engine':
+        specifier: workspace:*
+        version: link:../music-theory-engine
       zod:
         specifier: ^3.25.0
         version: 3.25.76

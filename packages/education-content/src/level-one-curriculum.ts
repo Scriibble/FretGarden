@@ -65,15 +65,15 @@ const emDiagram: CurriculumContentBlock = {
   chordName: "Em",
   strings: [
     { string: 6, state: "open", note: "E" },
-    { string: 5, state: "open", note: "A" },
-    { string: 4, state: "fretted", fret: 2, finger: 2, note: "E" },
-    { string: 3, state: "fretted", fret: 2, finger: 3, note: "B" },
+    { string: 5, state: "fretted", fret: 2, finger: 2, note: "B" },
+    { string: 4, state: "fretted", fret: 2, finger: 3, note: "E" },
+    { string: 3, state: "open", note: "G" },
     { string: 2, state: "open", note: "B" },
     { string: 1, state: "open", note: "E" }
   ],
   strumFromString: 6,
   explanation: "Place fingers 2 and 3 just behind fret 2 on strings 4 and 3. Let every string ring; use only enough pressure for a clear sound.",
-  accessibilityDescription: "Em: string 6 open E, string 5 open A, string 4 fret 2 finger 2 E, string 3 fret 2 finger 3 B, string 2 open B, string 1 open E. Strum all six strings."
+  accessibilityDescription: "Em: string 6 open E, string 5 fret 2 finger 2 B, string 4 fret 2 finger 3 E, string 3 open G, string 2 open B, string 1 open E. Strum all six strings."
 };
 
 const asus2Diagram: CurriculumContentBlock = {

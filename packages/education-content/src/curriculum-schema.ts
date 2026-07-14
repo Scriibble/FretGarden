@@ -98,6 +98,13 @@ const chordDiagramBlockSchema = z.object({
   chordName: z.string().min(1),
   strings: z.array(chordStringSchema).length(6),
   strumFromString: guitarStringNumberSchema,
+  baseFret: z.number().int().min(1).max(20).optional(),
+  barres: z.array(z.object({
+    fret: z.number().int().min(1).max(24),
+    fromString: guitarStringNumberSchema,
+    toString: guitarStringNumberSchema,
+    finger: z.number().int().min(1).max(4)
+  })).optional(),
   explanation: z.string().min(1),
   accessibilityDescription: z.string().min(1)
 });
@@ -174,6 +181,82 @@ const learningStageBlockSchema = z.object({
   accessibilityDescription: z.string().min(1)
 });
 
+const fretboardMapBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("fretboard-map"),
+  heading: z.string().min(1),
+  fretStart: z.number().int().min(0).max(20),
+  fretEnd: z.number().int().min(1).max(24),
+  positions: z.array(z.object({
+    string: guitarStringNumberSchema,
+    fret: z.number().int().min(0).max(24),
+    note: guitarNoteNameSchema,
+    label: z.string().min(1),
+    emphasis: z.enum(["root", "target", "context"])
+  })).min(1),
+  explanation: z.string().min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
+const scalePatternBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("scale-pattern"),
+  heading: z.string().min(1),
+  root: guitarNoteNameSchema,
+  collectionName: z.string().min(1),
+  formulaSemitones: z.array(z.number().int().min(0).max(11)).min(2),
+  notes: z.array(guitarNoteNameSchema).min(2),
+  degrees: z.array(z.string().min(1)).min(2),
+  positions: z.array(z.object({
+    string: guitarStringNumberSchema,
+    fret: z.number().int().min(0).max(24),
+    degree: z.string().min(1)
+  })).min(2),
+  explanation: z.string().min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
+const progressionMeasureSchema = z.object({
+  label: z.string().min(1),
+  chord: z.string().min(1),
+  romanNumeral: z.string().min(1),
+  nashvilleNumber: z.string().min(1),
+  beats: z.number().int().positive()
+});
+
+const progressionChartBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("progression-chart"),
+  heading: z.string().min(1),
+  key: guitarNoteNameSchema,
+  meter: z.enum(["4/4", "3/4", "6/8", "12/8"]),
+  measures: z.array(progressionMeasureSchema).min(2),
+  explanation: z.string().min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
+const leadSheetBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("lead-sheet"),
+  heading: z.string().min(1),
+  songTitle: z.string().min(1),
+  key: guitarNoteNameSchema,
+  meter: z.enum(["4/4", "3/4", "6/8", "12/8"]),
+  tempo: z.number().int().min(30).max(240),
+  capo: z.number().int().min(0).max(12),
+  sections: z.array(z.object({
+    name: z.string().min(1),
+    repeatCount: z.number().int().positive(),
+    measures: z.array(z.object({
+      chord: z.string().min(1),
+      cue: z.string().min(1),
+      beats: z.number().int().positive()
+    })).min(1)
+  })).min(1),
+  explanation: z.string().min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
 export const curriculumContentBlockSchema = z.discriminatedUnion("type", [
   textBlockSchema,
   calloutBlockSchema,
@@ -184,7 +267,11 @@ export const curriculumContentBlockSchema = z.discriminatedUnion("type", [
   tablatureBlockSchema,
   rhythmGridBlockSchema,
   instrumentSetupBlockSchema,
-  learningStageBlockSchema
+  learningStageBlockSchema,
+  fretboardMapBlockSchema,
+  scalePatternBlockSchema,
+  progressionChartBlockSchema,
+  leadSheetBlockSchema
 ]);
 
 export const curriculumExerciseSchema = z.object({
@@ -267,7 +354,7 @@ export const curriculumReviewPlanSchema = z.object({
 });
 
 export const foundationCurriculumSchema = z.object({
-  schemaVersion: z.literal(2),
+  schemaVersion: z.literal(3),
   contentVersion: z.string().min(1),
   units: z.array(curriculumIndexEntrySchema).length(51),
   lessons: z.array(curriculumLessonSchema).min(3),
