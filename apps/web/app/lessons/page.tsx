@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { AppNavigation } from "../components/AppNavigation";
 import { LessonLibrary } from "../components/LessonLibrary";
 import { lessons } from "../lib/lessons";
 
 export default function LessonsPage() {
   return (
     <main className="lesson-shell">
+      <AppNavigation activePage="lessons" />
       <header className="lesson-header">
         <div>
           <p className="eyebrow">FretGarden Lessons</p>

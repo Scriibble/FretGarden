@@ -13,8 +13,8 @@ import type {
 } from "../../lib/education/migration/contracts";
 import { createFretboardMapParallelReport } from "../../lib/education/migration/fretboardMapReportOrchestration";
 import {
+  fretboardMapMigrationInputsEqual,
   readFretboardMapMigrationInputs,
-  type FretboardMapMigrationInputs
 } from "../../lib/education/migration/readFretboardMapMigrationInputs";
 import styles from "./fretboardMapMigrationReport.module.css";
 
@@ -33,7 +33,10 @@ export function FretboardMapMigrationReport() {
       const now = new Date().toISOString();
       const report = createFretboardMapParallelReport({ raw: before, now });
       const after = readFretboardMapMigrationInputs(window.localStorage);
-      setState({ report, storageUnchanged: rawInputsEqual(before, after) });
+      setState({
+        report,
+        storageUnchanged: fretboardMapMigrationInputsEqual(before, after)
+      });
     } catch {
       setReadError(true);
     }
@@ -300,17 +303,6 @@ function DiagnosticList({ diagnostics }: { diagnostics: LegacyMappingDiagnostic[
         </li>
       ))}
     </ul>
-  );
-}
-
-function rawInputsEqual(
-  before: FretboardMapMigrationInputs,
-  after: FretboardMapMigrationInputs
-): boolean {
-  return Object.keys(before).every(
-    (key) =>
-      before[key as keyof FretboardMapMigrationInputs] ===
-      after[key as keyof FretboardMapMigrationInputs]
   );
 }
 

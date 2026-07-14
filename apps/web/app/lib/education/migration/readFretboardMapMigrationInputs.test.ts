@@ -4,7 +4,10 @@ import {
   EDUCATION_PILOT_STORAGE_KEY
 } from "../storage/educationPilotStorage";
 import { FRETBOARD_MAP_MIGRATION_STORAGE_KEYS } from "./fretboardMapLegacyMapping";
-import { readFretboardMapMigrationInputs } from "./readFretboardMapMigrationInputs";
+import {
+  fretboardMapMigrationInputsEqual,
+  readFretboardMapMigrationInputs
+} from "./readFretboardMapMigrationInputs";
 
 describe("fretboard-map migration input reader", () => {
   it("reads exactly the five approved keys without requiring a writer", () => {
@@ -19,5 +22,17 @@ describe("fretboard-map migration input reader", () => {
       EDUCATION_PILOT_RECOVERY_KEY
     ]);
     expect(result.educationPilotRaw).toBe(`raw:${EDUCATION_PILOT_STORAGE_KEY}`);
+  });
+
+  it("compares all approved raw values without normalizing them", () => {
+    const raw = readFretboardMapMigrationInputs({ getItem: (key) => `raw:${key}` });
+
+    expect(fretboardMapMigrationInputsEqual(raw, { ...raw })).toBe(true);
+    expect(
+      fretboardMapMigrationInputsEqual(raw, {
+        ...raw,
+        educationPilotRecoveryRaw: "different"
+      })
+    ).toBe(false);
   });
 });

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AppNavigation } from "../../components/AppNavigation";
 import { LessonCompletionCard } from "../../components/LessonCompletionCard";
 import { LessonPracticeCard } from "../../components/LessonPracticeCard";
 import {
@@ -47,6 +48,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <main className="lesson-shell lesson-page">
+      <AppNavigation activePage="lessons" />
       <nav className="lesson-nav" aria-label="Lesson navigation">
         <Link href="/lessons">All lessons</Link>
         <Link href="/practice#practice">Practice</Link>

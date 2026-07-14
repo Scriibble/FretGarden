@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { AppNavigation } from "../components/AppNavigation";
 import { PracticeHistory } from "../components/PracticeHistory";
 
 export default function HistoryPage() {
   return (
     <main className="lesson-shell">
+      <AppNavigation activePage="history" />
       <header className="lesson-header">
         <div>
           <p className="eyebrow">FretGarden History</p>

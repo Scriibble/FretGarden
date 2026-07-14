@@ -29,3 +29,14 @@ export function readFretboardMapMigrationInputs(
     educationPilotRecoveryRaw: storage.getItem(EDUCATION_PILOT_RECOVERY_KEY)
   };
 }
+
+export function fretboardMapMigrationInputsEqual(
+  left: FretboardMapMigrationInputs,
+  right: FretboardMapMigrationInputs
+): boolean {
+  return Object.keys(left).every(
+    (key) =>
+      left[key as keyof FretboardMapMigrationInputs] ===
+      right[key as keyof FretboardMapMigrationInputs]
+  );
+}
