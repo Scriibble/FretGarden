@@ -5,10 +5,12 @@
   "packageManager": "pnpm@11.7.0",
   "scripts": {
     "build": "pnpm -r build",
-    "build:packages": "pnpm --filter @pocket-practice/music-theory-engine --filter @pocket-practice/fretboard-engine build",
+    "build:packages": "pnpm --filter @pocket-practice/music-theory-engine --filter @pocket-practice/fretboard-engine --filter @pocket-practice/education-engine --filter @pocket-practice/education-content build",
     "dev": "pnpm --filter @pocket-practice/web dev",
     "lint": "pnpm build:packages && pnpm -r lint",
+    "report:education": "pnpm --filter @pocket-practice/education-content report",
     "test": "pnpm build:packages && pnpm -r test",
+    "test:education": "pnpm --filter @pocket-practice/education-engine test && pnpm --filter @pocket-practice/education-content test && pnpm --filter @pocket-practice/web test:education",
     "test:e2e": "pnpm --filter @pocket-practice/web test:e2e",
     "typecheck": "pnpm build:packages && pnpm -r typecheck"
   },
