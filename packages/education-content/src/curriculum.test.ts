@@ -69,4 +69,40 @@ describe("foundation curriculum", () => {
       })
     );
   });
+
+  it("rejects incomplete chord diagrams and malformed tablature", () => {
+    const chord = {
+      id: "bad-chord",
+      type: "chord-diagram" as const,
+      heading: "Bad chord",
+      chordName: "Em",
+      strings: Array.from({ length: 6 }, () => ({
+        string: 6,
+        state: "open" as const,
+        note: "E"
+      })),
+      strumFromString: 6,
+      explanation: "Invalid repeated strings.",
+      accessibilityDescription: "All entries incorrectly describe string six."
+    };
+    const tab = {
+      id: "bad-tab",
+      type: "tablature" as const,
+      heading: "Bad tab",
+      events: [{
+        count: "1",
+        duration: "quarter" as const,
+        rest: true,
+        notes: [{ string: 1, fret: 0 }]
+      }],
+      explanation: "Invalid rest with a note.",
+      accessibilityDescription: "A rest incorrectly includes an open first string."
+    };
+    const invalid = structuredClone(foundationCurriculum);
+    invalid.lessons[0]!.contentBlocks.push(chord, tab);
+
+    const issues = validateFoundationCurriculum(invalid).issues;
+    expect(issues).toContainEqual(expect.objectContaining({ code: "invalid_chord_strings" }));
+    expect(issues).toContainEqual(expect.objectContaining({ code: "invalid_tab_event" }));
+  });
 });

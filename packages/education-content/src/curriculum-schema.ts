@@ -69,12 +69,120 @@ const reflectionBlockSchema = z.object({
   placeholder: z.string().min(1)
 });
 
+const guitarStringNumberSchema = z.number().int().min(1).max(6);
+const guitarNoteNameSchema = z.string().regex(/^[A-G](?:#|b)?$/);
+
+const chordStringSchema = z.discriminatedUnion("state", [
+  z.object({
+    string: guitarStringNumberSchema,
+    state: z.literal("muted")
+  }),
+  z.object({
+    string: guitarStringNumberSchema,
+    state: z.literal("open"),
+    note: guitarNoteNameSchema
+  }),
+  z.object({
+    string: guitarStringNumberSchema,
+    state: z.literal("fretted"),
+    fret: z.number().int().min(1).max(24),
+    finger: z.number().int().min(1).max(4),
+    note: guitarNoteNameSchema
+  })
+]);
+
+const chordDiagramBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("chord-diagram"),
+  heading: z.string().min(1),
+  chordName: z.string().min(1),
+  strings: z.array(chordStringSchema).length(6),
+  strumFromString: guitarStringNumberSchema,
+  explanation: z.string().min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
+const tablatureNoteSchema = z.object({
+  string: guitarStringNumberSchema,
+  fret: z.number().int().min(0).max(24),
+  technique: z.enum(["pick", "hammer-on", "pull-off", "slide", "mute"]).optional()
+});
+
+const tablatureEventSchema = z.object({
+  count: z.string().min(1),
+  notes: z.array(tablatureNoteSchema).max(6),
+  duration: z.enum(["whole", "half", "quarter", "eighth"]),
+  rest: z.boolean()
+});
+
+const tablatureBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("tablature"),
+  heading: z.string().min(1),
+  tempo: z.number().int().min(30).max(240).optional(),
+  events: z.array(tablatureEventSchema).min(1),
+  explanation: z.string().min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
+const rhythmGridEventSchema = z.object({
+  count: z.string().min(1),
+  action: z.enum(["down", "up", "rest", "hold", "mute"]),
+  accent: z.boolean()
+});
+
+const rhythmGridBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("rhythm-grid"),
+  heading: z.string().min(1),
+  meter: z.enum(["4/4", "3/4", "6/8"]),
+  events: z.array(rhythmGridEventSchema).min(1),
+  explanation: z.string().min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
+const instrumentSetupBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("instrument-setup"),
+  heading: z.string().min(1),
+  items: z.array(z.object({
+    label: z.string().min(1),
+    instruction: z.string().min(1),
+    selfCheck: z.string().min(1)
+  })).min(1),
+  safetyNote: z.string().min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
+export const curriculumLearningStageSchema = z.enum([
+  "model",
+  "guided",
+  "scaffold-fade",
+  "independent"
+]);
+
+const learningStageBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.literal("learning-stage"),
+  stage: curriculumLearningStageSchema,
+  heading: z.string().min(1),
+  instructions: z.array(z.string().min(1)).min(1),
+  supports: z.array(z.string().min(1)),
+  successCriteria: z.array(z.string().min(1)).min(1),
+  accessibilityDescription: z.string().min(1)
+});
+
 export const curriculumContentBlockSchema = z.discriminatedUnion("type", [
   textBlockSchema,
   calloutBlockSchema,
   guitarTaskBlockSchema,
   rhythmBlockSchema,
-  reflectionBlockSchema
+  reflectionBlockSchema,
+  chordDiagramBlockSchema,
+  tablatureBlockSchema,
+  rhythmGridBlockSchema,
+  instrumentSetupBlockSchema,
+  learningStageBlockSchema
 ]);
 
 export const curriculumExerciseSchema = z.object({
@@ -157,7 +265,7 @@ export const curriculumReviewPlanSchema = z.object({
 });
 
 export const foundationCurriculumSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
   contentVersion: z.string().min(1),
   units: z.array(curriculumIndexEntrySchema).length(51),
   lessons: z.array(curriculumLessonSchema).min(3),

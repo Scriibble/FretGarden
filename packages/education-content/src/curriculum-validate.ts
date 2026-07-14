@@ -103,6 +103,72 @@ export function validateFoundationCurriculum(
     addDuplicateIssues(checkIds, `lessons.${lesson.id}.checks`, issues);
     addDuplicateIssues(masteryIds, `lessons.${lesson.id}.mastery`, issues);
 
+    for (const block of lesson.contentBlocks) {
+      if (block.type === "chord-diagram") {
+        const strings = block.strings.map(({ string }) => string);
+        if (new Set(strings).size !== 6) {
+          issues.push({
+            code: "invalid_chord_strings",
+            path: `lessons.${lesson.id}.contentBlocks.${block.id}`,
+            message: "A chord diagram must define each guitar string exactly once."
+          });
+        }
+        if (block.strings.find(({ string }) => string === block.strumFromString)?.state === "muted") {
+          issues.push({
+            code: "invalid_chord_strum_range",
+            path: `lessons.${lesson.id}.contentBlocks.${block.id}.strumFromString`,
+            message: "The first strummed string cannot be muted."
+          });
+        }
+      }
+
+      if (block.type === "tablature") {
+        block.events.forEach((event, eventIndex) => {
+          const noteStrings = event.notes.map(({ string }) => string);
+          if (event.rest === (event.notes.length > 0)) {
+            issues.push({
+              code: "invalid_tab_event",
+              path: `lessons.${lesson.id}.contentBlocks.${block.id}.events.${eventIndex}`,
+              message: "A rest must contain no notes and a played event must contain at least one note."
+            });
+          }
+          if (new Set(noteStrings).size !== noteStrings.length) {
+            issues.push({
+              code: "duplicate_tab_string",
+              path: `lessons.${lesson.id}.contentBlocks.${block.id}.events.${eventIndex}`,
+              message: "A tablature event cannot contain two notes on the same string."
+            });
+          }
+        });
+      }
+    }
+
+    const lessonUnit = content.units.find(({ id }) => id === lesson.unitId);
+    if (
+      lessonUnit?.status === "implemented" &&
+      lessonUnit.sourceUnit !== null &&
+      lessonUnit.sourceUnit <= 8
+    ) {
+      const requiredStages = [
+        "model",
+        "guided",
+        "scaffold-fade",
+        "independent"
+      ];
+      const actualStages = lesson.contentBlocks
+        .flatMap((block) => block.type === "learning-stage" ? [block.stage] : []);
+      if (
+        requiredStages.length !== actualStages.length ||
+        requiredStages.some((stage, index) => actualStages[index] !== stage)
+      ) {
+        issues.push({
+          code: "incomplete_learning_progression",
+          path: `lessons.${lesson.id}.contentBlocks`,
+          message: "Level 1 instrument lessons require model, guided, scaffold-fade, and independent stages in order."
+        });
+      }
+    }
+
     for (const check of lesson.knowledgeChecks) {
       if (!check.options.includes(check.correctAnswer)) {
         issues.push({

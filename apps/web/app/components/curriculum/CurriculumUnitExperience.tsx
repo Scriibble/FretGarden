@@ -24,6 +24,7 @@ import {
 import { FocusTimerActivity } from "./FocusTimerActivity";
 import { MetronomeActivity } from "./MetronomeActivity";
 import { PracticeIdentityActivity } from "./PracticeIdentityActivity";
+import { StructuredMusicBlock } from "./StructuredMusicBlock";
 import styles from "./curriculum.module.css";
 
 interface CurriculumUnitExperienceProps {
@@ -192,6 +193,15 @@ export function CurriculumUnitExperience({
                 <ul>{block.successCriteria.map((criterion) => <li key={criterion}>{criterion}</li>)}</ul>
               </section>
             );
+          }
+          if (
+            block.type === "chord-diagram" ||
+            block.type === "tablature" ||
+            block.type === "rhythm-grid" ||
+            block.type === "instrument-setup" ||
+            block.type === "learning-stage"
+          ) {
+            return <StructuredMusicBlock block={block} key={block.id} />;
           }
           return (
             <section className={styles.contentSection} key={block.id}>
