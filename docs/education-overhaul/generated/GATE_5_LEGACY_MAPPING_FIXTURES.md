@@ -1,6 +1,6 @@
 # Gate 5 Legacy Mapping Fixtures
 
-Status: Proposed fixtures for separate implementation approval
+Status: Implemented; LM-001 through LM-020 pass in Gate 5A
 
 Updated: 2026-07-14
 

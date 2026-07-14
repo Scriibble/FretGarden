@@ -1,10 +1,12 @@
 # Gate 5 Code Implementation Plan
 
-Status: PROPOSED; requires explicit approval before code edits
+Status: APPROVED AND IMPLEMENTED for Gate 5A; no later migration scope authorized
 
 Updated: 2026-07-14
 
 ## Requested Approval Boundary
+
+Approval recorded: Evan Anderson approved this exact Gate 5A boundary on 2026-07-14. Implementation evidence is recorded in `GATE_5A_VALIDATION_REPORT.md`.
 
 Approve only Gate 5A: a read-only `fretboard-map` legacy mapper, deterministic parallel-report builder, unlinked local preview route, fixtures, and tests.
 
@@ -231,6 +233,6 @@ Existing parsers may be imported by the migration module; their behavior and sig
 - `git diff --check`
 - Storage key/value inventory before and after report rehearsal
 
-## Approval Question
+## Approval Record
 
-Approve Gate 5A exactly as described above, or amend the proposed files, route exposure, fixture semantics, or report audience. No code implementation begins until that approval is explicit.
+Evan Anderson approved Gate 5A exactly as described on 2026-07-14. The implementation followed this boundary and passed the required validation. Any navigation exposure, changed legacy behavior, second segment, production data path, or later migration step still requires a new concrete plan and explicit approval.

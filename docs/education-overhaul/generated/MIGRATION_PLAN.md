@@ -2,7 +2,7 @@
 
 Status: Phase 1 staged strategy for Gate 2 review. No migration is authorized by this document.
 
-Current update: Gate 4 implementation is complete, governance owners are assigned, and human protocol execution remains pending. The docs-only `fretboard-map` Gate 5 proposal now lives in `GATE_5_LIMITED_MIGRATION_PLAN.md`, `GATE_5_LEGACY_MAPPING_FIXTURES.md`, and `GATE_5_CODE_IMPLEMENTATION_PLAN.md`. Those documents do not authorize code implementation.
+Current update: Gate 4 implementation is complete, governance owners are assigned, and human protocol execution remains pending. The approved Gate 5A read-only `fretboard-map` rehearsal is implemented and validated in `GATE_5A_VALIDATION_REPORT.md`. It does not authorize conversion, navigation exposure, production persistence, or any later migration step.
 
 ## Migration Principles
 

@@ -4,7 +4,7 @@ Date: 2026-07-14
 
 ## Decision
 
-The Gate 4 **implementation closure pass is complete**. Governance owners and the human-review methods are approved. Gate 4 itself remains **pending human protocol execution**, and Gate 5 limited migration code is not authorized.
+The Gate 4 **implementation closure pass is complete**. Governance owners and the human-review methods are approved. Gate 4 itself remains **pending human protocol execution**. The separately approved Gate 5A read-only rehearsal is implemented and validated, but Gate 5 remains open.
 
 The isolated pilot now provides observable transfer, authored pulse variation, changed-context delayed review, explicit support/fade states, and learner-visible local persistence recovery. No Supabase, RLS, authentication, deployment, legacy progress, or existing lesson behavior was changed.
 
@@ -20,7 +20,7 @@ The isolated pilot now provides observable transfer, authored pulse variation, c
 | Persistence resilience | Pass for local pilot | Write failure alert preserves in-memory state and offers retry/export; malformed reads retain recovery copy | Browser/device loss remains outside guarantee |
 | Accessibility | Pending human signoff | Semantic controls, equivalent input, reduced motion, keyboard-capable flow, review protocol | Screen-reader, zoom/reflow, and assistive-tech protocol not yet executed |
 | Usability | Pending human signoff | End-to-end automated flows and a moderated review protocol | Representative learner and educator sessions not yet executed |
-| Migration feasibility | Planned, not implemented | `GATE_5_LIMITED_MIGRATION_PLAN.md`, fixture matrix, exact code plan, additive packages, isolated route | Gate 4 human execution and separate Gate 5A code approval remain required |
+| Migration feasibility | Pass for read-only Gate 5A scope | 20 legacy fixtures, pure parser/mapper/report, unlinked preview, byte-preservation E2E, `GATE_5A_VALIDATION_REPORT.md` | Gate 4 human execution and separate approval for every later migration step remain required |
 
 ## Closure Work Implemented
 
@@ -67,7 +67,7 @@ The first full E2E invocation encountered a local port conflict after an older d
 
 ## Gate 5 Entry Conditions
 
-The docs-only Gate 5 plan now identifies `fretboard-map`, legacy mapping fixtures, parallel reporting, telemetry boundaries, feature isolation, and rollback rehearsal. `GATE_5_CODE_IMPLEMENTATION_PLAN.md` remains proposed and requires explicit approval after review. Gate 4 human protocol execution is still required, and production data design remains a separate future approval. This planning work does not satisfy or bypass either gate.
+Gate 5A now demonstrates `fretboard-map` legacy mapping fixtures, parallel reporting, telemetry boundaries, feature isolation, and code-only rollback. `GATE_5A_VALIDATION_REPORT.md` records the implementation evidence. Gate 4 human protocol execution is still required, and production data design remains a separate future approval. Gate 5A does not close or bypass either gate.
 
 ## Rollback
 

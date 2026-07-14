@@ -11,10 +11,10 @@ Updated: 2026-07-14
 | ED-005 | OPEN | Formal screen-reader and moderated usability validation are absent | P1 | Protocols approved by Evan Anderson; execute `ACCESSIBILITY_REVIEW_PROTOCOL.md` and `USABILITY_REVIEW_PROTOCOL.md`, then record findings and final signoffs | Evan Anderson | Before Gate 4 approval |
 | ED-006 | RESOLVED | Educational-debt and constitutional-interpretation owners were unnamed | P0 | Evan Anderson now owns both responsibilities; concentration of authority is recorded in `GOVERNANCE_DECISION_LOG.md` | Evan Anderson | Closed 2026-07-14 |
 | ED-007 | OPEN | Review timing trusts the local device clock | P2 | Define clock and conflict policy in the separately approved production persistence design | Engineering | Before production persistence |
-| ED-008 | OPEN | Authoring feasibility is proven only for four objectives | P2 | Implement the approved `fretboard-map` Gate 5A rehearsal and record authoring effort before scaling | Evan Anderson | During Gate 5A implementation |
+| ED-008 | RESOLVED | Representative limited-migration authoring effort had not been measured | P2 | Gate 5A implemented one `fretboard-map` rehearsal with 20 fixtures and recorded file, line, test, bundle, and rollback effort in `GATE_5A_VALIDATION_REPORT.md` | Evan Anderson | Closed 2026-07-14 |
 
 ## Gate Effect
 
-The four implementation debts that motivated this closure pass and the governance-owner debt are resolved. Gate 4 still requires human accessibility/usability execution. Gate 5 also requires its own approved limited-migration implementation plan; this register does not authorize migration.
+The Gate 4 implementation debts, governance-owner debt, and Gate 5A authoring-measurement debt are resolved. Gate 4 still requires human accessibility/usability execution. Gate 5 remains open, and this register does not authorize conversion or later migration work.
 
 Open items with an unassigned accountable person cannot be accepted as bounded debt.

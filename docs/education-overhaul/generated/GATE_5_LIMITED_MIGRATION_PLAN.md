@@ -1,10 +1,12 @@
 # Gate 5 Limited Migration Plan
 
-Status: Docs-only plan approved; code implementation requires separate approval
+Status: Gate 5A read-only rehearsal implemented and validated; Gate 5 remains open
 
 Updated: 2026-07-14
 
 ## Decision
+
+Implementation update: the read-only `fretboard-map` mapper, parallel report, unlinked preview, fixtures, and rollback rehearsal are complete. See `GATE_5A_VALIDATION_REPORT.md`. No conversion or later migration step is authorized.
 
 Use `fretboard-map` as the first limited-migration segment. Begin with a read-only mapping and parallel-report rehearsal. Do not replace, rewrite, or reinterpret the existing lesson or practice flow during the first code slice.
 
