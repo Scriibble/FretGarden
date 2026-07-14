@@ -13,10 +13,10 @@ describe("pilot education content", () => {
       counts: {
         objectives: 4,
         lessons: 4,
-        exercises: 4,
+        exercises: 5,
         reviewPolicies: 1,
         remediationRoutes: 4,
-        accessibilityEquivalents: 4
+        accessibilityEquivalents: 5
       }
     });
     expect(assertConformingContent(pilotEducationContent).contentVersion).toBe("pilot-1");

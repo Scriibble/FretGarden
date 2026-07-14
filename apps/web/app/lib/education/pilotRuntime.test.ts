@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   analyzePulseTaps,
+  applicationPrompts,
   coordinatePrompts,
+  evaluateApplicationSet,
   evaluateCoordinateSet,
   evaluateNoteSet,
   evaluatePracticePlan,
@@ -128,6 +130,43 @@ describe("education pilot runtime", () => {
     expect(early.evidence.kind).toBe("independent_performance");
     expect(early.review).toBeNull();
     expect(delayed.evidence.kind).toBe("retained_performance");
+  });
+
+  it("requires both ordered patterns before granting transfer evidence", () => {
+    const responses = applicationPrompts.map((prompt) => ({
+      promptId: prompt.id,
+      selectedFirstFret: prompt.firstFret,
+      selectedSecondFret: prompt.secondFret,
+      correct: true,
+      supportLevel: "independent" as const,
+      answerRevealed: false
+    }));
+    const result = evaluateApplicationSet({
+      responses,
+      sessionId: "application",
+      now
+    });
+    expect(result.evidence.kind).toBe("transfer");
+    expect(result.attempt.variedContext).toBe(true);
+    expect(result.review).toBeNull();
+  });
+
+  it("caps a revealed application pattern below transfer", () => {
+    const responses = applicationPrompts.map((prompt, index) => ({
+      promptId: prompt.id,
+      selectedFirstFret: prompt.firstFret,
+      selectedSecondFret: prompt.secondFret,
+      correct: true,
+      supportLevel: index === 0 ? ("prompted" as const) : ("independent" as const),
+      answerRevealed: index === 0
+    }));
+    const result = evaluateApplicationSet({
+      responses,
+      sessionId: "application-supported",
+      now
+    });
+    expect(result.evidence.kind).toBe("correction");
+    expect(result.review).toBeNull();
   });
 
   it("supports a real delayed pulse review without registering a duplicate review", () => {

@@ -75,7 +75,9 @@ export function deriveCapabilityClaim(input: {
     input.reviewDueAt !== undefined && Date.parse(input.now) >= Date.parse(input.reviewDueAt);
   const state = reviewIsDue
     ? "review_due"
-    : strongest.kind === "retained_performance" || strongest.kind === "transfer"
+    : strongest.kind === "transfer"
+      ? "applied"
+      : strongest.kind === "retained_performance"
       ? "retained"
       : strongest.kind === "independent_performance"
         ? "independent_once"
@@ -93,6 +95,8 @@ export function deriveCapabilityClaim(input: {
     rationale:
       state === "review_due"
         ? "Independent performance was observed and delayed retrieval is now due."
+        : state === "applied"
+          ? "The capability was observed independently in a changed musical context."
         : state === "retained"
           ? "Independent retrieval was observed after a meaningful delay."
           : state === "independent_once"

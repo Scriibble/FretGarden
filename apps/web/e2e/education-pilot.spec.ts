@@ -43,8 +43,11 @@ test("completes the opening pilot and preserves legacy storage isolation", async
 
   await expect(page.getByText("Shown independently", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Continue" }).click();
+  await completeApplication(page);
+  await expect(page.getByText("Applied in a changed context", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Continue" }).click();
   await expect(
-    page.getByRole("heading", { name: "Shown independently" })
+    page.getByRole("heading", { name: "Applied in a changed context" })
   ).toBeVisible();
   await expect(page.getByText("Return when the delayed review becomes due.")).toBeVisible();
 
@@ -91,6 +94,20 @@ test("limits a revealed answer and routes to a fresh unsupported set", async ({
     return raw ? (JSON.parse(raw) as { reviews: unknown[] }).reviews : [];
   }, PILOT_STORAGE_KEY);
   expect(reviews).toEqual([]);
+});
+
+test("limits a revealed application pattern below transfer", async ({ page }) => {
+  await seedPilot(page, buildPilotSeed("application"));
+  await page.goto("/education-pilot");
+
+  await page.getByRole("button", { name: "Show pattern" }).click();
+  await page.getByRole("button", { name: "Check pattern" }).click();
+  await page.getByRole("button", { name: "Next pattern" }).click();
+  await choosePattern(page, "A", "B", "Open", "2");
+  await page.getByRole("button", { name: "Evaluate application" }).click();
+
+  await expect(page.getByText("Not yet transferred")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Try changed patterns" })).toBeVisible();
 });
 
 test("completes a due delayed review and preserves the earlier achievement", async ({
@@ -264,6 +281,31 @@ async function completeNoteSet(
   await page.getByRole("button", { name: "Evaluate this set" }).click();
 }
 
+async function completeApplication(page: Page): Promise<void> {
+  await choosePattern(page, "E", "F", "Open", "1");
+  await page.getByRole("button", { name: "Next pattern" }).click();
+  await choosePattern(page, "A", "B", "Open", "2");
+  await page.getByRole("button", { name: "Evaluate application" }).click();
+}
+
+async function choosePattern(
+  page: Page,
+  firstNote: string,
+  secondNote: string,
+  firstFret: string,
+  secondFret: string
+): Promise<void> {
+  await page
+    .getByRole("group", { name: `First note: ${firstNote}` })
+    .getByRole("button", { name: firstFret, exact: true })
+    .click();
+  await page
+    .getByRole("group", { name: `Second note: ${secondNote}` })
+    .getByRole("button", { name: secondFret, exact: true })
+    .click();
+  await page.getByRole("button", { name: "Check pattern" }).click();
+}
+
 async function seedPilot(page: Page, store: unknown): Promise<void> {
   await page.evaluate(
     ({ key, value }) => window.localStorage.setItem(key, JSON.stringify(value)),
@@ -271,7 +313,9 @@ async function seedPilot(page: Page, store: unknown): Promise<void> {
   );
 }
 
-function buildPilotSeed(stage: "notes" | "due-review" | "due-pulse-review") {
+function buildPilotSeed(
+  stage: "notes" | "application" | "due-review" | "due-pulse-review"
+) {
   const now = new Date();
   const sourceAt = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString();
   const dueAt = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
@@ -314,7 +358,7 @@ function buildPilotSeed(stage: "notes" | "due-review" | "due-pulse-review") {
       }
     ],
     attempts: [],
-    evidence: isNoteReview
+    evidence: isNoteReview || stage === "application"
       ? [...baseEvidence, noteEvidence]
       : isPulseReview
         ? [...baseEvidence, noteEvidence, pulseEvidence]

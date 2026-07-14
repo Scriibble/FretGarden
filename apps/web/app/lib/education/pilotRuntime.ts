@@ -43,6 +43,24 @@ export interface NotePrompt {
   fret: number;
 }
 
+export interface ApplicationPrompt {
+  id: string;
+  string: 5 | 6;
+  firstNote: NotePrompt["note"];
+  firstFret: number;
+  secondNote: NotePrompt["note"];
+  secondFret: number;
+}
+
+export interface ApplicationResponse {
+  promptId: string;
+  selectedFirstFret: number;
+  selectedSecondFret: number;
+  correct: boolean;
+  supportLevel: SupportLevel;
+  answerRevealed: boolean;
+}
+
 export interface CoordinateResponse {
   promptId: string;
   selectedString: 5 | 6;
@@ -84,6 +102,25 @@ export const notePrompts: NotePrompt[] = [
   { id: "note-a-5", note: "A", string: 5, fret: 0 },
   { id: "note-f-6-varied", note: "F", string: 6, fret: 1 },
   { id: "note-c-5-varied", note: "C", string: 5, fret: 3 }
+];
+
+export const applicationPrompts: ApplicationPrompt[] = [
+  {
+    id: "pattern-e-f-6",
+    string: 6,
+    firstNote: "E",
+    firstFret: 0,
+    secondNote: "F",
+    secondFret: 1
+  },
+  {
+    id: "pattern-a-b-5",
+    string: 5,
+    firstNote: "A",
+    firstFret: 0,
+    secondNote: "B",
+    secondFret: 2
+  }
 ];
 
 export function evaluatePracticePlan(input: {
@@ -195,6 +232,66 @@ export function evaluateNoteSet(input: {
       : { ...attemptInput, sourceEvidenceAt: input.sourceEvidenceAt }
   );
   return result(attempt, requirement("fretboard.natural-notes.region-1", requirementId), errors);
+}
+
+export function evaluateApplicationSet(input: {
+  responses: ApplicationResponse[];
+  sessionId: string;
+  now: string;
+}): PilotEvaluationResult {
+  const relevant = input.responses.slice(0, applicationPrompts.length);
+  const correct = relevant.filter(({ correct }) => correct).length;
+  const independent = relevant.every(
+    ({ supportLevel, answerRevealed }) =>
+      supportLevel === "independent" && !answerRevealed
+  );
+  const promptCoverage = new Set(relevant.map(({ promptId }) => promptId));
+  const stringCoverage = new Set(
+    relevant.map(
+      ({ promptId }) =>
+        applicationPrompts.find(({ id }) => id === promptId)?.string
+    )
+  );
+  const varied = stringCoverage.has(5) && stringCoverage.has(6);
+  const errors: ObservableError[] = [];
+  for (const response of relevant) {
+    if (!response.correct) {
+      errors.push("incorrect_response");
+    }
+    if (response.supportLevel !== "independent" || response.answerRevealed) {
+      errors.push("support_dependency");
+    }
+  }
+  const attempt = buildAttempt({
+    id: `${input.sessionId}:note-transfer`,
+    sessionId: input.sessionId,
+    taskId: "natural-note-application",
+    objective: NOTE_OBJECTIVE,
+    now: input.now,
+    response: relevant,
+    supportLevel: independent ? "independent" : "prompted",
+    supportsUsed: independent ? [] : ["pattern_answer"],
+    correctionState: relevant.some(({ answerRevealed }) => answerRevealed)
+      ? "corrected_reattempt"
+      : "none",
+    variedContext: varied,
+    observations: [
+      { dimension: "correctness", passed: correct === 2, value: correct },
+      {
+        dimension: "scope_coverage",
+        passed: promptCoverage.size === applicationPrompts.length,
+        value: promptCoverage.size
+      },
+      { dimension: "independence", passed: independent },
+      { dimension: "validity", passed: relevant.length === applicationPrompts.length },
+      { dimension: "variation", passed: varied }
+    ]
+  });
+  return result(
+    attempt,
+    requirement("fretboard.natural-notes.region-1", "note-transfer"),
+    errors
+  );
 }
 
 export function evaluatePulseTaps(input: {

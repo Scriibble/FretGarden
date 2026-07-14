@@ -89,7 +89,7 @@
   border: 1px solid var(--color-line);
   border-radius: 6px;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   overflow: hidden;
 }
 
@@ -151,9 +151,29 @@
 
 .form,
 .pulseWorkspace,
-.fretWorkspace {
+.fretWorkspace,
+.applicationWorkspace {
   display: grid;
   gap: 1rem;
+}
+
+.patternControls {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.patternControls fieldset {
+  border: 1px solid var(--color-line);
+  margin: 0;
+  padding: 0.8rem;
+}
+
+.patternControls legend {
+  color: var(--color-olive-strong);
+  font-size: 0.82rem;
+  font-weight: 850;
+  padding-inline: 0.3rem;
 }
 
 .form label,
@@ -468,7 +488,7 @@
 .summaryGrid {
   display: grid;
   gap: 0.75rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .summaryGrid div {
@@ -547,6 +567,7 @@
   }
 
   .explicitControls,
+  .patternControls,
   .summaryGrid {
     grid-template-columns: 1fr;
   }

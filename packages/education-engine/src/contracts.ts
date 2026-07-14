@@ -17,6 +17,7 @@ export type CapabilityState =
   | "independent_once"
   | "review_due"
   | "retained"
+  | "applied"
   | "needs_refresh"
   | "insufficient_evidence";
 

@@ -8,10 +8,10 @@ Generated from `@pocket-practice/education-content`. Content version: `pilot-1`.
 
 - Objectives: 4
 - Lessons: 4
-- Exercises: 4
+- Exercises: 5
 - Review policies: 1
 - Remediation routes: 4
-- Accessibility equivalents: 4
+- Accessibility equivalents: 5
 - Conformance issues: 0
 
 ## Authoring Validation

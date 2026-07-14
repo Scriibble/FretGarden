@@ -12,7 +12,9 @@ import {
 import { PracticePlanStep } from "./PracticePlanStep";
 import { PulseTask } from "./PulseTask";
 import { FretboardTask } from "./FretboardTask";
+import { ApplicationTask } from "./ApplicationTask";
 import {
+  applicationPrompts,
   coordinatePrompts,
   evaluateCoordinateSet,
   evaluateNoteSet,
@@ -36,15 +38,23 @@ import {
 } from "../../lib/education/storage/educationPilotStorage";
 import styles from "./educationPilot.module.css";
 
-type Stage = "plan" | "pulse" | "coordinates" | "notes" | "summary";
+type Stage = "plan" | "pulse" | "coordinates" | "notes" | "application" | "summary";
 
 const EPOCH = "1970-01-01T00:00:00.000Z";
-const stageOrder: Stage[] = ["plan", "pulse", "coordinates", "notes", "summary"];
+const stageOrder: Stage[] = [
+  "plan",
+  "pulse",
+  "coordinates",
+  "notes",
+  "application",
+  "summary"
+];
 const stageLabels: Record<Stage, string> = {
   plan: "Set the session",
   pulse: "Meet the pulse",
   coordinates: "Orient the region",
   notes: "Retrieve notes",
+  application: "Apply a pattern",
   summary: "Next action"
 };
 
@@ -367,10 +377,25 @@ export function EducationPilot() {
           onComplete={handleNoteComplete}
           onRetry={() => setOutcome(null)}
           onContinue={() => {
-            if (reviewMode) {
+            const completedReview = reviewMode;
+            if (completedReview) {
               setReviewMode(false);
               setReviewObligation(null);
             }
+            setOutcome(null);
+            setStage(completedReview ? "summary" : "application");
+          }}
+        />
+      ) : null}
+
+      {stage === "application" ? (
+        <ApplicationTask
+          prompts={applicationPrompts}
+          sessionId={activeSessionId}
+          outcome={outcome}
+          onComplete={saveEvaluation}
+          onRetry={() => setOutcome(null)}
+          onContinue={() => {
             setOutcome(null);
             setStage("summary");
           }}
@@ -392,6 +417,10 @@ export function EducationPilot() {
             <div>
               <span>Delayed retrievals</span>
               <strong>{noteEvidence.filter(({ kind }) => kind === "retained_performance").length}</strong>
+            </div>
+            <div>
+              <span>Application evidence</span>
+              <strong>{noteEvidence.filter(({ kind }) => kind === "transfer").length}</strong>
             </div>
             <div>
               <span>Next review</span>
@@ -438,12 +467,26 @@ function inferStage(store: EducationPilotStore): Stage {
   const supportedRequirements = new Set(
     store.evidence
       .filter(({ kind }) =>
-        kind === "independent_performance" || kind === "retained_performance"
+        kind === "independent_performance" ||
+        kind === "retained_performance" ||
+        kind === "transfer"
       )
       .map(({ requirementId }) => requirementId)
   );
-  if (supportedRequirements.has("note-exit") || supportedRequirements.has("note-retained")) {
+  const hasDueReview = store.reviews.some(
+    (review) =>
+      getReviewState(review, new Date().toISOString()) === "due" &&
+      store.evidence.some(({ id }) => id === review.sourceEvidenceId)
+  );
+  if (
+    supportedRequirements.has("note-transfer") ||
+    supportedRequirements.has("note-retained") ||
+    (supportedRequirements.has("note-exit") && hasDueReview)
+  ) {
     return "summary";
+  }
+  if (supportedRequirements.has("note-exit")) {
+    return "application";
   }
   if (supportedRequirements.has("coordinate-placement")) {
     return "notes";
@@ -463,6 +506,9 @@ function statusLabel(kind: EvidenceKind | null, state: string): string {
   }
   if (kind === "retained_performance") {
     return "Retrieved after a delay";
+  }
+  if (kind === "transfer" || state === "applied") {
+    return "Applied in a changed context";
   }
   if (kind === "independent_performance") {
     return "Shown independently";

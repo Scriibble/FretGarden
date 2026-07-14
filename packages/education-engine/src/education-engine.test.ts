@@ -126,6 +126,26 @@ describe("constitutional education invariants", () => {
     expect(claim.supportingEvidenceIds).toContain(support.id);
   });
 
+  it("distinguishes transfer in a changed context from delayed retention", () => {
+    const transfer = interpretAttempt(
+      attempt({ id: "transfer-attempt", variedContext: true }),
+      {
+        ...requirement,
+        id: "note-transfer",
+        claimSupported: "transfer",
+        requiresVariedContext: true
+      }
+    );
+    const claim = deriveCapabilityClaim({
+      objective,
+      evidence: [transfer],
+      now: transfer.observedAt
+    });
+    expect(transfer.kind).toBe("transfer");
+    expect(claim.state).toBe("applied");
+    expect(claim.rationale).toContain("changed musical context");
+  });
+
   it("allows valid evidence to satisfy prerequisites without lesson completion", () => {
     const support = interpretAttempt(attempt(), requirement);
     const claim = deriveCapabilityClaim({

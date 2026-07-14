@@ -114,7 +114,8 @@ export const exerciseDefinitionSchema = z.object({
     "practice_plan",
     "pulse_tapping",
     "coordinate_selection",
-    "note_retrieval"
+    "note_retrieval",
+    "note_application"
   ]),
   evaluatorId: z.string().min(1),
   responseContract: z.string().min(1),

@@ -141,6 +141,7 @@ export const pilotEducationContent = {
           claimSupported: "transfer",
           qualityDimensions: ["correctness", "scope_coverage", "independence", "validity", "variation"],
           maxSupportLevel: "independent",
+          minimumValidSamples: 2,
           requiresVariedContext: true
         }
       ],
@@ -226,7 +227,10 @@ export const pilotEducationContent = {
       exitEvidenceRequirementIds: ["note-exit", "note-transfer"],
       delayedReviewPolicyIds: ["pilot-spaced-review"],
       remediationRouteIds: ["coordinate-orientation", "note-contrast-and-fade"],
-      accessibilityEquivalentIds: ["note-explicit-coordinate-controls"]
+      accessibilityEquivalentIds: [
+        "note-explicit-coordinate-controls",
+        "note-pattern-fret-controls"
+      ]
     }
   ],
   exercises: [
@@ -277,10 +281,23 @@ export const pilotEducationContent = {
       evaluatorId: "natural-note-coordinate-v1",
       responseContract: "prompted note and string answered with fret coordinate",
       qualityDimensions: ["correctness", "scope_coverage", "independence", "validity", "variation"],
-      variationAxes: ["note", "string", "prompt order", "response control", "application context"],
+      variationAxes: ["note", "string", "prompt order", "response control"],
       invalidationConditions: ["input cancelled", "prompt answer unavailable"],
       supportFade: ["modeled", "guided", "prompted", "independent"],
-      evidenceRequirementIds: ["note-exit", "note-retained", "note-transfer"]
+      evidenceRequirementIds: ["note-exit", "note-retained"]
+    },
+    {
+      id: "natural-note-application",
+      version: 1,
+      objective: { id: "fretboard.natural-notes.region-1", version: 1 },
+      kind: "note_application",
+      evaluatorId: "natural-note-pattern-v1",
+      responseContract: "ordered pair of fret locations on a prompted string",
+      qualityDimensions: ["correctness", "scope_coverage", "independence", "validity", "variation"],
+      variationAxes: ["ordered note pattern", "string", "physical playing context"],
+      invalidationConditions: ["input cancelled", "prompt answer unavailable"],
+      supportFade: ["modeled", "prompted", "independent"],
+      evidenceRequirementIds: ["note-transfer"]
     }
   ],
   reviewPolicies: [
@@ -357,6 +374,15 @@ export const pilotEducationContent = {
       unchangedCapability: "retrieve a natural-note location on the requested string",
       responseContract: "prompted string plus selected fret coordinate",
       evaluatorId: "natural-note-coordinate-v1",
+      evidenceCeiling: "retained_performance"
+    },
+    {
+      id: "note-pattern-fret-controls",
+      exerciseId: "natural-note-application",
+      alternateModality: "ordered labeled fret controls",
+      unchangedCapability: "retrieve two natural-note locations as a playable pattern",
+      responseContract: "ordered pair of fret locations on a prompted string",
+      evaluatorId: "natural-note-pattern-v1",
       evidenceCeiling: "transfer"
     }
   ]
