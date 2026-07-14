@@ -138,4 +138,16 @@ describe("foundation curriculum", () => {
     expect(issues).toContainEqual(expect.objectContaining({ code: "invalid_fretboard_position" }));
     expect(issues).toContainEqual(expect.objectContaining({ code: "invalid_scale_note" }));
   });
+
+  it("validates scale and arpeggio positions against their declared degrees", () => {
+    const invalid = structuredClone(foundationCurriculum);
+    const lesson = invalid.lessons.find(({ id }) => id === "lesson.major-scale-diatonic-melody")!;
+    const pattern = lesson.contentBlocks.find(({ id }) => id === "g-major-position");
+    if (pattern?.type !== "scale-pattern") throw new Error("Expected G-major scale pattern.");
+    pattern.positions[0]!.degree = "3";
+
+    expect(validateFoundationCurriculum(invalid).issues).toContainEqual(
+      expect.objectContaining({ code: "invalid_scale_position" })
+    );
+  });
 });

@@ -226,6 +226,24 @@ export function validateFoundationCurriculum(
               });
             }
           });
+
+          for (const position of block.positions) {
+            const degreeIndex = block.degrees.indexOf(position.degree);
+            const actual = getNoteAtFret(
+              position.string as GuitarStringNumber,
+              position.fret
+            ).note;
+            if (
+              degreeIndex === -1 ||
+              getPitchClass(actual) !== getPitchClass(block.notes[degreeIndex] as NoteName)
+            ) {
+              issues.push({
+                code: "invalid_scale_position",
+                path: `lessons.${lesson.id}.contentBlocks.${block.id}.positions`,
+                message: `String ${position.string} fret ${position.fret} must match declared degree ${position.degree}.`
+              });
+            }
+          }
         }
       }
 
@@ -248,7 +266,7 @@ export function validateFoundationCurriculum(
     if (
       lessonUnit?.status === "implemented" &&
       lessonUnit.sourceUnit !== null &&
-      lessonUnit.sourceUnit <= 16
+      lessonUnit.sourceUnit <= 24
     ) {
       const requiredStages = [
         "model",
@@ -265,7 +283,7 @@ export function validateFoundationCurriculum(
         issues.push({
           code: "incomplete_learning_progression",
           path: `lessons.${lesson.id}.contentBlocks`,
-          message: "Level 1 instrument lessons require model, guided, scaffold-fade, and independent stages in order."
+          message: "Implemented source lessons through Level 3 require model, guided, scaffold-fade, and independent stages in order."
         });
       }
     }
