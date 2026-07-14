@@ -4,6 +4,8 @@ Date: 2026-07-14
 
 Status: **IMPLEMENTATION VALIDATED; GATE 5 REMAINS OPEN**
 
+Technical review: **REVIEWED AGAINST CURRENT BRANCH ON 2026-07-14; PROJECT-OWNER ACKNOWLEDGMENT PENDING**
+
 ## Decision
 
 The approved read-only `fretboard-map` migration rehearsal is implemented and validated. It demonstrates deterministic legacy inspection, limited historical mapping, parallel reporting, local export, feature isolation, and code-only rollback without changing either source system.
@@ -99,6 +101,8 @@ Wall-clock authoring time was not instrumented, so no unsupported time estimate 
 
 The first full E2E attempt was stopped because an orphaned prior Playwright development server still owned port 3000. No application result was accepted from that run. After stopping only that repository-local server and letting one Playwright process own the port, all 28 tests passed.
 
+The 28-test count is the Gate 5A checkpoint result. The current branch adds two accessibility scenarios; the post-review suite passes all 30 tests. The migration implementation and prohibited-file boundary were rechecked with no inconsistency found.
+
 ## Prohibited-File Audit
 
 The Gate 5A diff does not modify:
@@ -115,5 +119,5 @@ The only existing runtime module modified is `educationPilotStorage.ts`, where t
 
 1. Execute and sign the accessibility protocol.
 2. Execute representative usability sessions and sign the usability protocol.
-3. Review this Gate 5A report and the local preview as project owner.
+3. Record project-owner acknowledgment of this report and the local preview; technical consistency review is complete.
 4. Require a new concrete plan and explicit approval before any navigation exposure, second segment, legacy write, production data path, or learner-facing migration behavior.

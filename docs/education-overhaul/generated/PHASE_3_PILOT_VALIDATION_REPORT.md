@@ -18,8 +18,8 @@ The isolated pilot now provides observable transfer, authored pulse variation, c
 | Tempo and retention | Pass | 50/60/70 BPM tasks; delayed pulse review disables source BPM and requires changed context | Local clock remains trusted |
 | Support ceilings | Pass | Guided pulse produces supported evidence; revealed answers produce correction; fresh independent attempts are separate | Human comprehension still requires review |
 | Persistence resilience | Pass for local pilot | Write failure alert preserves in-memory state and offers retry/export; malformed reads retain recovery copy | Browser/device loss remains outside guarantee |
-| Accessibility | Pending human signoff | Semantic controls, equivalent input, reduced motion, keyboard-capable flow, review protocol | Screen-reader, zoom/reflow, and assistive-tech protocol not yet executed |
-| Usability | Pending human signoff | End-to-end automated flows and a moderated review protocol | Representative learner and educator sessions not yet executed |
+| Accessibility | Technical preflight pass; pending human signoff | Three findings resolved in `376a1f3`; semantics, contrast, equivalent input, reduced motion, keyboard pulse, and 30-scenario E2E pass | Screen-reader, literal zoom, focus, and assistive-tech protocol not yet executed |
+| Usability | Expert preflight pass; pending human signoff | UX-01 through UX-10 have complete technical paths and a moderated review protocol | Representative learner and educator sessions not yet executed |
 | Migration feasibility | Pass for read-only Gate 5A scope | 20 legacy fixtures, pure parser/mapper/report, unlinked preview, byte-preservation E2E, `GATE_5A_VALIDATION_REPORT.md` | Gate 4 human execution and separate approval for every later migration step remain required |
 
 ## Closure Work Implemented
@@ -60,6 +60,8 @@ The isolated pilot now provides observable transfer, authored pulse variation, c
 The first full E2E invocation encountered a local port conflict after an older development server became unhealthy during the production build. No application assertion was accepted from that run. After stopping only the stale local server and letting Playwright own port 3000, all 22 tests passed.
 
 ## Gate 4 Human Closure Conditions
+
+Technical and expert preflight results are recorded in `GATE_4_REVIEW_EXECUTION_RECORD.md`. They do not replace the following human evidence:
 
 1. Execute `ACCESSIBILITY_REVIEW_PROTOCOL.md`; resolve blockers and record named signoff.
 2. Execute `USABILITY_REVIEW_PROTOCOL.md` with representative learners and a guitar educator/curriculum reviewer; resolve blockers and record named signoff.
