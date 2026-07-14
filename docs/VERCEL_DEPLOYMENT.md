@@ -25,6 +25,22 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-publishable-key"
 The waitlist integration is optional and uses the private variables documented
 in `docs/WAITLIST_SETUP.md`.
 
+## Supabase Auth Redirects
+
+Confirm these URLs in the hosted Supabase Auth URL configuration before inviting
+external account testers:
+
+- **Site URL:** the production FretGarden URL when production is ready.
+- **Local development callback:** `http://127.0.0.1:3000/auth/callback`
+- **Localhost callback:** `http://localhost:3000/auth/callback`
+- **Vercel preview callback:** the preview deployment callback URL, or the
+  approved preview wildcard pattern for this project.
+- **Production callback:** `https://<production-domain>/auth/callback`
+
+The checked-in `supabase/config.toml` covers local CLI development only. Hosted
+Supabase redirect settings must be verified in the Supabase dashboard or via
+the project management API.
+
 ## Recommended Vercel Setup
 
 Import the GitHub repository into Vercel with these settings:
@@ -64,6 +80,8 @@ pnpm build
 7. Confirm `/forgot-password`, `/update-password`, and `/account-notice`
    render correctly. Test a real password reset email before inviting broader
    account testers.
+8. Confirm the Supabase hosted redirect allow-list includes the local, preview,
+   and production callback URLs listed above.
 
 ## Needed From The Project Owner
 

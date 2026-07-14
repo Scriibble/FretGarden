@@ -32,7 +32,7 @@ export function ForgotPasswordForm() {
       );
 
       if (error) {
-        setStatus(error.message);
+        setStatus(getPasswordResetErrorMessage(error.message));
         return;
       }
 
@@ -83,4 +83,12 @@ export function ForgotPasswordForm() {
       ) : null}
     </form>
   );
+}
+
+function getPasswordResetErrorMessage(message: string): string {
+  if (message.toLowerCase().includes("rate limit")) {
+    return "Too many reset emails have been requested recently. Wait a few minutes, then try again.";
+  }
+
+  return message;
 }
