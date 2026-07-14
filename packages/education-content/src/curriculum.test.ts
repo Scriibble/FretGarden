@@ -20,12 +20,12 @@ describe("foundation curriculum", () => {
     expect(curriculumUnitIndex[13]?.title).toBe("Fretboard Notes and Octave Shapes");
   });
 
-  it("implements Level 1 and the opening Level 2 units without claiming later mapped units are complete", () => {
-    expect(curriculumUnitIndex.filter(({ status }) => status === "implemented")).toHaveLength(14);
-    expect(curriculumUnitIndex.filter(({ status }) => status === "mapped")).toHaveLength(37);
-    expect(foundationCurriculum.lessons).toHaveLength(14);
-    expect(foundationCurriculum.assessments).toHaveLength(14);
-    expect(foundationCurriculum.reviewPlans).toHaveLength(14);
+  it("implements Units 1-18 without claiming later mapped units are complete", () => {
+    expect(curriculumUnitIndex.filter(({ status }) => status === "implemented")).toHaveLength(18);
+    expect(curriculumUnitIndex.filter(({ status }) => status === "mapped")).toHaveLength(33);
+    expect(foundationCurriculum.lessons).toHaveLength(18);
+    expect(foundationCurriculum.assessments).toHaveLength(18);
+    expect(foundationCurriculum.reviewPlans).toHaveLength(18);
   });
 
   it("passes curriculum schema and reference validation", () => {

@@ -144,7 +144,7 @@ const rhythmGridBlockSchema = z.object({
   id: z.string().min(1),
   type: z.literal("rhythm-grid"),
   heading: z.string().min(1),
-  meter: z.enum(["4/4", "3/4", "6/8"]),
+  meter: z.enum(["4/4", "3/4", "6/8", "12/8"]),
   events: z.array(rhythmGridEventSchema).min(1),
   explanation: z.string().min(1),
   accessibilityDescription: z.string().min(1)

@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => window.localStorage.clear());
 });
 
-test("presents the complete Level 1 path without claiming the mapped roadmap is complete", async ({ page }) => {
+test("presents the implemented curriculum without claiming the mapped roadmap is complete", async ({ page }) => {
   await page.goto("/lessons");
 
   await expect(page.getByRole("heading", { name: "Learn to practice before you rush to collect facts" })).toBeVisible();
@@ -18,8 +18,9 @@ test("presents the complete Level 1 path without claiming the mapped roadmap is 
   await expect(page.getByRole("link", { name: "Using and Practicing With a Metronome" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Meet the Guitar and Produce a Clear Sound" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Level 1 Integration Project" })).toBeVisible();
-  await expect(page.getByText("The remaining 40 units are source-mapped", { exact: false })).toBeVisible();
-  await expect(page.getByText("Fretboard Notes and Octave Shapes")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Lead-Sheet Literacy and Transposition" })).toBeVisible();
+  await expect(page.getByText("The remaining 33 units are source-mapped", { exact: false })).toBeVisible();
+  await expect(page.getByText("Level 2 Band and Songwriting Project")).toHaveCount(0);
 });
 
 test("requires correct knowledge and explicit performance checks before Unit 1 completion", async ({ page }) => {
@@ -101,7 +102,14 @@ test("keeps every foundation route inside a 320 pixel viewport", async ({ page }
     "/lessons/melody-scales-musical-alphabet",
     "/lessons/power-chords-rock-rhythm",
     "/lessons/open-chord-vocabulary-two-song-form",
-    "/lessons/level-one-integration-project"
+    "/lessons/level-one-integration-project",
+    "/lessons/barre-chords-movable-harmony",
+    "/lessons/minor-pentatonic-blues-language",
+    "/lessons/fretboard-notes-octave-shapes",
+    "/lessons/major-scale-diatonic-melody",
+    "/lessons/rhythm-guitar-vocabulary",
+    "/lessons/triads-open-movable-contexts",
+    "/lessons/lead-sheet-literacy-transposition"
   ]) {
     await page.goto(route);
     const dimensions = await page.evaluate(() => ({
@@ -171,6 +179,22 @@ test("renders structured music blocks with text equivalents and explicit support
   const tab = page.getByRole("table", { name: /Two-measure etude/ });
   await expect(tab).toBeVisible();
   await expect(tab.getByRole("columnheader", { name: "1 &" })).toBeVisible();
+
+  await page.goto("/lessons/fretboard-notes-octave-shapes");
+  await expect(page.getByRole("table", { name: /Natural notes on strings 6 and 5/ })).toBeVisible();
+
+  await page.goto("/lessons/lead-sheet-literacy-transposition");
+  await expect(page.getByRole("table", { name: /North Window/ })).toBeVisible();
+  await expect(page.getByText("1 · Model", { exact: true })).toBeVisible();
+});
+
+test("keeps optional Level 2 reinforcement isolated from legacy storage", async ({ page }) => {
+  await page.goto("/lessons/triads-open-movable-contexts");
+
+  const reinforcement = page.getByRole("link", { name: "Practice optional chord-tone reinforcement" });
+  await expect(reinforcement).toHaveAttribute("href", "/practice?drill=chordTone&lesson=triads#practice");
+  await expect.poll(() => page.evaluate((key) => window.localStorage.getItem(key), LEGACY_LEARNING_KEY)).toBeNull();
+  await expect.poll(() => page.evaluate((key) => window.localStorage.getItem(key), LEGACY_DRILL_KEY)).toBeNull();
 });
 
 test("keeps later units previewable while enforcing the completion prerequisite", async ({ page }) => {

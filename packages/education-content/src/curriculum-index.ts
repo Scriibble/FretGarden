@@ -135,7 +135,7 @@ function levelForSourceUnit(sourceUnit: number): CurriculumIndexEntry["level"] {
   return "advanced";
 }
 
-const implementedLevelOneMetadata: Record<number, {
+const implementedSourceMetadata: Record<number, {
   estimatedMinutes: number;
   outcomes: string[];
   tags: string[];
@@ -238,13 +238,49 @@ const implementedLevelOneMetadata: Record<number, {
       "Create a riff using named roots in two registers."
     ],
     tags: ["fretboard", "note-names", "octaves", "roots"]
+  },
+  12: {
+    estimatedMinutes: 120,
+    outcomes: [
+      "Construct and play the major scale in two movable positions with named degrees.",
+      "Identify tonic and relative minor by sound and function.",
+      "Compose and perform an eight-bar melody with motive, sequence, climax, and resolution."
+    ],
+    tags: ["major-scale", "melody", "composition", "ear-training"]
+  },
+  13: {
+    estimatedMinutes: 115,
+    outcomes: [
+      "Maintain continuous sixteenth-note motion through sounded and silent events.",
+      "Distinguish and perform straight, syncopated, and shuffle feels.",
+      "Sustain an intentional rhythm-guitar groove for two minutes with recovery."
+    ],
+    tags: ["rhythm-guitar", "sixteenth-notes", "syncopation", "groove"]
+  },
+  14: {
+    estimatedMinutes: 125,
+    outcomes: [
+      "Construct major, minor, diminished, and augmented triads from formulas.",
+      "Play and name root-position and inverted triads on a top-string set.",
+      "Arrange a voice-led second guitar part with intentional register choices."
+    ],
+    tags: ["triads", "inversions", "voice-leading", "arrangement"]
+  },
+  15: {
+    estimatedMinutes: 120,
+    outcomes: [
+      "Interpret lead-sheet form, repeats, slash chords, rhythmic cues, and capo markings.",
+      "Read two unfamiliar original charts while looking ahead and recovering in time.",
+      "Transpose a progression to two keys using Roman and Nashville notation."
+    ],
+    tags: ["lead-sheets", "transposition", "reading", "functional-harmony"]
   }
 };
 
 const mappedUnits: CurriculumIndexEntry[] = mappedSourceUnits.map((unit) => {
   const order = unit.sourceUnit + 3;
   const previousId = order === 4 ? "unit.metronome-foundations" : `unit.${mappedSourceUnits[unit.sourceUnit - 2]!.slug}`;
-  const implementedMetadata = implementedLevelOneMetadata[unit.sourceUnit];
+  const implementedMetadata = implementedSourceMetadata[unit.sourceUnit];
 
   return {
     id: `unit.${unit.slug}`,
