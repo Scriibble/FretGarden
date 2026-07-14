@@ -5,6 +5,7 @@ import {
   appendPilotEvaluation,
   createEmptyPilotStore,
   discardEducationPilotRecovery,
+  parseEducationPilotStore,
   readEducationPilotStore,
   readEducationPilotRecovery,
   upsertPilotSession,
@@ -93,6 +94,37 @@ describe("education pilot storage", () => {
     expect(storage.getItem(EDUCATION_PILOT_RECOVERY_KEY)).toContain("{bad-json");
     discardEducationPilotRecovery(storage);
     expect(readEducationPilotRecovery(storage)).toBeNull();
+  });
+
+  it("parses pilot data without touching recovery storage", () => {
+    const storage = new MemoryStorage();
+    storage.setItem(EDUCATION_PILOT_RECOVERY_KEY, "existing-recovery");
+
+    expect(parseEducationPilotStore(null, now)).toMatchObject({
+      state: "absent",
+      store: { attempts: [], evidence: [] }
+    });
+    expect(parseEducationPilotStore("{bad-json", now)).toMatchObject({
+      state: "invalid_json",
+      store: { attempts: [], evidence: [] }
+    });
+    expect(
+      parseEducationPilotStore(JSON.stringify({ schemaVersion: 99 }), now)
+    ).toMatchObject({
+      state: "unknown_schema",
+      store: { attempts: [], evidence: [] }
+    });
+    expect(storage.getItem(EDUCATION_PILOT_RECOVERY_KEY)).toBe(
+      "existing-recovery"
+    );
+  });
+
+  it("classifies a valid store through the pure parser", () => {
+    const store = createEmptyPilotStore(now);
+    expect(parseEducationPilotStore(JSON.stringify(store), now)).toEqual({
+      state: "valid",
+      store
+    });
   });
 
   it("reports a local write failure without throwing", () => {

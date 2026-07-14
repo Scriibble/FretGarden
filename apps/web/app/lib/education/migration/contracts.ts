@@ -4,15 +4,11 @@ import type {
   ReviewObligation,
   VersionRef
 } from "@pocket-practice/education-engine";
+import type { EducationPilotStoreState } from "../storage/educationPilotStorage";
 
 export const FRETBOARD_MAP_REPORT_VERSION = 1 as const;
 
 export type MigrationReportVersion = typeof FRETBOARD_MAP_REPORT_VERSION;
-export type EducationPilotStoreState =
-  | "absent"
-  | "valid"
-  | "invalid_json"
-  | "unknown_schema";
 export type LegacySourceVersion = number | "unversioned";
 export type LegacySourceKind =
   | "learning_progress"

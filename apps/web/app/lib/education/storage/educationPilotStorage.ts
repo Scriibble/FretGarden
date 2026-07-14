@@ -45,6 +45,17 @@ export interface EducationPilotStore {
   readinessDecisions: ReadinessDecision[];
 }
 
+export type EducationPilotStoreState =
+  | "absent"
+  | "valid"
+  | "invalid_json"
+  | "unknown_schema";
+
+export interface ParsedEducationPilotStore {
+  store: EducationPilotStore;
+  state: EducationPilotStoreState;
+}
+
 const versionRefSchema = z.object({ id: z.string(), version: z.number() });
 const recoverySchema = z.object({
   capturedAt: z.string(),
@@ -150,21 +161,39 @@ export function readEducationPilotStore(
   now: string
 ): EducationPilotStore {
   const raw = storage.getItem(EDUCATION_PILOT_STORAGE_KEY);
+  const parsed = parseEducationPilotStore(raw, now);
+  if (
+    raw !== null &&
+    (parsed.state === "invalid_json" || parsed.state === "unknown_schema")
+  ) {
+    preservePilotRecovery(storage, {
+      capturedAt: now,
+      reason: parsed.state,
+      raw
+    });
+  }
+  return parsed.store;
+}
+
+export function parseEducationPilotStore(
+  raw: string | null,
+  now: string
+): ParsedEducationPilotStore {
   if (!raw) {
-    return createEmptyPilotStore(now);
+    return { store: createEmptyPilotStore(now), state: "absent" };
   }
 
+  let value: unknown;
   try {
-    const parsed = storeSchema.safeParse(JSON.parse(raw) as unknown);
-    if (parsed.success) {
-      return parsed.data as EducationPilotStore;
-    }
-    preservePilotRecovery(storage, { capturedAt: now, reason: "unknown_schema", raw });
-    return createEmptyPilotStore(now);
+    value = JSON.parse(raw) as unknown;
   } catch {
-    preservePilotRecovery(storage, { capturedAt: now, reason: "invalid_json", raw });
-    return createEmptyPilotStore(now);
+    return { store: createEmptyPilotStore(now), state: "invalid_json" };
   }
+
+  const parsed = storeSchema.safeParse(value);
+  return parsed.success
+    ? { store: parsed.data as EducationPilotStore, state: "valid" }
+    : { store: createEmptyPilotStore(now), state: "unknown_schema" };
 }
 
 export function readEducationPilotRecovery(
