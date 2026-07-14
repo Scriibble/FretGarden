@@ -61,7 +61,7 @@ Secondary:
 - A video course platform
 - An ear training app
 - A tuner, recording tool, or backing-track app
-- A cloud progress, subscription, or social learning network
+- A cloud-progress, subscription, or social learning network
 
 ## Messaging Pillars
 

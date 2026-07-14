@@ -10,7 +10,8 @@ are still stored in each browser's `localStorage`.
 
 This means:
 
-- Supabase environment variables are required for signup, login, account, and auth callback routes.
+- Supabase environment variables are required for signup, login, password reset,
+  account, profile editing, and auth callback routes.
 - Testers on different browsers or devices will not share progress.
 - Resetting demo progress only clears the current browser.
 
@@ -60,6 +61,9 @@ pnpm build
 5. Confirm the reset button clears local demo progress.
 6. Create a test account, confirm the email if required, sign in, open
    `/account`, and sign out.
+7. Confirm `/forgot-password`, `/update-password`, and `/account-notice`
+   render correctly. Test a real password reset email before inviting broader
+   account testers.
 
 ## Needed From The Project Owner
 

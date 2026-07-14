@@ -2,7 +2,13 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import styles from "./marketing.module.css";
 
-type MarketingPage = "home" | "about" | "signup" | "login" | "account";
+type MarketingPage =
+  | "home"
+  | "about"
+  | "signup"
+  | "login"
+  | "account"
+  | "accountNotice";
 
 type MarketingShellProps = {
   activePage: MarketingPage;
@@ -108,7 +114,7 @@ export function MarketingShell({ activePage, children }: MarketingShellProps) {
 
           <div className={styles.footerMeta}>
             <span>© {new Date().getFullYear()} FretGarden</span>
-            <span>Privacy and terms need to be finalized before broad account rollout.</span>
+            <Link href="/account-notice">Early account notice</Link>
           </div>
         </div>
       </footer>

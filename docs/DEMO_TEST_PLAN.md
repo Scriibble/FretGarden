@@ -12,8 +12,9 @@ Validate whether a new learner understands the first practice loop without expla
 4. Try scale degrees.
 5. Notice that local progress updates.
 
-This demo includes basic account creation/sign-in, but it intentionally does
-not include cloud progress sync, audio, payments, or advanced backend features.
+This demo includes basic account creation, sign-in, password reset, and profile
+display-name editing, but it intentionally does not include cloud progress
+sync, audio, payments, or advanced backend features.
 
 ## Before Sharing
 
@@ -89,6 +90,7 @@ Keep feedback focused on the current playable loop:
 - Lessons to practice
 - Local progress
 - Basic account creation/sign-in
+- Password reset and display-name editing
 - First-time clarity
 
 Do not evaluate deferred roadmap items yet:

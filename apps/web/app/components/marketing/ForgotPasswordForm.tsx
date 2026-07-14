@@ -4,14 +4,9 @@ import { useState, type FormEvent } from "react";
 import { createClient } from "../../lib/supabase/client";
 import styles from "./marketing.module.css";
 
-type LoginFormProps = {
-  initialStatus?: string;
-};
-
-export function LoginForm({ initialStatus = "" }: LoginFormProps) {
+export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [status, setStatus] = useState(initialStatus);
+  const [status, setStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -19,8 +14,8 @@ export function LoginForm({ initialStatus = "" }: LoginFormProps) {
 
     const trimmedEmail = email.trim();
 
-    if (!trimmedEmail || !password) {
-      setStatus("Enter your email and password to sign in.");
+    if (!trimmedEmail) {
+      setStatus("Enter the email address for your FretGarden account.");
       return;
     }
 
@@ -29,20 +24,25 @@ export function LoginForm({ initialStatus = "" }: LoginFormProps) {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({
-        email: trimmedEmail,
-        password
-      });
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        trimmedEmail,
+        {
+          redirectTo: `${window.location.origin}/auth/callback?next=/update-password`
+        }
+      );
 
       if (error) {
         setStatus(error.message);
         return;
       }
 
-      window.location.assign("/account");
+      setEmail("");
+      setStatus(
+        "If that email belongs to a FretGarden account, a password reset link is on the way."
+      );
     } catch (error) {
-      console.error("FretGarden sign in failed:", error);
-      setStatus("Sign in failed. Check your connection and try again.");
+      console.error("FretGarden password reset failed:", error);
+      setStatus("Password reset failed. Check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -51,11 +51,11 @@ export function LoginForm({ initialStatus = "" }: LoginFormProps) {
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <div className={styles.fieldGroup}>
-        <label htmlFor="login-email">Email address</label>
+        <label htmlFor="reset-email">Email address</label>
         <input
           autoComplete="email"
           disabled={isSubmitting}
-          id="login-email"
+          id="reset-email"
           inputMode="email"
           name="email"
           placeholder="you@example.com"
@@ -68,29 +68,12 @@ export function LoginForm({ initialStatus = "" }: LoginFormProps) {
         />
       </div>
 
-      <div className={styles.fieldGroup}>
-        <label htmlFor="login-password">Password</label>
-        <input
-          autoComplete="current-password"
-          disabled={isSubmitting}
-          id="login-password"
-          name="password"
-          placeholder="Enter your password"
-          type="password"
-          value={password}
-          onChange={(event) => {
-            setPassword(event.target.value);
-            setStatus("");
-          }}
-        />
-      </div>
-
       <button
         className={styles.submitButton}
         disabled={isSubmitting}
         type="submit"
       >
-        {isSubmitting ? "Signing in..." : "Sign in"}
+        {isSubmitting ? "Sending reset link..." : "Send reset link"}
       </button>
 
       {status ? (
@@ -98,12 +81,6 @@ export function LoginForm({ initialStatus = "" }: LoginFormProps) {
           {status}
         </div>
       ) : null}
-
-      <p className={styles.formFooter}>
-        New to FretGarden? <a href="/signup">Create an account</a>
-        <br />
-        Forgot your password? <a href="/forgot-password">Reset it</a>
-      </p>
     </form>
   );
 }

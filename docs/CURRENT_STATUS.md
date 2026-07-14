@@ -22,7 +22,11 @@ The current MVP is broader than the earliest master-plan scope. It includes note
 
 Practice progress is local-only. The app stores recent drill sessions, custom drill presets, and lesson progress in `window.localStorage`. Stored lesson progress, session history, and custom preset payloads are validated before being used by the app. The Practice Hub includes a reset button for clearing local demo progress between testers.
 
-Account creation and sign-in are now real Supabase-backed features. The account page confirms the authenticated user and profile shell, but it does not yet sync lesson progress, drill history, or presets. There is no subscription flow, payment system, or cloud progress history yet.
+Account creation, sign-in, sign-out, password reset, and display-name editing
+are real Supabase-backed features. The account page confirms the authenticated
+user and profile shell, but it does not yet sync lesson progress, drill
+history, or presets. There is no subscription flow, payment system, or cloud
+progress history yet.
 
 ## Known Architecture Debt
 
@@ -30,7 +34,9 @@ Account creation and sign-in are now real Supabase-backed features. The account 
 - `zustand` is installed ahead of a clearer shared client-state need.
 - The root scripts build internal packages before typecheck/test/lint so a clean restore does not depend on pre-existing `dist` folders.
 - Unit tests and browser E2E tests are split between Vitest and Playwright so Playwright specs do not get collected by the unit runner. Browser storage validation and shared session completion persistence have focused unit coverage.
-- Account UI is intentionally minimal. Login, signup, callback, signout, and account routes exist, but password reset, account settings, profile editing, and cloud sync are still future work.
+- Account UI is intentionally minimal. Login, signup, callback, signout,
+  password reset, profile editing, and account routes exist, but cloud sync,
+  full account settings, and complete policy pages are still future work.
 
 ## Deferred Features
 
@@ -46,8 +52,8 @@ The following are future roadmap items, not current app behavior:
 
 ## Likely Next Steps
 
-1. Complete the account boundary: password reset, profile editing, and clear privacy/terms copy before broad rollout.
-2. Decide how Supabase profiles should connect to local lesson and drill progress before implementing cloud sync.
+1. Decide how Supabase profiles should connect to local lesson and drill progress before implementing cloud sync.
+2. Replace the early account notice with full privacy and terms pages before broad account rollout.
 3. Continue extracting state and behavior out of `FretboardExplorer.tsx`, especially drill setup and answer handling.
 4. Keep the first public MVP messaging centered on notes, chord tones, and scale degrees while preserving advanced drills as stretch practice.
 5. Move into the curriculum overhaul once the account surface is stable.

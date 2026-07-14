@@ -53,6 +53,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             <Link className={styles.textCta} href="/practice">
               Open the practice app without signing in.
             </Link>
+            <Link className={styles.textCta} href="/forgot-password">
+              Reset a forgotten password.
+            </Link>
           </div>
 
           <div className={styles.signupCard}>

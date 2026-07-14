@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MarketingShell } from "../components/marketing/MarketingShell";
+import { ProfileForm } from "../components/marketing/ProfileForm";
 import { createClient } from "../lib/supabase/server";
 import styles from "../components/marketing/marketing.module.css";
 
@@ -54,6 +55,9 @@ export default async function AccountPage() {
             <Link className={styles.textCta} href="/practice">
               Continue practicing
             </Link>
+            <Link className={styles.textCta} href="/account-notice">
+              Read the early account notice.
+            </Link>
           </div>
 
           <aside className={styles.signupCard}>
@@ -76,6 +80,14 @@ export default async function AccountPage() {
                 <dd>Planned</dd>
               </div>
             </dl>
+
+            <div className={styles.accountFormSection}>
+              <div className={styles.signupCardHeader}>
+                <h2>Edit profile</h2>
+                <p>Update the display name saved with your profile.</p>
+              </div>
+              <ProfileForm initialDisplayName={displayName} />
+            </div>
 
             <form action="/auth/signout" method="post">
               <button className={styles.submitButton} type="submit">

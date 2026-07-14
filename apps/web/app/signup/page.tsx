@@ -68,6 +68,9 @@ export default function SignupPage() {
             <Link className={styles.textCta} href="/practice">
               Open the practice tools without creating an account.
             </Link>
+            <Link className={styles.textCta} href="/account-notice">
+              Read the early account notice.
+            </Link>
           </div>
 
           <div className={styles.signupCard}>

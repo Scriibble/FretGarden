@@ -1659,6 +1659,38 @@
   overflow-wrap: anywhere;
 }
 
+.accountFormSection {
+  border-top: 1px solid var(--line);
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+}
+
+.noticeList {
+  display: grid;
+  gap: 1rem;
+}
+
+.noticeList section {
+  background: var(--parchment-soft);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+}
+
+.noticeList h3 {
+  color: var(--forest-deep);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.noticeList p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
 .footer {
   background: #1f3027;
   color: var(--cream-bright);
@@ -1723,6 +1755,18 @@
   gap: 0.6rem 1.5rem;
   justify-content: space-between;
   padding-top: 1.2rem;
+}
+
+.footerMeta a {
+  color: #e4eddc;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.footerMeta a:hover {
+  color: var(--cream-bright);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .site :is(a, button, input, summary):focus-visible {

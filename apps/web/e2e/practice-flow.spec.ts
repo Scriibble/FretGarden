@@ -73,6 +73,64 @@ test("shows a focused branded landing page", async ({ page }) => {
   await expect(page.getByText("Accounts are live; cloud progress sync is planned")).toBeVisible();
 });
 
+test("renders account access pages without requiring live signup", async ({
+  page
+}) => {
+  await page.goto("/login");
+
+  await expect(
+    page.getByRole("heading", { name: "Return to your practice garden." })
+  ).toBeVisible();
+  await expect(page.getByLabel("Email address")).toBeVisible();
+  await expect(page.getByLabel("Password")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Reset a forgotten password." })
+  ).toHaveAttribute("href", "/forgot-password");
+
+  await page.goto("/forgot-password");
+  await expect(
+    page.getByRole("heading", { name: "Get a fresh path back in." })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Send reset link" })
+  ).toBeVisible();
+
+  await page.goto("/update-password");
+  await expect(
+    page.getByRole("heading", { name: "Reset your account key." })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Update password" })
+  ).toBeVisible();
+
+  await page.goto("/account-notice");
+  await expect(
+    page.getByRole("heading", {
+      name: "Accounts are real, but still early."
+    })
+  ).toBeVisible();
+  await expect(page.getByText("What accounts do now")).toBeVisible();
+});
+
+test("protects the account page and exposes signout redirect", async ({
+  page,
+  request
+}) => {
+  await page.goto("/account");
+
+  await expect(page).toHaveURL(/\/login\?next=%2Faccount|\/login\?next=\/account/);
+  await expect(
+    page.getByRole("heading", { name: "Return to your practice garden." })
+  ).toBeVisible();
+
+  const signoutResponse = await request.post("/auth/signout", {
+    maxRedirects: 0
+  });
+
+  expect(signoutResponse.status()).toBe(303);
+  expect(signoutResponse.headers().location).toMatch(/\/login$/);
+});
+
 test("surfaces the core MVP path while keeping advanced drills available", async ({
   page
 }) => {
