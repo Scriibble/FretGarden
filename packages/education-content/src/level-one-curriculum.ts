@@ -821,6 +821,133 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     ],
     reviewRecommendation: "Next session, state the form and retrieve its boundary transitions before a full run. After one week, replace one section's rhythm while preserving its role and length.",
     optionalExtension: "Add a four-measure bridge that borrows the 6/8 feel, then explain why it belongs between the final verse and chorus."
+  },
+  {
+    id: "lesson.level-one-integration-project",
+    unitId: "unit.level-one-integration-project",
+    order: 1,
+    title: "Plan, perform, and assess a complete Level 1 piece",
+    objective: "Tune independently, prepare three contrasting short pieces, and complete a 60–120 second original performance that integrates chord accompaniment, a riff or melody, two rhythmic feels, recovery, and reflection.",
+    whyItMatters: "Integration reveals whether separate skills can cooperate inside music. A complete performance asks tone, time, reading, memory, listening, form, creativity, and recovery to serve one intentional result.",
+    estimatedMinutes: 180,
+    priorKnowledge: ["Independent setup and tuning", "Open and power chords", "Tab and rhythm reading", "C major melody", "Section form and recovery"],
+    contentBlocks: [
+      {
+        id: "project-evidence",
+        type: "text",
+        heading: "A project shows relationships between skills",
+        paragraphs: [
+          "Prepare three contrasting pieces: one chord accompaniment, one riff-based study, and one melody. These may be the original studies from earlier units or other lawful repertoire selected for your interests. Each piece should have a written starting tempo, a hardest transition, and a recovery cue.",
+          "The original project lasts 60–120 seconds and uses an intro, at least two contrasting sections, and an ending. Include open chords, either a power-chord riff or a scale-based melody, two rhythmic feels, at least one rest, and a planned dynamic change."
+        ]
+      },
+      {
+        id: "project-scope",
+        type: "callout",
+        heading: "Completeness matters more than density",
+        body: "A clear two-chord verse, short melody, and deliberate ending can demonstrate more musicianship than an overloaded piece that cannot keep time. Remove material until every section has a musical job and can recover after an error.",
+        tone: "practice"
+      },
+      {
+        id: "project-form-grid",
+        type: "rhythm-grid",
+        heading: "Model form: Seed, Path, and Return",
+        meter: "4/4",
+        events: [
+          { count: "Intro 1", action: "down", accent: true }, { count: "2", action: "hold", accent: false }, { count: "3", action: "rest", accent: false }, { count: "4", action: "hold", accent: false },
+          { count: "Verse 1", action: "down", accent: true }, { count: "2", action: "down", accent: false }, { count: "3", action: "down", accent: false }, { count: "4", action: "down", accent: false },
+          { count: "Chorus 1", action: "down", accent: true }, { count: "&", action: "up", accent: false }, { count: "2", action: "down", accent: false }, { count: "&", action: "up", accent: false },
+          { count: "Outro 1", action: "down", accent: true }, { count: "2", action: "hold", accent: false }, { count: "3", action: "hold", accent: false }, { count: "4", action: "hold", accent: false }
+        ],
+        explanation: "Use sparse intro attacks, quarter-note verse motion, eighth-note chorus energy, and a held outro. The grid models contrast; your project may choose different lawful materials.",
+        accessibilityDescription: "Four section cues: sparse intro with a rest, quarter-note verse, down-up eighth-note chorus, and an outro chord held for four beats."
+      },
+      {
+        id: "project-melody-cue",
+        type: "tablature",
+        heading: "Optional original transition melody",
+        tempo: 60,
+        events: [
+          { count: "1", notes: [{ string: 3, fret: 0 }], duration: "quarter", rest: false },
+          { count: "2", notes: [{ string: 3, fret: 2 }], duration: "quarter", rest: false },
+          { count: "3", notes: [{ string: 2, fret: 0 }], duration: "quarter", rest: false },
+          { count: "4", notes: [], duration: "quarter", rest: true },
+          { count: "1", notes: [{ string: 2, fret: 1 }], duration: "half", rest: false },
+          { count: "3", notes: [{ string: 3, fret: 0 }], duration: "quarter", rest: false },
+          { count: "4", notes: [{ string: 4, fret: 2 }], duration: "quarter", rest: false }
+        ],
+        explanation: "This G-A-B-rest, C-G-E phrase can connect sections. Keep it, adapt it within C major, or write a different transition that has a clear destination.",
+        accessibilityDescription: "Two measures: G, A, B, quarter rest; then C held for two beats, G on beat 3, E on beat 4."
+      },
+      ...learningStages("integration-performance", {
+        skill: "a complete original Level 1 performance",
+        model: ["Read the sample form and identify how rhythm, register, and duration distinguish its sections.", "Observe a practice plan that isolates one boundary instead of replaying the whole piece.", "Review a complete-take checklist: tune, count in, continue after errors, shape sections, and finish deliberately."],
+        guided: ["Write a form map with chord names, riff or melody, rhythmic feel, and approximate duration.", "Rehearse each section separately, then loop the two weakest boundaries.", "Perform a guided take with the form map, metronome or count-in, and recovery cues visible."],
+        fade: ["Reduce the map to section names and first events.", "Perform a complete take without stopping and note only one repair priority afterward.", "Remove the map and retrieve the opening, boundaries, and ending from memory."],
+        independent: ["Tune independently and state the intended form and starting tempo.", "Perform one complete 60–120 second take without prompts, restarting, or a model.", "After the final sound, explain one successful musical choice and one observable next action."],
+        success: ["The performance contains an audible intro, contrasting sections, and deliberate ending.", "Open chords and a riff or melody remain inside a recoverable pulse.", "The learner continues after errors and names evidence rather than giving a global self-rating."]
+      }),
+      {
+        id: "project-aural-check",
+        type: "guitar-task",
+        heading: "Echo and locate an unfamiliar starting note",
+        instructions: ["Ask another person or a simple tone source to provide a two- or three-note rhythm and one starting pitch within your known C major notes.", "Clap or sing the rhythm back before touching the guitar.", "Find the starting pitch by comparing one candidate at a time, then play the complete echo.", "If no partner or tone source is available, write three cards with known note-and-rhythm prompts, shuffle them, and perform one without advance rehearsal."],
+        listenFor: "The echoed spacing matches the prompt and the chosen guitar note matches the starting pitch closely enough to continue.",
+        successCriteria: ["The rhythm is echoed before searching the guitar.", "Pitch candidates are compared rather than guessed repeatedly.", "The final echo keeps a steady pulse."],
+        accessibilityDescription: "An aural echo task with an equivalent shuffled written-prompt path when an external sound source is unavailable."
+      },
+      {
+        id: "project-reflection",
+        type: "reflection",
+        heading: "Write the next practice plan from evidence",
+        prompt: "Name the take length, starting tempo, strongest musical choice, weakest transition, exact symptom, and smallest next exercise.",
+        fieldLabel: "Level 1 performance reflection",
+        placeholder: "82 seconds at 60 BPM. The chorus dynamic lift worked. D to Em entered late after the melody; loop the final melody measure into Em at 50 BPM."
+      }
+    ],
+    guidedExercises: [
+      {
+        id: "exercise.project-boundary",
+        title: "Repair the weakest boundary",
+        purpose: "Turn a complete-take observation into a small practice task.",
+        instructions: ["Name the exact final event before the boundary and first event after it.", "Set a tempo 5–10 BPM below the complete take.", "Loop one measure before through two measures after the boundary three times.", "Return immediately to a complete section run."],
+        successCriteria: ["The loop includes both sides of the boundary.", "Three repetitions use the same count-in and tempo.", "The repaired movement improves inside the complete section."],
+        reduceDifficultyWhen: ["Use one attack per measure and remove optional notes."],
+        increaseDifficultyWhen: ["Restore the final dynamics and articulation."],
+        relatedSkills: ["practice design", "form", "recovery"],
+        repetitions: 3
+      },
+      {
+        id: "exercise.project-three-pieces",
+        title: "Prepare three contrasting snapshots",
+        purpose: "Show that Level 1 skills transfer across accompaniment, riff, and melody contexts.",
+        instructions: ["Choose one 30–60 second chord accompaniment, riff, and melody.", "Write a starting tempo and one quality target for each.", "Perform each once without stopping, then choose only one for immediate repair."],
+        successCriteria: ["All three snapshots have different musical roles.", "Each begins with tuning or a count-in and ends deliberately.", "The repair priority is selected from observed evidence."],
+        reduceDifficultyWhen: ["Use earlier original lesson studies and shorten each to 20 seconds."],
+        increaseDifficultyWhen: ["Perform the three snapshots in one continuous recital order."],
+        relatedSkills: ["repertoire", "transfer", "reflection"]
+      }
+    ],
+    commonMistakes: [
+      { id: "mistake.project-overload", symptom: "The piece contains every learned skill but no section can be performed reliably.", likelyCause: "Quantity is being treated as integration.", adjustment: "Keep one chord part, one riff or melody, two rhythmic feels, and one clear ending; remove the rest." },
+      { id: "mistake.project-restart", symptom: "A complete take never reaches the outro because every error triggers a restart.", likelyCause: "Repair practice and performance practice are being mixed.", adjustment: "Finish one take with recovery first, then isolate only the most important observed boundary." },
+      { id: "mistake.project-vague", symptom: "The reflection says only 'good' or 'bad.'", likelyCause: "No musical variable was selected for observation.", adjustment: "Name section, beat, chord or note, sound or timing symptom, and one next action." }
+    ],
+    knowledgeChecks: [
+      { id: "check.project-complete", prompt: "Which project plan best demonstrates integration?", options: ["A 60–120 second form with clear sections, recoverable skills, contrast, and an ending", "The largest possible number of chords with frequent restarts", "One scale repeated as fast as possible"], correctAnswer: "A 60–120 second form with clear sections, recoverable skills, contrast, and an ending", explanation: "Integration means skills cooperate in a complete musical result." },
+      { id: "check.project-repair", prompt: "After a late transition in one take, what is the most useful next exercise?", options: ["Loop one measure before through two measures after it at a manageable tempo", "Replay only the easy intro", "Increase every section by 20 BPM"], correctAnswer: "Loop one measure before through two measures after it at a manageable tempo", explanation: "The loop includes preparation, the transition, and its musical continuation." },
+      { id: "check.project-theory", prompt: "Which set contains only Level 1 concepts used in the project?", options: ["Root, tonic, whole and half steps, rhythm values, major/minor quality, and form", "Secondary dominants, modal interchange, and counterpoint", "Only fret numbers with no rhythm or note identity"], correctAnswer: "Root, tonic, whole and half steps, rhythm values, major/minor quality, and form", explanation: "These concepts explain the pitch, chord, rhythm, and structural choices made in Level 1." }
+    ],
+    masteryCriteria: [
+      { id: "mastery.project-tune", description: "Tune independently and begin each performance with a deliberate count-in or cue.", verification: "performance-checklist", required: true },
+      { id: "mastery.project-three", description: "Prepare contrasting chord, riff, and melody snapshots with starting tempos and quality targets.", verification: "performance-checklist", required: true },
+      { id: "mastery.project-original", description: "Perform one complete 60–120 second original piece with sections, contrast, recovery, and an ending.", verification: "performance-checklist", required: true },
+      { id: "mastery.project-aural", description: "Echo a short unfamiliar rhythm and locate or verify its starting note using the available equivalent path.", verification: "guided-self-check", required: true },
+      { id: "mastery.project-theory", description: "Explain the Level 1 note, rhythm, chord-quality, root, tonic, and form decisions used in the project.", verification: "guided-self-check", required: true },
+      { id: "mastery.project-reflect", description: "Record take length, tempo, one successful musical choice, one exact symptom, and one next exercise.", verification: "reflection", required: true }
+    ],
+    reviewRecommendation: "Next session, retrieve the original form and weakest boundary before a complete take. After one week, perform the piece in a changed context: different starting tempo, section dynamic, or transposed power-chord roots.",
+    optionalExtension: "Capture the performance with a device you already control, then listen once without playing and compare the recorded result with the written intention. FretGarden does not upload or evaluate the recording."
   }
 ];
 
@@ -880,5 +1007,13 @@ export const levelOneReviewPlans: readonly CurriculumReviewPlan[] = [
     nextSessionReview: ["Retrieve Dm, Fmaj7, B7, and all boundary transitions before a full run."],
     oneWeekReview: ["Change one section rhythm while preserving its role, length, and cadence."],
     longTermReview: ["Map phrase lengths and boundary cues for each complete accompaniment piece."]
+  },
+  {
+    id: "review.level-one-integration-project",
+    unitId: "unit.level-one-integration-project",
+    immediateReview: ["Name the strongest musical choice, weakest boundary, and smallest next exercise from the complete take."],
+    nextSessionReview: ["Retrieve the form and repair the weakest boundary before performing a complete take."],
+    oneWeekReview: ["Perform the piece with one changed tempo, dynamic plan, or transposed power-chord context."],
+    longTermReview: ["Keep the piece in a rotating repertoire and update its practice plan from complete-performance evidence."]
   }
 ];

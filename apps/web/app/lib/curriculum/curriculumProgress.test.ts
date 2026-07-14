@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { foundationLessons } from "@pocket-practice/education-content";
 import {
+  areCurriculumPrerequisitesComplete,
   canCompleteCurriculumLesson,
   finalizeCurriculumProgress,
   inspectCurriculumProgress,
@@ -89,5 +90,21 @@ describe("curriculum progress", () => {
     expect(parseCurriculumProgress(serializeCurriculumProgress(records))).toEqual(
       records
     );
+  });
+
+  it("requires every declared prerequisite to have a completed record", () => {
+    const records = [
+      {
+        ...startCurriculumUnit([], "unit.one", "now")[0]!,
+        completedAt: "done"
+      },
+      ...startCurriculumUnit([], "unit.two", "now")
+    ];
+
+    expect(areCurriculumPrerequisitesComplete(records, [])).toBe(true);
+    expect(areCurriculumPrerequisitesComplete(records, ["unit.one"])).toBe(true);
+    expect(
+      areCurriculumPrerequisitesComplete(records, ["unit.one", "unit.two"])
+    ).toBe(false);
   });
 });

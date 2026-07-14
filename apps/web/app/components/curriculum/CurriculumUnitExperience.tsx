@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CURRICULUM_PROGRESS_STORAGE_KEY,
+  areCurriculumPrerequisitesComplete,
   canCompleteCurriculumLesson,
   finalizeCurriculumProgress,
   getCurriculumRecord,
@@ -118,6 +119,11 @@ export function CurriculumUnitExperience({
   );
 
   const readyToComplete = hydrated && canCompleteCurriculumLesson(record, lesson);
+  const prerequisitesComplete = areCurriculumPrerequisitesComplete(
+    records,
+    unit.requiredPriorUnitIds
+  );
+  const readyToCompleteWithPrerequisites = readyToComplete && prerequisitesComplete;
   const completed = Boolean(record.completedAt);
 
   return (
@@ -131,7 +137,7 @@ export function CurriculumUnitExperience({
         <dl className={styles.unitFacts}>
           <div><dt>Lesson</dt><dd>{lesson.title}</dd></div>
           <div><dt>Estimated time</dt><dd>{lesson.estimatedMinutes} minutes</dd></div>
-          <div><dt>Status</dt><dd>{completed ? "Completed self-check" : "In progress"}</dd></div>
+          <div><dt>Status</dt><dd>{completed ? "Completed self-check" : prerequisitesComplete ? "In progress" : "Previewing"}</dd></div>
         </dl>
       </header>
 
@@ -139,6 +145,13 @@ export function CurriculumUnitExperience({
         <div className={styles.warning} role="alert">
           <strong>Local lesson progress could not be saved.</strong>
           <p>The lesson remains usable. Keep your written reflection somewhere you control before leaving this page.</p>
+        </div>
+      ) : null}
+
+      {!prerequisitesComplete ? (
+        <div className={styles.prerequisiteNotice} role="note">
+          <strong>Preview available</strong>
+          <p>Complete the required prior unit before this unit can be marked complete. You may still read and try every activity.</p>
         </div>
       ) : null}
 
@@ -328,11 +341,11 @@ export function CurriculumUnitExperience({
         </div>
         <button
           className={styles.primaryButton}
-          disabled={!readyToComplete || completed}
+          disabled={!readyToCompleteWithPrerequisites || completed}
           onClick={() => persist(finalizeCurriculumProgress(records, lesson, new Date().toISOString()))}
           type="button"
         >
-          {completed ? "Unit self-check complete" : readyToComplete ? "Complete unit self-check" : "Finish checks to complete"}
+          {completed ? "Unit self-check complete" : !prerequisitesComplete ? "Complete the prior unit first" : readyToComplete ? "Complete unit self-check" : "Finish checks to complete"}
         </button>
         <p className={styles.evidenceNote}>
           Physical performance items are learner-confirmed checklists. FretGarden does not claim it heard or measured your guitar unless an activity explicitly evaluates a response.

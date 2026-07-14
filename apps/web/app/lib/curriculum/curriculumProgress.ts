@@ -142,6 +142,15 @@ export function canCompleteCurriculumLesson(
   return allChecksCorrect && requiredCriteriaComplete;
 }
 
+export function areCurriculumPrerequisitesComplete(
+  records: readonly CurriculumProgressRecord[],
+  requiredUnitIds: readonly string[]
+): boolean {
+  return requiredUnitIds.every((unitId) =>
+    records.some((record) => record.unitId === unitId && Boolean(record.completedAt))
+  );
+}
+
 export function getCurriculumRecord(
   records: readonly CurriculumProgressRecord[],
   unitId: string

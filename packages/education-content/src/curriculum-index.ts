@@ -202,6 +202,15 @@ const implementedLevelOneMetadata: Record<number, {
       "Perform and map a complete multi-section song form."
     ],
     tags: ["open-chords", "song-form", "six-eight", "accompaniment"]
+  },
+  8: {
+    estimatedMinutes: 180,
+    outcomes: [
+      "Prepare contrasting chord, riff, and melody performances.",
+      "Complete a 60-120 second original piece with form, contrast, recovery, and an ending.",
+      "Use musical evidence to identify one successful choice and one next practice exercise."
+    ],
+    tags: ["integration", "performance", "composition", "reflection"]
   }
 };
 

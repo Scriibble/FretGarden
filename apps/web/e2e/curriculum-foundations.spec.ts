@@ -9,14 +9,16 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => window.localStorage.clear());
 });
 
-test("presents the three implemented foundation units without claiming the mapped roadmap is complete", async ({ page }) => {
+test("presents the complete Level 1 path without claiming the mapped roadmap is complete", async ({ page }) => {
   await page.goto("/lessons");
 
   await expect(page.getByRole("heading", { name: "Learn to practice before you rush to collect facts" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Tending the Practice Garden" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Focused Practice and the Pomodoro Technique" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Using and Practicing With a Metronome" })).toBeVisible();
-  await expect(page.getByText("The remaining 48 units are source-mapped", { exact: false })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Meet the Guitar and Produce a Clear Sound" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Level 1 Integration Project" })).toBeVisible();
+  await expect(page.getByText("The remaining 40 units are source-mapped", { exact: false })).toBeVisible();
   await expect(page.getByText("Fretboard Notes and Octave Shapes")).toHaveCount(0);
 });
 
@@ -91,7 +93,15 @@ test("keeps every foundation route inside a 320 pixel viewport", async ({ page }
     "/lessons",
     "/lessons/tending-the-practice-garden",
     "/lessons/focused-practice-pomodoro",
-    "/lessons/using-a-metronome"
+    "/lessons/using-a-metronome",
+    "/lessons/meet-the-guitar",
+    "/lessons/pulse-subdivision-first-chords",
+    "/lessons/open-chord-vocabulary-one",
+    "/lessons/reading-rhythm-tablature",
+    "/lessons/melody-scales-musical-alphabet",
+    "/lessons/power-chords-rock-rhythm",
+    "/lessons/open-chord-vocabulary-two-song-form",
+    "/lessons/level-one-integration-project"
   ]) {
     await page.goto(route);
     const dimensions = await page.evaluate(() => ({
@@ -145,4 +155,38 @@ test("leaves unreadable curriculum progress untouched", async ({ page }) => {
   expect(
     await page.evaluate((key) => window.localStorage.getItem(key), CURRICULUM_KEY)
   ).toBe("{unreadable-curriculum");
+});
+
+test("renders structured music blocks with text equivalents and explicit support fade", async ({ page }) => {
+  await page.goto("/lessons/open-chord-vocabulary-one");
+
+  await expect(page.getByRole("heading", { name: "Build C major around three target notes" })).toBeVisible();
+  await expect(page.getByText("C major: string 6 muted", { exact: false })).toBeVisible();
+  await expect(page.getByText("1 · Model", { exact: true })).toBeVisible();
+  await expect(page.getByText("2 · Guided attempt", { exact: true })).toBeVisible();
+  await expect(page.getByText("3 · Fade support", { exact: true })).toBeVisible();
+  await expect(page.getByText("4 · Independent attempt", { exact: true })).toBeVisible();
+
+  await page.goto("/lessons/reading-rhythm-tablature");
+  const tab = page.getByRole("table", { name: /Two-measure etude/ });
+  await expect(tab).toBeVisible();
+  await expect(tab.getByRole("columnheader", { name: "1 &" })).toBeVisible();
+});
+
+test("keeps later units previewable while enforcing the completion prerequisite", async ({ page }) => {
+  await page.goto("/lessons/level-one-integration-project");
+
+  await expect(page.getByText("Preview available", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Complete the prior unit first" })).toBeDisabled();
+  await expect(page.getByRole("heading", { name: "Plan, perform, and assess a complete Level 1 piece" })).toBeVisible();
+  await expect(page.getByText("60–120 second original piece", { exact: false })).toBeVisible();
+});
+
+test("supports a keyboard knowledge-check path in the instrument sequence", async ({ page }) => {
+  await page.goto("/lessons/meet-the-guitar");
+
+  const answer = page.getByLabel("E-A-D-G-B-E");
+  await answer.press("Space");
+  await expect(answer).toBeChecked();
+  await expect(page.getByText("Correct.", { exact: true }).first()).toBeVisible();
 });

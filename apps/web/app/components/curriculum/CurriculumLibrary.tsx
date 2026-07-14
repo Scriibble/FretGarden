@@ -62,7 +62,14 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
       <ol className={styles.unitList} aria-label="Implemented foundation units">
         {units.map((unit) => {
           const record = statuses.get(unit.id);
-          const status = record?.completedAt ? "Complete" : record ? "In progress" : "Not started";
+          const prerequisitesComplete = unit.requiredPriorUnitIds.every(
+            (unitId) => Boolean(statuses.get(unitId)?.completedAt)
+          );
+          const status = record?.completedAt
+            ? "Complete"
+            : !prerequisitesComplete
+              ? record ? "Previewing" : "Preview available"
+              : record ? "In progress" : "Not started";
           return (
             <li key={unit.id}>
               <span className={styles.unitNumber}>{unit.order}</span>
@@ -76,7 +83,7 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
                 <ul>{unit.outcomes.map((outcome) => <li key={outcome}>{outcome}</li>)}</ul>
               </div>
               <Link className={styles.openUnit} href={`/lessons/${unit.slug}`}>
-                {record ? "Continue unit" : "Begin unit"}
+                {!prerequisitesComplete ? "Preview unit" : record ? "Continue unit" : "Begin unit"}
               </Link>
             </li>
           );
