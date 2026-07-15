@@ -39,6 +39,19 @@ A webhook automation service, a small private API, or an email-marketing
 provider integration can sit behind this URL. Keep provider credentials in the
 webhook or server environment rather than in client-side code.
 
+## Tester survey link
+
+The tester feedback page uses a separate public environment variable:
+
+```bash
+NEXT_PUBLIC_TESTER_SURVEY_URL="https://forms.gle/your-form"
+```
+
+Use the blueprint at `docs/testing/GOOGLE_FORMS_TESTER_SURVEY_BLUEPRINT.md` to
+create the form, then paste the live form URL into local and hosted
+environments. This URL is public because it is rendered as a normal outbound
+link.
+
 ## Local test
 
 After configuring the webhook, run the app and submit either waitlist form:
