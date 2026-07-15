@@ -121,7 +121,7 @@ export function PracticeReviewPanel({
             ))}
           </ul>
         ) : (
-          <p>No missed answers. Clean run.</p>
+          <p>No misses this time.</p>
         )}
       </div>
 
@@ -138,7 +138,7 @@ export function PracticeReviewPanel({
               ))}
             </div>
           ) : (
-            <p>No weak spots yet. Every tracked category is clean.</p>
+            <p>No tracked trouble spots yet.</p>
           )}
         </div>
 

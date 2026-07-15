@@ -28,13 +28,13 @@ const principles = [
     number: "03",
     title: "Musical meaning before decoration",
     description:
-      "Every drill should support a real fretboard or theory skill rather than exist only to keep someone busy."
+      "Each drill should support a real fretboard or theory skill."
   },
   {
     number: "04",
     title: "Honest progress",
     description:
-      "FretGarden should clearly distinguish what works today from what is still planned."
+      "FretGarden should show what works today and what is still planned."
   }
 ];
 
@@ -48,9 +48,9 @@ export default function AboutPage() {
             <h1 id="about-title">Why I’m growing FretGarden</h1>
             <p>
               I’m building FretGarden to help guitarists move beyond isolated
-              shapes and develop a more connected understanding of the neck.
+              shapes and build a clearer map of the neck.
               The goal is a practice tool that feels patient, practical, and
-              grounded in the way musical knowledge actually develops.
+              grounded in the way players build musical knowledge.
             </p>
             <div className={styles.heroActions}>
               <Link className={styles.primaryCta} href="/practice">
@@ -86,7 +86,7 @@ export default function AboutPage() {
 
           <aside className={styles.aboutStoryCard}>
             <blockquote>
-              “The aim is not to make practice feel effortless. It is to make the effort clear, focused, and worth returning to.”
+              “Practice takes effort. FretGarden helps you make that effort clear, focused, and worth returning to.”
             </blockquote>
             <p>
               The garden metaphor reflects that approach. Knowledge needs
@@ -104,8 +104,8 @@ export default function AboutPage() {
             <h2 id="principles-title">Built around sustainable learning</h2>
             <p>
               These principles guide both the lesson content and the product
-              decisions behind FretGarden. They are meant to keep the app useful
-              as it grows rather than letting features obscure the practice itself.
+              decisions behind FretGarden. They keep the app useful as it grows,
+              so features do not crowd the practice.
             </p>
           </div>
 

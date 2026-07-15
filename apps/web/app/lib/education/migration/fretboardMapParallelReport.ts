@@ -59,7 +59,7 @@ export function buildFretboardMapParallelReport(input: {
       source: "parallel_report",
       count: 1,
       message:
-        "Legacy history and current evidence are both present and remain independent."
+        "Older history and guided practice results are both present. FretGarden keeps them separate."
     });
   }
 
@@ -68,7 +68,7 @@ export function buildFretboardMapParallelReport(input: {
     segmentId: "fretboard-map",
     generatedAt: input.now,
     explanation:
-      "Legacy completion is preserved as historical context. It was not evaluated under the current evidence policy and does not strengthen capability claims.",
+      "Older completion is saved as history. FretGarden does not use it to decide what you can do now.",
     legacy: {
       summary: summarizeLegacy(input.historical.records),
       records: input.historical.records.map(cloneHistoricalRecord),
@@ -157,10 +157,10 @@ function countEvidence(evidence: EvidenceRecord[]): EvidenceKindCount[] {
 
 function chooseNextAction(claims: CapabilityClaim[]): string {
   if (claims.some(({ state }) => state === "needs_refresh" || state === "review_due")) {
-    return "Complete the due current-system review before making a new claim.";
+    return "Complete the guided practice review before making a new claim.";
   }
   if (claims.every(({ state }) => state === "not_observed")) {
-    return "No current-system evidence has been observed for this segment.";
+    return "No guided practice result has been recorded for this segment.";
   }
   if (claims.some(({ state }) => state === "independent_once")) {
     return "Preserve the independent result and wait for its delayed review.";
@@ -168,7 +168,7 @@ function chooseNextAction(claims: CapabilityClaim[]): string {
   if (claims.some(({ state }) => state === "applied")) {
     return "Keep the applied result separate from legacy completion history.";
   }
-  return "Continue with the next current-system action already assigned by the pilot.";
+  return "Continue with the next guided practice action.";
 }
 
 function isTargetObjective(objective: VersionRef): boolean {

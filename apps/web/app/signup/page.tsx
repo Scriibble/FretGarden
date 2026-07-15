@@ -24,7 +24,7 @@ const accountBenefits = [
   {
     title: "Prepare for cloud progress",
     description:
-      "Cloud lesson history, drill results, and saved settings are planned for the next account pass.",
+      "Cloud lesson history, drill results, and saved settings are planned for a future update.",
   },
 ];
 
@@ -37,8 +37,8 @@ export default function SignupPage() {
             <span className={styles.eyebrow}>Start your practice garden</span>
             <h1 id="signup-title">Create a place for your progress to grow.</h1>
             <p>
-              Create your FretGarden account now so the foundation is ready for
-              cloud progress sync. The current practice app still stores lesson
+              Create your FretGarden account now so your account is ready when
+              cloud sync arrives. The current practice app still stores lesson
               and drill progress in this browser.
             </p>
 
@@ -46,7 +46,7 @@ export default function SignupPage() {
               <div>
                 <strong>Grow at your own pace.</strong>
                 Account creation is live, and practice progress remains
-                local-first until the sync layer is built.
+                local-first until cloud sync is built.
               </div>
             </div>
 

@@ -46,14 +46,14 @@ export function FretboardMapMigrationReport() {
     return (
       <main className={styles.shell}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>Local migration review</p>
-          <h1>Fretboard map parallel report</h1>
+          <p className={styles.eyebrow}>Local progress check</p>
+          <h1>Fretboard map comparison report</h1>
         </header>
         <section className={styles.notice} role="alert">
           <h2>Local data could not be read</h2>
           <p>
-            The report stopped without changing storage. Review browser storage
-            availability before trying this rehearsal again.
+            FretGarden stopped without changing your saved data. Check that your
+            browser allows local storage, then try this review again.
           </p>
         </section>
       </main>
@@ -63,7 +63,7 @@ export function FretboardMapMigrationReport() {
   if (!state) {
     return (
       <main className={styles.loading} aria-live="polite">
-        Preparing the local migration report...
+        Preparing the local comparison report...
       </main>
     );
   }
@@ -73,8 +73,8 @@ export function FretboardMapMigrationReport() {
     <main className={styles.shell}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>Local migration review</p>
-          <h1>Fretboard map parallel report</h1>
+          <p className={styles.eyebrow}>Local progress check</p>
+          <h1>Fretboard map comparison report</h1>
           <p className={styles.lead}>
             This read-only check compares older history with the new guided
             practice results without mixing them together.
@@ -96,7 +96,7 @@ export function FretboardMapMigrationReport() {
 
       <section className={styles.statusBand} aria-label="Report integrity">
         <Status label="Report version" value={String(report.reportVersion)} />
-        <Status label="Pilot source" value={formatToken(report.currentEducation.storeState)} />
+        <Status label="Guided practice data" value={formatToken(report.currentEducation.storeState)} />
         <Status
           label="Storage integrity"
           value={storageUnchanged ? "Unchanged" : "Changed during read"}
@@ -137,7 +137,7 @@ export function FretboardMapMigrationReport() {
         </dl>
         <div className={styles.recordList}>
           {report.legacy.records.length === 0 ? (
-            <p className={styles.emptyState}>No attributable fretboard-map history was found.</p>
+            <p className={styles.emptyState}>No saved fretboard-map history was found.</p>
           ) : (
             report.legacy.records.map((record) => (
               <HistoricalRecordView key={record.id} record={record} />
@@ -159,7 +159,7 @@ export function FretboardMapMigrationReport() {
         </div>
         <div className={styles.detailColumns}>
           <div>
-            <h3>Counted result types</h3>
+            <h3>Results counted here</h3>
             {report.currentEducation.evidenceCounts.length === 0 ? (
               <p className={styles.emptyState}>No new guided practice results yet.</p>
             ) : (
@@ -179,8 +179,8 @@ export function FretboardMapMigrationReport() {
 
       <section className={styles.reportBand} aria-labelledby="diagnostics-heading">
         <div className={styles.sectionHeading}>
-          <p className={styles.eyebrow}>Mapping diagnostics</p>
-          <h2 id="diagnostics-heading">Source conditions kept explicit</h2>
+          <p className={styles.eyebrow}>Storage notes</p>
+          <h2 id="diagnostics-heading">What the old data can and cannot show</h2>
         </div>
         <DiagnosticList diagnostics={report.legacy.diagnostics} />
       </section>
@@ -253,11 +253,11 @@ function ClaimView({ claim }: { claim: CapabilityClaim }) {
       </div>
       <dl>
         <div>
-          <dt>Best counted result</dt>
+          <dt>Strongest result</dt>
           <dd>{claim.strongestKind ? formatToken(claim.strongestKind) : "No result yet"}</dd>
         </div>
         <div>
-          <dt>Confidence</dt>
+          <dt>Skill strength</dt>
           <dd>{formatToken(claim.confidence)}</dd>
         </div>
       </dl>
@@ -269,9 +269,9 @@ function ClaimView({ claim }: { claim: CapabilityClaim }) {
 function ReviewList({ reviews }: { reviews: ReviewObligation[] }) {
   return (
     <div>
-      <h3>Review obligations</h3>
+      <h3>Scheduled reviews</h3>
       {reviews.length === 0 ? (
-        <p className={styles.emptyState}>No review obligation is recorded.</p>
+        <p className={styles.emptyState}>No scheduled review is recorded.</p>
       ) : (
         <ul className={styles.plainList}>
           {reviews.map((review) => (
@@ -288,15 +288,15 @@ function ReviewList({ reviews }: { reviews: ReviewObligation[] }) {
 
 function DiagnosticList({ diagnostics }: { diagnostics: LegacyMappingDiagnostic[] }) {
   if (diagnostics.length === 0) {
-    return <p className={styles.emptyState}>No source diagnostics were produced.</p>;
+    return <p className={styles.emptyState}>No storage notes were produced.</p>;
   }
   return (
     <ul className={styles.diagnosticList}>
       {diagnostics.map((diagnostic) => (
         <li key={`${diagnostic.source}:${diagnostic.code}`}>
           <div>
-            <strong>{formatToken(diagnostic.code)}</strong>
-            <span>{formatToken(diagnostic.source)}</span>
+            <strong>{formatDiagnosticCode(diagnostic.code)}</strong>
+            <span>{formatDiagnosticSource(diagnostic.source)}</span>
           </div>
           <p>{diagnostic.message}</p>
           <b aria-label={`${diagnostic.count} occurrences`}>{diagnostic.count}</b>
@@ -308,6 +308,32 @@ function DiagnosticList({ diagnostics }: { diagnostics: LegacyMappingDiagnostic[
 
 function formatToken(value: string): string {
   return value.replaceAll("_", " ");
+}
+
+function formatDiagnosticCode(value: LegacyMappingDiagnostic["code"]): string {
+  const labels: Record<LegacyMappingDiagnostic["code"], string> = {
+    combined_sources: "Old and new results found",
+    duplicate_record: "Duplicate saved item",
+    ignored_unrelated: "Other lesson data skipped",
+    legacy_format: "Older save format",
+    malformed_envelope: "Saved data could not be read",
+    omitted_record: "Saved item skipped",
+    source_records_seen: "Saved items found",
+    timestamp_unknown: "Missing practice time",
+    unattributed_session: "Session source missing",
+    valid_non_mappable: "Missing activity detail"
+  };
+  return labels[value];
+}
+
+function formatDiagnosticSource(value: LegacyMappingDiagnostic["source"]): string {
+  const labels: Record<LegacyMappingDiagnostic["source"], string> = {
+    learning_progress: "Lesson history",
+    note_history: "Note drill history",
+    parallel_report: "Comparison report",
+    practice_progress: "Practice history"
+  };
+  return labels[value];
 }
 
 function formatDate(value: string | null): string {
@@ -327,7 +353,7 @@ function exportReport(report: FretboardMapParallelReport): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = `fretgarden-fretboard-map-migration-${report.generatedAt.replaceAll(":", "-")}.json`;
+  anchor.download = `fretgarden-fretboard-map-comparison-${report.generatedAt.replaceAll(":", "-")}.json`;
   anchor.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }

@@ -134,7 +134,7 @@ export function WaitlistForm({ source }: WaitlistFormProps) {
       </div>
 
       <p className={styles.waitlistConsent}>
-        Receive occasional FretGarden development and early-access updates. You
+        Receive occasional FretGarden updates. You
         can unsubscribe at any time.
       </p>
 

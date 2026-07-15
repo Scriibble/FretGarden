@@ -13,7 +13,7 @@ const sections = [
   {
     title: "Early-access status",
     body:
-      "FretGarden is actively being developed. Features may change, break, move, or be removed while the product is tested."
+      "FretGarden is still in active development. Features may change, break, move, or be removed while the product is tested."
   },
   {
     title: "Accounts",

@@ -327,10 +327,10 @@ export function EducationPilot() {
       {recovery ? (
         <section className={styles.recoveryNotice} aria-labelledby="pilot-recovery-title">
           <div>
-            <strong id="pilot-recovery-title">A pilot data copy was preserved.</strong>
+            <strong id="pilot-recovery-title">A saved copy is available.</strong>
             <p>
-              The earlier pilot record could not be read, so this session started fresh
-              without changing lesson or practice history.
+              FretGarden could not read an earlier practice record, so this session
+              started fresh without changing lesson or practice history.
             </p>
           </div>
           <div className={styles.actionRow}>
@@ -352,11 +352,11 @@ export function EducationPilot() {
         >
           <div>
             <strong id="pilot-persistence-title">
-              This pilot activity is not saved yet.
+              This practice activity is not saved yet.
             </strong>
             <p>
               Your current work remains on this screen. Retry local saving or export
-              the pending pilot record; lesson and practice history are untouched.
+              the pending practice record; lesson and practice history are untouched.
             </p>
           </div>
           <div className={styles.actionRow}>

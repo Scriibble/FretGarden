@@ -17,7 +17,7 @@ export default function UpdatePasswordPage() {
         <div className={styles.signupGrid}>
           <div className={styles.signupCopy}>
             <span className={styles.eyebrow}>Choose a new password</span>
-            <h1 id="update-title">Reset your account key.</h1>
+            <h1 id="update-title">Reset your password.</h1>
             <p>
               Use this page after opening the password reset link from your
               email. If the link is expired, request a new one.

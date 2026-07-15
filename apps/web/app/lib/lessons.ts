@@ -108,7 +108,7 @@ export const lessons = [
       reference: "Many beginner rock and blues riffs",
       body: [
         "A lot of familiar guitar parts begin by moving a small number of frets on one string. You do not need the exact riff to learn the idea: adjacent frets create tight motion, while skips create a bigger jump.",
-        "When a song moves a shape up one fret, it is using the same half-step logic you just played."
+        "A song that moves a shape up one fret uses the same half-step idea you just played."
       ]
     },
     writeWithIt: {
@@ -459,7 +459,7 @@ export const lessons = [
   {
     slug: "octave-shapes",
     eyebrow: "Octaves",
-    title: "CAGED octave shapes unlock the neck",
+    title: "Use CAGED octave shapes across the neck",
     summary:
       "Use octave relationships to find the same note in nearby fretboard regions.",
     sections: [
@@ -474,7 +474,7 @@ export const lessons = [
         heading: "Shapes become navigation tools",
         body: [
           "Octave shapes connect low-string roots to middle and high-string targets without counting every fret from scratch.",
-          "The goal is not only to memorize a shape, but to use it to confirm note names quickly as you move through the neck."
+          "Use each shape to confirm note names as you move through the neck."
         ]
       }
     ],

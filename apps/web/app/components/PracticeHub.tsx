@@ -116,7 +116,7 @@ export function PracticeHub({
             <div>
               <span className="control-label">Note Recognition</span>
               <h3>Find notes by string</h3>
-              <p>Train the fretboard map with string-specific questions.</p>
+              <p>Practice the fretboard map with string-specific questions.</p>
             </div>
             <HubMetrics metrics={noteMetrics} />
             <button
@@ -179,7 +179,7 @@ export function PracticeHub({
             <div>
               <span className="control-label">Intervals</span>
               <h3>Find landmark intervals</h3>
-              <p>Train major/minor 3rds, 5ths, and other intervals by string.</p>
+              <p>Practice major/minor 3rds, 5ths, and other intervals by string.</p>
             </div>
             <HubMetrics metrics={intervalMetrics} />
             <button

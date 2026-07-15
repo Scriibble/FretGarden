@@ -23,7 +23,7 @@ const noticeItems = [
   {
     title: "What is not ready yet",
     body:
-      "Cloud progress sync, paid subscriptions, social features, and complete legal terms are not part of this early account pass."
+      "Cloud progress sync, paid subscriptions, social features, and complete legal terms are not part of this early account version."
   },
   {
     title: "What data is involved",
@@ -41,7 +41,7 @@ export default function AccountNoticePage() {
             <span className={styles.eyebrow}>Early account notice</span>
             <h1 id="notice-title">Accounts are real, but still early.</h1>
             <p>
-              This notice keeps FretGarden&apos;s account boundary clear while
+              This notice explains what FretGarden accounts can do while
               the product grows toward cloud progress sync and fuller policy
               pages.
             </p>

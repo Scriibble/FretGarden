@@ -31,13 +31,13 @@ const features = [
     icon: "chords" as const,
     title: "Chord tones",
     description:
-      "Find roots, thirds, fifths, and other chord tones where they actually live on the fretboard."
+      "Find roots, thirds, fifths, and other chord tones where they sit on the fretboard."
   },
   {
     icon: "degrees" as const,
     title: "Scale degrees",
     description:
-      "Connect every note to its role inside a key so scales become musical rather than mechanical."
+      "Connect notes to their roles inside a key so scales sound like music."
   },
   {
     icon: "patterns" as const,
@@ -49,7 +49,7 @@ const features = [
     icon: "focus" as const,
     title: "Focused sessions",
     description:
-      "Use short, intentional practice loops that support consistency without turning practice into a grind."
+      "Use short, focused practice loops that support consistency without turning practice into a grind."
   }
 ];
 
@@ -168,7 +168,7 @@ export default function HomePage() {
         <div className={styles.problemGrid}>
           <div className={styles.problemCopy}>
             <span className={styles.sectionEyebrow}>Beyond memorized shapes</span>
-            <h2 id="problem-title">Understand what you play, not only where to place your fingers.</h2>
+            <h2 id="problem-title">Understand what you play and where your fingers go.</h2>
             <p>
               Many guitarists collect scale boxes, chord diagrams, and familiar
               shapes without developing a connected map of the fretboard.
@@ -231,7 +231,7 @@ export default function HomePage() {
         <div className={styles.sectionHeader}>
           <span className={styles.sectionEyebrow}>How FretGarden works</span>
           <h2 className={styles.sectionTitle} id="how-title">
-            Work through one deliberate layer at a time
+            Work through one clear layer at a time
           </h2>
           <p className={styles.sectionLead}>
             The learning path moves from concrete fretboard knowledge toward
@@ -261,7 +261,7 @@ export default function HomePage() {
             <span className={styles.sectionEyebrow}>Focused practice philosophy</span>
             <h2 id="focus-title">Practice that respects your attention.</h2>
             <p>
-              FretGarden encourages short, intentional sessions inspired by
+              FretGarden encourages short, focused sessions inspired by
               Pomodoro-style focus. A manageable practice window makes it
               easier to return consistently, review mistakes, and stop before
               attention turns into frustration.

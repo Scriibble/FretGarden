@@ -98,7 +98,7 @@ function practiceHistory(report: FretboardMapParallelReport): LearnerHistorySumm
     report.legacy.summary;
   const detail =
     lastAccuracy === null || lastPromptCount === null
-      ? "No attributable drill summary is recorded."
+      ? "No saved drill result is recorded."
       : `Last recorded drill: ${lastAccuracy}% across ${lastPromptCount} prompts.`;
   return {
     status: practiceStatus,
@@ -114,8 +114,30 @@ function toCapabilitySummary(claim: CapabilityClaim): LearnerCapabilitySummary {
     label: objectiveLabels[claim.objective.id] ?? claim.objective.id,
     state: claim.state,
     statusLabel: formatCapabilityState(claim.state),
-    detail: claim.rationale
+    detail: friendlyClaimRationale(claim.rationale)
   };
+}
+
+function friendlyClaimRationale(rationale: string): string {
+  const replacements: Record<string, string> = {
+    "No evidence has been observed.": "No counted try has been recorded yet.",
+    "Current evidence does not yet meet the requirement.":
+      "Your latest tries do not count for this skill yet.",
+    "Earlier achievement is preserved, and newer independent evidence calls for a refresh.":
+      "Your earlier success still counts. A newer try shows this skill needs a quick refresh.",
+    "Independent performance was observed and delayed retrieval is now due.":
+      "You did it without help. Now it is time to check whether you still remember it.",
+    "The capability was observed independently in a changed musical context.":
+      "You used the skill without help in a new pattern.",
+    "Independent retrieval was observed after a meaningful delay.":
+      "You remembered it after a break.",
+    "Independent performance was observed once; delayed review is still required.":
+      "You did it once without help. Come back later to check it again.",
+    "Performance has been observed with support.":
+      "You practiced it with help."
+  };
+
+  return replacements[rationale] ?? rationale;
 }
 
 function choosePrimaryAction(claims: CapabilityClaim[]): LearnerProgressAction {

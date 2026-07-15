@@ -117,7 +117,7 @@ export function MetronomeActivity({
       <div className={styles.toolHeading}>
         <p className={styles.eyebrow}>Practice metronome</p>
         <h2 id="metronome-title">Hear, count, and keep the pulse</h2>
-        <p>Audio and the visible beat are triggered by the same timing step.</p>
+        <p>The sound and beat marker stay together.</p>
       </div>
 
       <div className={styles.metronomeLayout}>
