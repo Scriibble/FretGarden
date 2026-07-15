@@ -30,6 +30,22 @@ test("presents the complete implemented curriculum without mapped-roadmap claims
   await expect(page.getByRole("link", { name: "Capstone: Complete Artist Portfolio" })).toBeVisible();
   await expect(page.getByText("Every listed unit is fully authored", { exact: false })).toBeVisible();
   await expect(page.getByText("source-mapped", { exact: false })).toHaveCount(0);
+  await expect(page.getByText("51 units shown", { exact: true })).toBeVisible();
+
+  await page.getByLabel("Search").fill("capstone");
+  await expect(page.getByText("1 units shown", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Capstone: Complete Artist Portfolio" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Tending the Practice Garden" })).toHaveCount(0);
+
+  await page.getByLabel("Search").clear();
+  await page.getByLabel("Level").selectOption("advanced");
+  await expect(page.getByRole("link", { name: "Extended Chords and Color Tones" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Tending the Practice Garden" })).toHaveCount(0);
+
+  await page.getByLabel("Level").selectOption("all");
+  await page.getByLabel("Status").selectOption("preview");
+  await expect(page.getByRole("link", { name: "Focused Practice and the Pomodoro Technique" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Tending the Practice Garden" })).toHaveCount(0);
 });
 
 test("requires correct knowledge and explicit performance checks before Unit 1 completion", async ({ page }) => {

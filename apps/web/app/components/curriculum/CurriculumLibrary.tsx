@@ -17,6 +17,9 @@ interface CurriculumLibraryProps {
 
 export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryProps) {
   const [records, setRecords] = useState<CurriculumProgressRecord[]>([]);
+  const [query, setQuery] = useState("");
+  const [levelFilter, setLevelFilter] = useState<"all" | CurriculumIndexEntry["level"]>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | UnitStatus>("all");
 
   useEffect(() => {
     try {
@@ -40,6 +43,24 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
     () => new Map(records.map((record) => [record.unitId, record])),
     [records]
   );
+  const visibleUnits = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return units.filter((unit) => {
+      const unitStatus = getUnitStatus(unit, statuses);
+      const searchableText = [
+        unit.title,
+        unit.summary,
+        formatLevel(unit.level),
+        ...unit.outcomes,
+        ...unit.tags
+      ].join(" ").toLowerCase();
+      return (
+        (levelFilter === "all" || unit.level === levelFilter) &&
+        (statusFilter === "all" || unitStatus === statusFilter) &&
+        (!normalizedQuery || searchableText.includes(normalizedQuery))
+      );
+    });
+  }, [levelFilter, query, statusFilter, statuses, units]);
 
   return (
     <>
@@ -61,24 +82,60 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
         </div>
       </section>
 
+      <section className={styles.libraryFilters} aria-label="Filter curriculum units">
+        <label>
+          <span>Search</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.currentTarget.value)}
+            placeholder="Chord melody, metronome, portfolio"
+          />
+        </label>
+        <label>
+          <span>Level</span>
+          <select
+            value={levelFilter}
+            onChange={(event) =>
+              setLevelFilter(event.currentTarget.value as "all" | CurriculumIndexEntry["level"])
+            }
+          >
+            <option value="all">All levels</option>
+            <option value="absolute-beginner">Absolute beginner</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="upper-intermediate">Upper intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </label>
+        <label>
+          <span>Status</span>
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.currentTarget.value as "all" | UnitStatus)}
+          >
+            <option value="all">All statuses</option>
+            <option value="not-started">Not started</option>
+            <option value="in-progress">In progress</option>
+            <option value="preview">Preview available</option>
+            <option value="complete">Complete</option>
+          </select>
+        </label>
+        <p aria-live="polite">{visibleUnits.length} units shown</p>
+      </section>
+
       <ol className={styles.unitList} aria-label="Implemented curriculum units">
-        {units.map((unit) => {
+        {visibleUnits.map((unit) => {
           const record = statuses.get(unit.id);
-          const prerequisitesComplete = unit.requiredPriorUnitIds.every(
-            (unitId) => Boolean(statuses.get(unitId)?.completedAt)
-          );
-          const status = record?.completedAt
-            ? "Complete"
-            : !prerequisitesComplete
-              ? record ? "Previewing" : "Preview available"
-              : record ? "In progress" : "Not started";
+          const prerequisitesComplete = arePrerequisitesComplete(unit, statuses);
+          const status = getUnitStatus(unit, statuses);
           return (
             <li key={unit.id}>
               <span className={styles.unitNumber}>{unit.order}</span>
               <div>
                 <div className={styles.unitMeta}>
                   <span>{formatLevel(unit.level)}</span>
-                  <strong>{status}</strong>
+                  <strong>{formatStatus(status)}</strong>
                 </div>
                 <h2><Link href={`/lessons/${unit.slug}`}>{unit.title}</Link></h2>
                 <p>{unit.summary}</p>
@@ -91,8 +148,37 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
           );
         })}
       </ol>
+      {visibleUnits.length === 0 ? (
+        <p className={styles.emptyLibraryResult}>No curriculum units match the current filters.</p>
+      ) : null}
     </>
   );
+}
+
+type UnitStatus = "complete" | "in-progress" | "preview" | "not-started";
+
+function arePrerequisitesComplete(
+  unit: CurriculumIndexEntry,
+  statuses: ReadonlyMap<string, CurriculumProgressRecord>
+): boolean {
+  return unit.requiredPriorUnitIds.every((unitId) => Boolean(statuses.get(unitId)?.completedAt));
+}
+
+function getUnitStatus(
+  unit: CurriculumIndexEntry,
+  statuses: ReadonlyMap<string, CurriculumProgressRecord>
+): UnitStatus {
+  const record = statuses.get(unit.id);
+  if (record?.completedAt) return "complete";
+  if (!arePrerequisitesComplete(unit, statuses)) return "preview";
+  return record ? "in-progress" : "not-started";
+}
+
+function formatStatus(status: UnitStatus): string {
+  if (status === "complete") return "Complete";
+  if (status === "in-progress") return "In progress";
+  if (status === "preview") return "Preview available";
+  return "Not started";
 }
 
 function formatLevel(level: CurriculumIndexEntry["level"]): string {

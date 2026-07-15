@@ -61,6 +61,54 @@
   height: 100%;
 }
 
+.libraryFilters {
+  align-items: end;
+  border-bottom: 1px solid #cbd7d1;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) minmax(160px, 220px) auto;
+  padding: 1.25rem 0;
+}
+
+.libraryFilters label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.libraryFilters span {
+  color: #6b584d;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.libraryFilters input,
+.libraryFilters select {
+  background: white;
+  border: 1px solid #a9bab3;
+  border-radius: 7px;
+  color: #173f43;
+  font: inherit;
+  min-height: 42px;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+}
+
+.libraryFilters p {
+  color: #4b5d56;
+  font-weight: 800;
+  margin: 0 0 0.65rem;
+  white-space: nowrap;
+}
+
+.emptyLibraryResult {
+  border-bottom: 1px solid #cbd7d1;
+  color: #4b5d56;
+  font-weight: 700;
+  margin: 0;
+  padding: 1.5rem 0;
+}
+
 .unitList {
   display: grid;
   list-style: none;
@@ -1024,6 +1072,8 @@
 .bpmControl button:focus-visible,
 .repetitionControl button:focus-visible,
 .sequenceNav a:focus-visible,
+.libraryFilters input:focus-visible,
+.libraryFilters select:focus-visible,
 .contentSection input:focus-visible,
 .contentSection textarea:focus-visible,
 .tool input:focus-visible,
@@ -1035,6 +1085,7 @@
 
 @media (max-width: 760px) {
   .libraryOverview,
+  .libraryFilters,
   .hero,
   .timerLayout,
   .metronomeLayout,
@@ -1044,6 +1095,10 @@
 
   .formulaGrid {
     grid-template-columns: 1fr;
+  }
+
+  .libraryFilters p {
+    margin: 0;
   }
 
   .hero h1 {

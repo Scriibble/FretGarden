@@ -4,7 +4,7 @@ Date: 2026-07-14
 
 Branch: `codex/curriculum-level-3`
 
-Status: Curriculum Phase 7 implemented; automated validation complete
+Status: Curriculum Phase 8 hardening implemented; automated validation complete
 
 ## Current Boundary
 
@@ -54,14 +54,27 @@ The application does not claim to hear chord clarity, timing, technique quality,
 
 Phase 7 adds no Supabase schema, RLS, authentication, deployment, environment configuration, production telemetry, legacy conversion, microphone permission, audio upload, automatic performance diagnosis, copyrighted tablature, or external content dependency.
 
+## Phase 8 Hardening
+
+The post-expansion hardening pass adds curriculum-wide QA tests and learner catalog scanning controls without changing storage semantics or lesson completion rules.
+
+- The content suite now guards route/lesson/assessment/review alignment across all 51 units.
+- Unit 4-51 lessons are locked to the explicit model -> guided attempt -> scaffold fade -> independent attempt sequence.
+- Completion criteria remain learner-confirmed; automatic verification is not used for curriculum completion claims.
+- Review plans retain immediate, next-session, one-week, and long-term prompts.
+- Unit 3 now includes an explicit metronome reflection criterion so timing observations are recorded, not implied.
+- The `/lessons` catalog now supports search, level filtering, status filtering, and a visible result count for the complete 51-unit path.
+
+Phase 8 adds no Supabase schema, RLS, authentication, deployment, environment configuration, production telemetry, legacy conversion, curriculum migration, or new lesson-storage namespace.
+
 ## Automated Validation Record
 
 | Check | Result |
 | --- | --- |
 | `pnpm validate:curriculum` | Passed: 51 units, 51 implemented, 0 mapped |
-| `pnpm --filter @pocket-practice/education-content test` | Passed: 20 tests |
+| `pnpm --filter @pocket-practice/education-content test` | Passed: 24 tests |
 | `pnpm report:education` | Passed; pilot conformance regenerated |
-| `pnpm test` | Passed: 262 workspace tests, including 214 web tests |
+| `pnpm test` | Passed: 266 workspace tests, including 214 web tests |
 | `pnpm typecheck` | Passed |
 | `pnpm lint` | Passed |
 | `pnpm build` | Passed; 72 static pages generated and all 51 implemented lesson routes statically generated |
@@ -74,4 +87,4 @@ Gate 4 accessibility and usability evidence remains deferred under `GOV-004`. Th
 
 ## Rollback
 
-Revert the Phase 7 commits beginning with `ff25ab0` to return to the Phase 6 curriculum boundary. Curriculum storage remains isolated and no production, Supabase, authentication, deployment, or legacy cleanup is required.
+Revert the Phase 8 hardening commit to remove the catalog filters, additional QA tests, and Unit 3 reflection criterion. Revert the Phase 7 commits beginning with `ff25ab0` to return to the Phase 6 curriculum boundary. Curriculum storage remains isolated and no production, Supabase, authentication, deployment, or legacy cleanup is required.

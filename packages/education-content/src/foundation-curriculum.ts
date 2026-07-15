@@ -600,6 +600,12 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         description: "Record a clean BPM, task, subdivision, and useful next observation.",
         verification: "recorded-value",
         required: true
+      },
+      {
+        id: "mastery.metronome-reflection",
+        description: "Describe one rushing, dragging, recovery, or comfort observation from the timing task.",
+        verification: "reflection",
+        required: true
       }
     ],
     reviewRecommendation:
