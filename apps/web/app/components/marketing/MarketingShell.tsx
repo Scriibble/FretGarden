@@ -8,7 +8,11 @@ type MarketingPage =
   | "signup"
   | "login"
   | "account"
-  | "accountNotice";
+  | "accountNotice"
+  | "accessibility"
+  | "privacy"
+  | "terms"
+  | "testerFeedback";
 
 type MarketingShellProps = {
   activePage: MarketingPage;
@@ -18,8 +22,15 @@ type MarketingShellProps = {
 const navigation = [
   { key: "home" as const, href: "/", label: "Home" },
   { key: "about" as const, href: "/about", label: "About Me" },
+  { key: "testerFeedback" as const, href: "/tester-feedback", label: "Test Feedback" },
   { key: "signup" as const, href: "/signup", label: "Sign Up" },
   { key: "login" as const, href: "/login", label: "Sign In" }
+];
+
+const legalNavigation = [
+  { key: "privacy" as const, href: "/privacy", label: "Privacy" },
+  { key: "terms" as const, href: "/terms", label: "Terms" },
+  { key: "accessibility" as const, href: "/accessibility", label: "Accessibility" }
 ];
 
 export function MarketingShell({ activePage, children }: MarketingShellProps) {
@@ -110,11 +121,20 @@ export function MarketingShell({ activePage, children }: MarketingShellProps) {
               </Link>
             ))}
             <Link href="/practice">Open App</Link>
+            {legalNavigation.map((item) => (
+              <Link href={item.href} key={item.key}>
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           <div className={styles.footerMeta}>
             <span>© {new Date().getFullYear()} FretGarden</span>
-            <Link href="/account-notice">Early account notice</Link>
+            <span>
+              <Link href="/account-notice">Early account notice</Link>
+              {" · "}
+              <Link href="/tester-feedback">Tester feedback</Link>
+            </span>
           </div>
         </div>
       </footer>

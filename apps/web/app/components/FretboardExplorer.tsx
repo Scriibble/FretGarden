@@ -14,6 +14,7 @@ import type {
   TriadQuality
 } from "@pocket-practice/music-theory-engine";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { AppNavigation } from "./AppNavigation";
 import { PracticeHub } from "./PracticeHub";
 import { PracticePromptPanel } from "./PracticePromptPanel";
 import {
@@ -1781,6 +1782,7 @@ export function FretboardExplorer({
 
   return (
     <main className="app-shell">
+      <AppNavigation activePage={isPracticeExperience ? "practice" : "explore"} />
       <header className="app-header">
         <div>
           <p className="eyebrow">FretGarden</p>

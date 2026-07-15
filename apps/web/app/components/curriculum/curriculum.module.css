@@ -1,0 +1,1169 @@
+.eyebrow {
+  color: #8a472e;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.libraryOverview {
+  align-items: center;
+  border-bottom: 1px solid #cbd7d1;
+  border-top: 1px solid #cbd7d1;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  padding: 1.5rem 0;
+}
+
+.libraryOverview > div:first-child {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.libraryOverview h2 {
+  color: #173f43;
+  font-size: 1.6rem;
+  letter-spacing: 0;
+}
+
+.libraryOverview p,
+.unitList p,
+.unitList ul {
+  color: #4b5d56;
+  line-height: 1.55;
+}
+
+.progressSummary {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.progressSummary > strong {
+  color: #173f43;
+  font-size: 2rem;
+}
+
+.progressSummary > span {
+  color: #53635d;
+  font-weight: 700;
+}
+
+.progressSummary > div {
+  background: #dce5e1;
+  border-radius: 7px;
+  height: 9px;
+  overflow: hidden;
+}
+
+.progressSummary > div span {
+  background: #39786e;
+  display: block;
+  height: 100%;
+}
+
+.libraryFilters {
+  align-items: end;
+  border-bottom: 1px solid #cbd7d1;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) minmax(160px, 220px) auto;
+  padding: 1.25rem 0;
+}
+
+.libraryFilters label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.libraryFilters span {
+  color: #6b584d;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.libraryFilters input,
+.libraryFilters select {
+  background: white;
+  border: 1px solid #a9bab3;
+  border-radius: 7px;
+  color: #173f43;
+  font: inherit;
+  min-height: 42px;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+}
+
+.libraryFilters p {
+  color: #4b5d56;
+  font-weight: 800;
+  margin: 0 0 0.65rem;
+  white-space: nowrap;
+}
+
+.emptyLibraryResult {
+  border-bottom: 1px solid #cbd7d1;
+  color: #4b5d56;
+  font-weight: 700;
+  margin: 0;
+  padding: 1.5rem 0;
+}
+
+.unitList {
+  display: grid;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.unitList > li {
+  align-items: start;
+  border-bottom: 1px solid #cbd7d1;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  padding: 1.6rem 0;
+}
+
+.unitNumber {
+  align-items: center;
+  background: #173f43;
+  border-radius: 7px;
+  color: white;
+  display: inline-flex;
+  font-size: 1.1rem;
+  font-weight: 850;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.unitList > li > div {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.unitList h2 {
+  font-size: 1.35rem;
+  letter-spacing: 0;
+}
+
+.unitList h2 a {
+  color: #173f43;
+}
+
+.unitList ul {
+  display: grid;
+  gap: 0.3rem;
+  padding-left: 1.2rem;
+}
+
+.unitMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.unitMeta span,
+.unitMeta strong {
+  color: #6b584d;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.openUnit,
+.primaryButton,
+.secondaryButton {
+  align-items: center;
+  border-radius: 7px;
+  display: inline-flex;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.6rem 0.85rem;
+  text-decoration: none;
+}
+
+.openUnit,
+.primaryButton {
+  background: #173f43;
+  border: 1px solid #173f43;
+  color: white;
+}
+
+.secondaryButton {
+  background: white;
+  border: 1px solid #7da79d;
+  color: #173f43;
+}
+
+.primaryButton:disabled {
+  background: #d9e0dd;
+  border-color: #b8c3be;
+  color: #59665f;
+  cursor: not-allowed;
+}
+
+.lesson {
+  display: grid;
+  gap: 0;
+}
+
+.hero {
+  align-items: end;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  padding: 1.5rem 0 2rem;
+}
+
+.hero > div {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.hero h1 {
+  color: #172d2b;
+  font-size: 3.15rem;
+  letter-spacing: 0;
+  line-height: 1.03;
+  max-width: 760px;
+}
+
+.hero > div > p:last-child {
+  color: #485b54;
+  font-size: 1.08rem;
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+.unitFacts {
+  border-left: 3px solid #ae5a37;
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.unitFacts div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.unitFacts dt {
+  color: #6b584d;
+  font-size: 0.75rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.unitFacts dd {
+  color: #263d38;
+  font-weight: 750;
+  margin: 0;
+}
+
+.objective,
+.tool,
+.mastery,
+.review {
+  border-radius: 8px;
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.objective {
+  background: #e6f0ec;
+  border: 1px solid #9bb8af;
+  margin-bottom: 1rem;
+}
+
+.objective h2 {
+  color: #173f43;
+  font-size: 1.35rem;
+  letter-spacing: 0;
+  max-width: 860px;
+}
+
+.objective p {
+  color: #40564f;
+  line-height: 1.55;
+}
+
+.readingFlow {
+  display: grid;
+}
+
+.contentSection,
+.playBlock,
+.callout,
+.band {
+  border-top: 1px solid #cbd7d1;
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.6rem 0;
+}
+
+.contentSection h2,
+.playBlock h2,
+.callout h2,
+.sectionHeading h2,
+.toolHeading h2,
+.review h2 {
+  color: #173f43;
+  font-size: 1.45rem;
+  letter-spacing: 0;
+}
+
+.contentSection p,
+.playBlock p,
+.callout p,
+.band p,
+.tool p,
+.review p {
+  color: #465a53;
+  line-height: 1.6;
+  max-width: 850px;
+}
+
+.contentSection label,
+.fieldWide,
+.formGrid label,
+.timerSettings label,
+.metronomeControls label,
+.practiceLogGrid label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.contentSection label span,
+.fieldWide span,
+.formGrid label span,
+.timerSettings label span,
+.metronomeControls label span,
+.practiceLogGrid label span,
+.repetitionControl > span,
+.bpmControl > span {
+  color: #2f4841;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.contentSection input,
+.contentSection textarea,
+.tool input,
+.tool textarea,
+.tool select {
+  background: white;
+  border: 1px solid #99aaa3;
+  border-radius: 6px;
+  color: #1f302c;
+  font: inherit;
+  min-height: 42px;
+  padding: 0.65rem 0.75rem;
+  width: 100%;
+}
+
+.contentSection textarea,
+.tool textarea {
+  resize: vertical;
+}
+
+.callout {
+  border-left: 4px solid #ae5a37;
+  padding-left: 1rem;
+}
+
+.callout-safety {
+  border-left-color: #9e382f;
+}
+
+.callout-listen {
+  border-left-color: #39786e;
+}
+
+.callout-remember {
+  border-left-color: #79622f;
+}
+
+.rhythmGrid {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rhythmGrid code {
+  background: #f2f6f4;
+  border: 1px solid #c3d0cb;
+  border-radius: 6px;
+  color: #273e38;
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+  padding: 0.75rem;
+}
+
+.playBlock {
+  background: #f1f6f3;
+  border: 1px solid #b7c9c1;
+  border-radius: 8px;
+  margin: 0.5rem 0 1rem;
+  padding: 1.25rem;
+}
+
+.musicBlock,
+.learningStage {
+  border-top: 1px solid #cbd7d1;
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.6rem 0;
+}
+
+.musicBlock h2,
+.learningStage h2 {
+  color: #173f43;
+  font-size: 1.45rem;
+  letter-spacing: 0;
+}
+
+.musicBlock p,
+.learningStage p,
+.learningStage ol,
+.learningStage ul {
+  color: #465a53;
+  line-height: 1.55;
+}
+
+.chordLayout {
+  align-items: center;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+}
+
+.chordDiagram {
+  background: #f2f6f4;
+  border: 1px solid #aebfb8;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.chordDiagram > strong {
+  color: #173f43;
+  font-size: 1.35rem;
+}
+
+.chordStrings {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(6, minmax(32px, 1fr));
+}
+
+.chordStrings > div {
+  align-items: center;
+  border-left: 1px solid #73877f;
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  min-height: 100px;
+}
+
+.chordStrings > div:last-child {
+  border-right: 1px solid #73877f;
+}
+
+.chordStrings span {
+  font-weight: 850;
+}
+
+.chordStrings i {
+  align-items: center;
+  background: #173f43;
+  border-radius: 50%;
+  color: white;
+  display: inline-flex;
+  font-style: normal;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+
+.chordStrings i:empty {
+  background: transparent;
+}
+
+.tableScroller {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tabTable {
+  border-collapse: collapse;
+  min-width: 560px;
+  width: 100%;
+}
+
+.tabTable caption {
+  color: #465a53;
+  padding-bottom: 0.65rem;
+  text-align: left;
+}
+
+.tabTable th,
+.tabTable td {
+  border: 1px solid #b9c8c2;
+  color: #263d38;
+  min-width: 44px;
+  padding: 0.45rem;
+  text-align: center;
+}
+
+.tabTable th {
+  background: #e5eeea;
+}
+
+.fretboardTable {
+  border-collapse: collapse;
+  min-width: 680px;
+  width: 100%;
+}
+
+.fretboardTable caption {
+  color: #465a53;
+  padding-bottom: 0.65rem;
+  text-align: left;
+}
+
+.fretboardTable th,
+.fretboardTable td {
+  border: 1px solid #b9c8c2;
+  height: 42px;
+  min-width: 48px;
+  padding: 0.35rem;
+  text-align: center;
+}
+
+.fretboardTable th {
+  background: #e5eeea;
+}
+
+.map-root { background: #cbe3dc; font-weight: 850; }
+.map-target { background: #f5dacd; font-weight: 850; }
+.map-context { background: #eef1e8; }
+
+.formulaGrid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.formulaGrid div {
+  border-left: 3px solid #39786e;
+  display: grid;
+  gap: 0.25rem;
+  padding-left: 0.75rem;
+}
+
+.formulaGrid dt {
+  color: #6b584d;
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.formulaGrid dd { color: #263d38; margin: 0; }
+
+.positionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.positionList span {
+  background: #eef3f0;
+  border: 1px solid #bdcbc5;
+  border-radius: 6px;
+  color: #314a43;
+  padding: 0.45rem 0.55rem;
+}
+
+.chartGrid {
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+}
+
+.chartGrid > div {
+  border: 1px solid #b7c7c0;
+  border-radius: 6px;
+  display: grid;
+  gap: 0.25rem;
+  min-height: 100px;
+  padding: 0.65rem;
+}
+
+.chartGrid strong { color: #173f43; font-size: 1.2rem; }
+.chartGrid span,
+.chartGrid small { color: #5a6762; }
+
+.leadSheet {
+  border: 1px solid #aebfb8;
+  display: grid;
+}
+
+.leadSheet > section {
+  border-bottom: 1px solid #c8d3ce;
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.85rem;
+}
+
+.leadSheet > section:last-child { border-bottom: 0; }
+.leadSheet h3 { color: #173f43; letter-spacing: 0; }
+.leadSheet section > div { display: grid; gap: 0.4rem; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+.leadSheet span { background: #f2f6f4; display: grid; gap: 0.2rem; padding: 0.55rem; }
+.leadSheet small { color: #5a6762; }
+
+.structuredRhythm {
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+}
+
+.structuredRhythm > div {
+  background: #f2f6f4;
+  border: 1px solid #b9c8c2;
+  border-radius: 6px;
+  display: grid;
+  gap: 0.25rem;
+  min-height: 72px;
+  padding: 0.55rem;
+  text-align: center;
+}
+
+.structuredRhythm .rhythmAccent {
+  border-top: 4px solid #ae5a37;
+}
+
+.setupList {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.setupList li {
+  border-left: 3px solid #39786e;
+  display: grid;
+  gap: 0.35rem;
+  padding-left: 0.85rem;
+}
+
+.setupList small {
+  color: #5d6965;
+}
+
+.safetyLine {
+  background: #fff3ef;
+  border-left: 4px solid #9e382f;
+  padding: 0.85rem;
+}
+
+.learningStage {
+  border-left: 4px solid #39786e;
+  padding-left: 1rem;
+}
+
+.stageHeading {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.stageHeading > span {
+  color: #8a472e;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.playBlock ol,
+.playBlock ul,
+.exercise ol,
+.exercise ul,
+.criteriaColumns ul {
+  color: #40544e;
+  display: grid;
+  gap: 0.45rem;
+  line-height: 1.5;
+  padding-left: 1.25rem;
+}
+
+.tool {
+  background: #f4f7f5;
+  border: 1px solid #aebfb8;
+  margin: 1rem 0 1.5rem;
+}
+
+.toolHeading,
+.sectionHeading {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.formGrid,
+.practiceLogGrid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.segmented button,
+.bpmControl button,
+.repetitionControl button {
+  background: white;
+  border: 1px solid #8fa59d;
+  border-radius: 6px;
+  color: #25443d;
+  font: inherit;
+  font-weight: 750;
+  min-height: 40px;
+  padding: 0.45rem 0.7rem;
+}
+
+.segmented button[aria-pressed="true"] {
+  background: #dcebe6;
+  border-color: #39786e;
+}
+
+.timerLayout,
+.metronomeLayout {
+  align-items: stretch;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+}
+
+.timerDisplay,
+.pulsePanel {
+  align-content: center;
+  background: #173f43;
+  border-radius: 8px;
+  color: white;
+  display: grid;
+  justify-items: center;
+  min-height: 190px;
+  padding: 1rem;
+}
+
+.timerDisplay span,
+.pulsePanel span {
+  font-weight: 750;
+}
+
+.timerDisplay strong {
+  font-size: 3rem;
+  letter-spacing: 0;
+}
+
+.pulsePanel strong {
+  align-items: center;
+  border: 3px solid #84b6aa;
+  border-radius: 50%;
+  display: inline-flex;
+  font-size: 2.8rem;
+  height: 88px;
+  justify-content: center;
+  letter-spacing: 0;
+  width: 88px;
+}
+
+.pulseActive {
+  animation: pulse 220ms ease-out;
+}
+
+@keyframes pulse {
+  from { background: #39786e; transform: scale(1.05); }
+  to { background: transparent; transform: scale(1); }
+}
+
+.timerSettings,
+.metronomeControls {
+  align-content: start;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.timerSettings {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkControl {
+  align-items: center;
+  display: flex !important;
+  grid-column: 1 / -1;
+}
+
+.checkControl input {
+  min-height: auto;
+  width: 20px;
+}
+
+.toolActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.srStatus {
+  margin: 0;
+}
+
+.bpmControl {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.bpmControl > div {
+  display: grid;
+  gap: 0.3rem;
+  grid-template-columns: auto auto minmax(70px, 1fr) auto auto;
+}
+
+.bpmControl input {
+  min-width: 0;
+  text-align: center;
+}
+
+.metronomeControls fieldset,
+.knowledgeList fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.metronomeControls legend {
+  color: #2f4841;
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+
+.repetitionControl {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.repetitionControl div {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.exerciseList,
+.mistakeList,
+.knowledgeList,
+.masteryList {
+  display: grid;
+  gap: 1rem;
+}
+
+.exercise {
+  border-bottom: 1px solid #cbd7d1;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0 0 1.4rem;
+}
+
+.exercise > span {
+  color: #8a472e;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.exercise h3,
+.mistakeList h3 {
+  color: #233e37;
+  font-size: 1.1rem;
+  letter-spacing: 0;
+}
+
+.criteriaColumns {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mistakeList {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mistakeList article {
+  border-left: 3px solid #ae5a37;
+  display: grid;
+  gap: 0.45rem;
+  padding-left: 0.9rem;
+}
+
+.knowledgeList fieldset {
+  border-bottom: 1px solid #cbd7d1;
+  display: grid;
+  gap: 0.55rem;
+  padding-bottom: 1rem;
+}
+
+.knowledgeList legend {
+  color: #233e37;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.knowledgeList label,
+.masteryList label {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.65rem;
+}
+
+.knowledgeList input,
+.masteryList input {
+  margin-top: 0.2rem;
+  min-height: 18px;
+  width: 18px;
+}
+
+.correct {
+  border-left: 3px solid #39786e;
+  padding-left: 0.75rem;
+}
+
+.incorrect {
+  border-left: 3px solid #ae5a37;
+  padding-left: 0.75rem;
+}
+
+.mastery {
+  background: #e9f1ee;
+  border: 1px solid #9db7ae;
+  margin-top: 1rem;
+}
+
+.masteryList label {
+  background: white;
+  border: 1px solid #c3d0cb;
+  border-radius: 7px;
+  padding: 0.8rem;
+}
+
+.masteryList span {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.masteryList small,
+.evidenceNote {
+  color: #5d6965;
+}
+
+.review {
+  border: 1px solid #c5cdc9;
+  margin: 1.5rem 0;
+}
+
+.reviewGrid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.reviewGrid div {
+  border-top: 3px solid #39786e;
+  display: grid;
+  gap: 0.35rem;
+  padding-top: 0.65rem;
+}
+
+.sequenceNav {
+  border-top: 1px solid #cbd7d1;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 1.5rem 0;
+}
+
+.sequenceNav a {
+  border: 1px solid #a9b9b2;
+  border-radius: 7px;
+  color: #173f43;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem;
+  text-decoration: none;
+}
+
+.sequenceNav a:last-child {
+  text-align: right;
+}
+
+.sequenceNav span {
+  color: #6b584d;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.visuallyHidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.warning {
+  background: #fff6e6;
+  border: 1px solid #d7a459;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.prerequisiteNotice {
+  background: #eef4f1;
+  border-left: 4px solid #39786e;
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+}
+
+.prerequisiteNotice p {
+  color: #465a53;
+  line-height: 1.5;
+}
+
+.warning p {
+  color: #5a4a35;
+}
+
+.openUnit:focus-visible,
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.segmented button:focus-visible,
+.bpmControl button:focus-visible,
+.repetitionControl button:focus-visible,
+.sequenceNav a:focus-visible,
+.libraryFilters input:focus-visible,
+.libraryFilters select:focus-visible,
+.contentSection input:focus-visible,
+.contentSection textarea:focus-visible,
+.tool input:focus-visible,
+.tool textarea:focus-visible,
+.tool select:focus-visible {
+  outline: 3px solid #b8582f;
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .libraryOverview,
+  .libraryFilters,
+  .hero,
+  .timerLayout,
+  .metronomeLayout,
+  .chordLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .formulaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryFilters p {
+    margin: 0;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .unitList > li {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .openUnit {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .rhythmGrid,
+  .formGrid,
+  .practiceLogGrid,
+  .criteriaColumns,
+  .mistakeList,
+  .reviewGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sequenceNav {
+    grid-template-columns: 1fr;
+  }
+
+  .sequenceNav a:last-child {
+    text-align: left;
+  }
+}
+
+@media (max-width: 420px) {
+  .unitList > li {
+    gap: 0.75rem;
+  }
+
+  .tool,
+  .objective,
+  .mastery,
+  .review {
+    padding: 1rem;
+  }
+
+  .timerSettings {
+    grid-template-columns: 1fr;
+  }
+
+  .checkControl {
+    grid-column: auto;
+  }
+
+  .bpmControl > div {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .bpmControl input {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulseActive {
+    animation: none;
+  }
+}

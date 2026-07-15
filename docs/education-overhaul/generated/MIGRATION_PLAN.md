@@ -2,7 +2,7 @@
 
 Status: Phase 1 staged strategy for Gate 2 review. No migration is authorized by this document.
 
-Current update: Gate 4 implementation is complete, governance owners are assigned, and human protocol execution remains pending. The approved Gate 5A read-only `fretboard-map` rehearsal is implemented and validated in `GATE_5A_VALIDATION_REPORT.md`. It does not authorize conversion, navigation exposure, production persistence, or any later migration step.
+Current update: Gate 4 implementation is complete, governance owners are assigned, and `GOV-004` defers the remaining human protocol evidence until final project signoff. Separately approved implementation work may continue, but final acceptance or release remains blocked by the deferred evidence. Gate 5A's read-only `fretboard-map` rehearsal and Gate 5B's learner-facing read-only bridge are implemented and validated in `GATE_5A_VALIDATION_REPORT.md` and `GATE_5B_VALIDATION_REPORT.md`. Gate 5B authorizes navigation exposure only within its approved no-write boundary; it does not authorize conversion, a second segment, production persistence, or any later migration step.
 
 ## Migration Principles
 
@@ -50,6 +50,8 @@ Review educational validity, usability, accessibility, content authoring effort,
 ### Gate 5: Limited Migration
 
 After separate approval, migrate one coherent curriculum segment. Continue legacy reporting alongside new reporting. Add an importer only after representative local and future cloud data contracts are approved.
+
+Current checkpoint: Gate 5A validates the read-only comparison and Gate 5B exposes that comparison to learners. No importer or converted record exists, so Gate 5 remains open.
 
 Permitted legacy mappings:
 

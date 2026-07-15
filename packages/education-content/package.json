@@ -16,10 +16,13 @@
     "lint": "tsc -p tsconfig.json --noEmit",
     "report": "pnpm build && node dist/generate-report.js",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "validate:curriculum": "pnpm build && node dist/validate-curriculum.js"
   },
   "dependencies": {
     "@pocket-practice/education-engine": "workspace:*",
+    "@pocket-practice/fretboard-engine": "workspace:*",
+    "@pocket-practice/music-theory-engine": "workspace:*",
     "zod": "^3.25.0"
   },
   "devDependencies": {

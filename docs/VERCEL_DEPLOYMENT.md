@@ -25,6 +25,16 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-publishable-key"
 The waitlist integration is optional and uses the private variables documented
 in `docs/WAITLIST_SETUP.md`.
 
+Optional tester survey environment variable:
+
+```bash
+NEXT_PUBLIC_TESTER_SURVEY_URL="https://forms.gle/your-form"
+```
+
+When this value is present, `/tester-feedback` links directly to the live
+tester survey. When it is absent, the page explains that the survey link is not
+configured yet.
+
 ## Supabase Auth Redirects
 
 Confirm these URLs in the hosted Supabase Auth URL configuration before inviting
@@ -80,7 +90,11 @@ pnpm build
 7. Confirm `/forgot-password`, `/update-password`, and `/account-notice`
    render correctly. Test a real password reset email before inviting broader
    account testers.
-8. Confirm the Supabase hosted redirect allow-list includes the local, preview,
+8. Confirm `/privacy`, `/terms`, `/accessibility`, and `/tester-feedback`
+   render correctly.
+9. If a tester survey is live, confirm `NEXT_PUBLIC_TESTER_SURVEY_URL` opens the
+   expected form from `/tester-feedback`.
+10. Confirm the Supabase hosted redirect allow-list includes the local, preview,
    and production callback URLs listed above.
 
 ## Needed From The Project Owner

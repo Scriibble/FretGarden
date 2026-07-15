@@ -66,11 +66,26 @@ test("shows a focused branded landing page", async ({ page }) => {
     "href",
     "/about"
   );
+  await expect(primaryNavigation.getByRole("link", { name: "Test Feedback" })).toHaveAttribute(
+    "href",
+    "/tester-feedback"
+  );
   await expect(primaryNavigation.getByRole("link", { name: "Sign In" })).toHaveAttribute(
     "href",
     "/login"
   );
   await expect(page.getByText("Accounts are live; cloud progress sync is planned")).toBeVisible();
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Privacy" })).toHaveAttribute(
+    "href",
+    "/privacy"
+  );
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Terms" })).toHaveAttribute(
+    "href",
+    "/terms"
+  );
+  await expect(
+    page.getByRole("contentinfo").getByRole("link", { name: "Accessibility" })
+  ).toHaveAttribute("href", "/accessibility");
 });
 
 test("renders account access pages without requiring live signup", async ({
@@ -112,6 +127,25 @@ test("renders account access pages without requiring live signup", async ({
   await expect(page.getByText("What accounts do now")).toBeVisible();
 });
 
+test("renders release policy and tester evidence pages", async ({ page }) => {
+  await page.goto("/privacy");
+  await expect(page.getByRole("heading", { name: "Early-access data boundaries." })).toBeVisible();
+  await expect(page.getByText("This data is not synced across devices.")).toBeVisible();
+
+  await page.goto("/terms");
+  await expect(page.getByRole("heading", { name: "Use FretGarden with clear expectations." })).toBeVisible();
+  await expect(page.getByText("Accounts do not currently sync lesson progress", { exact: false })).toBeVisible();
+
+  await page.goto("/accessibility");
+  await expect(page.getByRole("heading", { name: "Accessibility is part of release readiness." })).toBeVisible();
+  await expect(page.getByText("Full screen-reader matrix execution and signoff.")).toBeVisible();
+
+  await page.goto("/tester-feedback");
+  await expect(page.getByRole("heading", { name: "Help decide what is ready." })).toBeVisible();
+  await expect(page.getByText("Survey link not configured yet")).toBeVisible();
+  await expect(page.getByText("NEXT_PUBLIC_TESTER_SURVEY_URL", { exact: false })).toBeVisible();
+});
+
 test("protects the account page and exposes signout redirect", async ({
   page,
   request
@@ -149,11 +183,14 @@ test("surfaces the core MVP path while keeping advanced drills available", async
   await expect(page.getByText("Explore mode")).toHaveCount(0);
 });
 
-test("links a lesson into its matching practice drill", async ({ page }) => {
+test("redirects replaced lesson content while preserving its practice drill", async ({ page }) => {
   await page.goto("/lessons/fretboard-map");
-  await page.getByRole("link", { name: "Start reinforcement drill" }).click();
+  await expect(page).toHaveURL(/\/lessons$/);
+  await expect(
+    page.getByRole("heading", { name: "Learn to practice before you rush to collect facts" })
+  ).toBeVisible();
 
-  await expect(page).toHaveURL(/\/practice/);
+  await page.goto("/practice?drill=note&lesson=fretboard-map#practice");
   await expect(page).toHaveURL(/drill=note/);
   await expect(page).toHaveURL(/lesson=fretboard-map/);
   await expect(

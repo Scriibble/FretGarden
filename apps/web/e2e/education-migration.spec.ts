@@ -87,7 +87,7 @@ test("malformed sources remain byte-for-byte unchanged on repeated loads", async
   expect(await storageSnapshot(page)).toEqual(before);
 });
 
-test("repeated reports are idempotent and legacy lesson routing is unchanged", async ({
+test("repeated reports are idempotent while replaced lessons preserve drill access", async ({
   page
 }) => {
   await seedCompleteLegacy(page);
@@ -97,8 +97,8 @@ test("repeated reports are idempotent and legacy lesson routing is unchanged", a
   expect(await storageSnapshot(page)).toEqual(before);
 
   await page.goto("/lessons/fretboard-map");
-  await page.getByRole("link", { name: "Practice again" }).click();
-  await expect(page).toHaveURL(/\/practice/);
+  await expect(page).toHaveURL(/\/lessons$/);
+  await page.goto("/practice?drill=note&lesson=fretboard-map#practice");
   await expect(page).toHaveURL(/drill=note/);
   await expect(page).toHaveURL(/lesson=fretboard-map/);
   await expect(page.getByText("Find D on the A string")).toBeVisible();

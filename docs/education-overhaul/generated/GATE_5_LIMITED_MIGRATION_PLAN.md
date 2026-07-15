@@ -1,6 +1,6 @@
 # Gate 5 Limited Migration Plan
 
-Status: Gate 5A read-only rehearsal implemented and validated; Gate 5 remains open
+Status: Gate 5A rehearsal and Gate 5B read-only learner bridge implemented and validated; Gate 5 remains open
 
 Updated: 2026-07-14
 
@@ -10,7 +10,7 @@ Implementation update: the read-only `fretboard-map` mapper, parallel report, un
 
 Use `fretboard-map` as the first limited-migration segment. Begin with a read-only mapping and parallel-report rehearsal. Do not replace, rewrite, or reinterpret the existing lesson or practice flow during the first code slice.
 
-Gate 4 human protocol execution remains open. This plan can be reviewed while that evidence is gathered, but Gate 5 code must not be treated as learner-ready until Gate 4 closes.
+Gate 4 human protocol execution remains open and is deferred under `GOV-004`. Separately approved Gate 5 implementation may continue, but it must not be treated as release-ready until the deferred evidence is completed and resulting findings are resolved. Gate 5B separately approved learner navigation and `/progress` within a read-only boundary; it did not authorize conversion or a writer.
 
 ## Why `fretboard-map`
 
@@ -166,4 +166,4 @@ Because the first slice is read-only, rollback requires code reversion only; it 
 
 ## Stop Conditions
 
-Stop and request approval if the implementation would change a legacy reader or writer, alter lesson/practice copy, add navigation exposure, infer evidence from legacy completion, write a migration result, introduce remote telemetry, or touch production persistence.
+Stop and request approval if the implementation would change a legacy reader or writer, alter lesson/practice meaning, expand navigation beyond the approved Gate 5B bridge, infer evidence from legacy completion, write a migration result, add a second segment, introduce remote telemetry, or touch production persistence.

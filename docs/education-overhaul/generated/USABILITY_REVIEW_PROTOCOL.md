@@ -10,12 +10,13 @@ Use this protocol to evaluate whether the isolated education pilot feels like a 
 
 | Field | Value |
 | --- | --- |
-| Build or commit | Pending execution entry |
+| Build or commit | `376a1f3` |
 | Facilitator | Evan Anderson |
 | Education observer | Evan Anderson; external educator input remains recommended |
-| Session dates | Pending |
-| Participant profile | Pending; record only role-relevant characteristics |
-| Result | **PROTOCOL APPROVED; PARTICIPANT EVIDENCE PENDING** |
+| Expert preflight | Codex, 2026-07-14 |
+| Session dates | Deferred to final project signoff under `GOV-004` |
+| Participant profile | Early learner, returning learner, and educator/curriculum author all pending |
+| Result | **EXPERT PREFLIGHT COMPLETE; OWNER-APPROVED PARTICIPANT-EVIDENCE DEFERRAL** |
 
 Use at least three representative sessions before Gate 4 signoff: one early learner, one returning learner, and one guitar educator or curriculum author. Obtain appropriate consent and do not store names, account identifiers, recordings, or sensitive data in this repository.
 
@@ -31,16 +32,16 @@ Use at least three representative sessions before Gate 4 signoff: one early lear
 
 | ID | Scenario | What to observe | Pass criterion | Result / evidence |
 | --- | --- | --- | --- | --- |
-| UX-01 | Choose a five-minute or reduced-load plan | Whether the target, duration, and next action feel workable rather than punitive | Participant can set or lighten the session and explain the immediate plan | Pending |
-| UX-02 | Complete pulse model and guided attempt | Whether “model” and “supported practice” are understood | Participant recognizes that guided success is useful but not independent evidence | Pending |
-| UX-03 | Fade support and complete an independent pulse at 50, 60, or 70 BPM | Whether the transition feels clear and musically coherent | Participant notices support removal and can identify the selected tempo | Pending |
-| UX-04 | Complete coordinate and note retrieval | Orientation, prompt interpretation, controls, and feedback usefulness | Participant completes using the grid or equivalent controls without facilitator instruction | Pending |
-| UX-05 | Reveal an answer, then retry | Emotional response and claim comprehension | Participant understands the corrected set is capped and that a fresh set is needed; copy is non-shaming | Pending |
-| UX-06 | Complete the two-note application | Whether ordered note placement feels like musical application rather than duplicate recall | Participant can explain what changed and why both notes must be selected | Pending |
-| UX-07 | Read the summary and next action | Interpretation of independent, retained, and transfer language | Participant can state what was shown, what was not claimed, and what happens next | Pending |
-| UX-08 | Complete a due review at a changed tempo | Whether delayed and changed-context retrieval are understood | Participant notices the source tempo is unavailable and understands why another tempo is used | Pending |
-| UX-09 | Encounter local save failure | Trust, recovery expectations, and action choice | Participant understands work is unsaved locally and can retry or export without believing legacy history was erased | Pending |
-| UX-10 | End the session early | Autonomy and emotional tone | Participant can stop without coercion, loss language, streak pressure, or a false failure message | Pending |
+| UX-01 | Choose a five-minute or reduced-load plan | Whether the target, duration, and next action feel workable rather than punitive | Participant can set or lighten the session and explain the immediate plan | Expert preflight pass; participant evidence pending. |
+| UX-02 | Complete pulse model and guided attempt | Whether “model” and “supported practice” are understood | Participant recognizes that guided success is useful but not independent evidence | Expert preflight pass; participant evidence pending. |
+| UX-03 | Fade support and complete an independent pulse at 50, 60, or 70 BPM | Whether the transition feels clear and musically coherent | Participant notices support removal and can identify the selected tempo | Expert preflight pass; participant evidence pending. |
+| UX-04 | Complete coordinate and note retrieval | Orientation, prompt interpretation, controls, and feedback usefulness | Participant completes using the grid or equivalent controls without facilitator instruction | Expert preflight pass; participant evidence pending. |
+| UX-05 | Reveal an answer, then retry | Emotional response and claim comprehension | Participant understands the corrected set is capped and that a fresh set is needed; copy is non-shaming | Expert preflight pass; participant evidence pending. |
+| UX-06 | Complete the two-note application | Whether ordered note placement feels like musical application rather than duplicate recall | Participant can explain what changed and why both notes must be selected | Expert preflight pass; participant evidence pending. |
+| UX-07 | Read the summary and next action | Interpretation of independent, retained, and transfer language | Participant can state what was shown, what was not claimed, and what happens next | Expert preflight pass; participant evidence pending. |
+| UX-08 | Complete a due review at a changed tempo | Whether delayed and changed-context retrieval are understood | Participant notices the source tempo is unavailable and understands why another tempo is used | Expert preflight pass; participant evidence pending. |
+| UX-09 | Encounter local save failure | Trust, recovery expectations, and action choice | Participant understands work is unsaved locally and can retry or export without believing legacy history was erased | Expert preflight pass; participant evidence pending. |
+| UX-10 | End the session early | Autonomy and emotional tone | Participant can stop without coercion, loss language, streak pressure, or a false failure message | Expert preflight pass; participant evidence pending. |
 
 ## Comprehension Questions
 
@@ -70,9 +71,11 @@ Any failed criterion becomes `UX-FINDING-NNN` with severity, evidence, owner, re
 
 | Role | Name | Decision | Date |
 | --- | --- | --- | --- |
-| Usability facilitator | Evan Anderson | Protocol approved; execution pending | 2026-07-14 |
+| Usability facilitator | Evan Anderson | Participant execution deferred under `GOV-004` | 2026-07-14 |
 | Guitar education reviewer | Pending | Pending | Pending |
 | Product owner | Evan Anderson | Protocol approved | 2026-07-14 |
 | Engineering owner | Evan Anderson | Protocol approved | 2026-07-14 |
 
 Gate 4 usability closure requires the acceptance criteria to pass or remaining non-blocking findings to be explicitly accepted with a named owner and expiration.
+
+`GOV-004` permits implementation work to continue while the three sessions are deferred. It does not create participant evidence or permit final project acceptance or release without the sessions and resulting finding review.

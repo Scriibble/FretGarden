@@ -6,22 +6,15 @@ import type {
   CapabilityClaim,
   ReviewObligation
 } from "@pocket-practice/education-engine";
-import {
-  parseEducationPilotStore
-} from "../../lib/education/storage/educationPilotStorage";
 import type {
   FretboardMapParallelReport,
   HistoricalEducationRecord,
   LegacyMappingDiagnostic
 } from "../../lib/education/migration/contracts";
+import { createFretboardMapParallelReport } from "../../lib/education/migration/fretboardMapReportOrchestration";
 import {
-  inspectFretboardMapLegacySources,
-  mapFretboardMapLegacyHistory
-} from "../../lib/education/migration/fretboardMapLegacyMapping";
-import { buildFretboardMapParallelReport } from "../../lib/education/migration/fretboardMapParallelReport";
-import {
+  fretboardMapMigrationInputsEqual,
   readFretboardMapMigrationInputs,
-  type FretboardMapMigrationInputs
 } from "../../lib/education/migration/readFretboardMapMigrationInputs";
 import styles from "./fretboardMapMigrationReport.module.css";
 
@@ -38,18 +31,12 @@ export function FretboardMapMigrationReport() {
     try {
       const before = readFretboardMapMigrationInputs(window.localStorage);
       const now = new Date().toISOString();
-      const historical = mapFretboardMapLegacyHistory(
-        inspectFretboardMapLegacySources(before)
-      );
-      const parsedPilot = parseEducationPilotStore(before.educationPilotRaw, now);
-      const report = buildFretboardMapParallelReport({
-        historical,
-        educationStore: parsedPilot.store,
-        educationStoreState: parsedPilot.state,
-        now
-      });
+      const report = createFretboardMapParallelReport({ raw: before, now });
       const after = readFretboardMapMigrationInputs(window.localStorage);
-      setState({ report, storageUnchanged: rawInputsEqual(before, after) });
+      setState({
+        report,
+        storageUnchanged: fretboardMapMigrationInputsEqual(before, after)
+      });
     } catch {
       setReadError(true);
     }
@@ -316,17 +303,6 @@ function DiagnosticList({ diagnostics }: { diagnostics: LegacyMappingDiagnostic[
         </li>
       ))}
     </ul>
-  );
-}
-
-function rawInputsEqual(
-  before: FretboardMapMigrationInputs,
-  after: FretboardMapMigrationInputs
-): boolean {
-  return Object.keys(before).every(
-    (key) =>
-      before[key as keyof FretboardMapMigrationInputs] ===
-      after[key as keyof FretboardMapMigrationInputs]
   );
 }
 

@@ -38,6 +38,7 @@ import {
   type EducationPilotStore
 } from "../../lib/education/storage/educationPilotStorage";
 import styles from "./educationPilot.module.css";
+import { AppNavigation } from "../AppNavigation";
 
 type Stage = "plan" | "pulse" | "coordinates" | "notes" | "application" | "summary";
 
@@ -281,6 +282,7 @@ export function EducationPilot() {
   if (!hydrated) {
     return (
       <main className={styles.shell}>
+        <AppNavigation activePage="progress" />
         <p className={styles.loading} role="status">
           Preparing your practice path...
         </p>
@@ -300,6 +302,7 @@ export function EducationPilot() {
 
   return (
     <main className={styles.shell}>
+      <AppNavigation activePage="progress" />
       <header className={styles.header}>
         <div>
           <p className={styles.eyebrow}>Education pilot</p>
@@ -377,6 +380,7 @@ export function EducationPilot() {
       <nav className={styles.progress} aria-label="Pilot progress">
         {stageOrder.map((item, index) => (
           <span
+            aria-current={item === stage ? "step" : undefined}
             className={index === currentIndex ? styles.currentStep : index < currentIndex ? styles.pastStep : ""}
             key={item}
           >

@@ -4,13 +4,17 @@ Date: 2026-07-14
 
 Status: **IMPLEMENTATION VALIDATED; GATE 5 REMAINS OPEN**
 
+Technical review: **REVIEWED AND ACKNOWLEDGED BY PROJECT OWNER ON 2026-07-14**
+
+Successor checkpoint: Gate 5B learner-facing read-only exposure is separately approved and validated in `GATE_5B_VALIDATION_REPORT.md`. Gate 5A's original no-navigation boundary remains the historical boundary of this report.
+
 ## Decision
 
 The approved read-only `fretboard-map` migration rehearsal is implemented and validated. It demonstrates deterministic legacy inspection, limited historical mapping, parallel reporting, local export, feature isolation, and code-only rollback without changing either source system.
 
 This result does not authorize navigation exposure, learner-facing migration claims, legacy conversion, a second curriculum segment, production persistence, Supabase, RLS, authentication, deployment, or telemetry.
 
-Gate 4 human accessibility and usability execution remains pending. Gate 5 cannot close until that evidence and a later explicitly approved migration step are complete.
+Gate 4 human accessibility and usability execution remains incomplete. `GOV-004` defers that evidence until final project signoff, allowing separately approved implementation work to continue. The deferral does not authorize production behavior or final project release.
 
 ## Implemented Boundary
 
@@ -99,6 +103,8 @@ Wall-clock authoring time was not instrumented, so no unsupported time estimate 
 
 The first full E2E attempt was stopped because an orphaned prior Playwright development server still owned port 3000. No application result was accepted from that run. After stopping only that repository-local server and letting one Playwright process own the port, all 28 tests passed.
 
+The 28-test count is the Gate 5A checkpoint result. The current branch adds two accessibility scenarios; the post-review suite passes all 30 tests. The migration implementation and prohibited-file boundary were rechecked with no inconsistency found.
+
 ## Prohibited-File Audit
 
 The Gate 5A diff does not modify:
@@ -113,7 +119,7 @@ The only existing runtime module modified is `educationPilotStorage.ts`, where t
 
 ## Remaining Conditions
 
-1. Execute and sign the accessibility protocol.
-2. Execute representative usability sessions and sign the usability protocol.
-3. Review this Gate 5A report and the local preview as project owner.
-4. Require a new concrete plan and explicit approval before any navigation exposure, second segment, legacy write, production data path, or learner-facing migration behavior.
+1. Execute and sign the deferred accessibility protocol before final project acceptance or release.
+2. Execute the three deferred representative usability sessions before final project acceptance or release.
+3. Project-owner acknowledgment is complete; retain this report as the Gate 5A baseline.
+4. Gate 5B separately authorizes learner navigation exposure. Require another concrete plan and explicit approval before a second segment, legacy write, conversion, telemetry, production data path, or any later migration behavior.
