@@ -85,10 +85,32 @@ export function PracticeHub({
 
   return (
     <section className="practice-hub" aria-label="Practice hub">
+      <article className="curriculum-gateway" aria-labelledby="curriculum-gateway-title">
+        <div>
+          <span className="control-label">Guided path</span>
+          <h2 id="curriculum-gateway-title">Start with the 51-unit curriculum</h2>
+          <p>
+            Lessons are the main learning flow. Use these drills as focused
+            reinforcement after a unit gives you something specific to practice.
+          </p>
+        </div>
+        <div className="curriculum-gateway-actions">
+          <Link className="curriculum-gateway-primary" href="/lessons">
+            Open curriculum
+          </Link>
+        </div>
+      </article>
+
       <section className="hub-section" aria-labelledby="core-path-heading">
-        <h2 className="visually-hidden" id="core-path-heading">
-          Garden Patch
-        </h2>
+        <div className="hub-section-heading">
+          <span className="control-label">Reinforcement tools</span>
+          <h2 id="core-path-heading">Core fretboard drills</h2>
+          <p>
+            Use these when a curriculum unit asks you to strengthen a concrete
+            fretboard skill. Drill results stay separate from curriculum
+            self-checks.
+          </p>
+        </div>
 
         <div className="hub-grid hub-grid-core">
           <article className="hub-card hub-card-core">
@@ -148,9 +170,10 @@ export function PracticeHub({
         className="hub-section"
         aria-labelledby="advanced-practice-heading"
       >
-        <h2 className="visually-hidden" id="advanced-practice-heading">
-          Advanced practice
-        </h2>
+        <div className="hub-section-heading">
+          <span className="control-label">Optional reinforcement</span>
+          <h2 id="advanced-practice-heading">Advanced practice tools</h2>
+        </div>
 
         <div className="hub-grid">
           <article className="hub-card">
@@ -219,7 +242,7 @@ export function PracticeHub({
       </section>
 
       <Link className="lesson-library-link hub-library-link" href="/lessons">
-        Open lesson library
+        Return to curriculum
       </Link>
     </section>
   );

@@ -36,13 +36,14 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
   const completedCount = records.filter(({ completedAt, unitId }) =>
     completedAt && units.some(({ id }) => id === unitId)
   ).length;
-  const currentUnit =
-    units.find((unit) => !records.find((record) => record.unitId === unit.id)?.completedAt) ?? null;
-  const progress = Math.round((completedCount / units.length) * 100);
   const statuses = useMemo(
     () => new Map(records.map((record) => [record.unitId, record])),
     [records]
   );
+  const currentUnit =
+    units.find((unit) => !records.find((record) => record.unitId === unit.id)?.completedAt) ?? null;
+  const currentUnitStatus = currentUnit ? getUnitStatus(currentUnit, statuses) : null;
+  const progress = Math.round((completedCount / units.length) * 100);
   const visibleUnits = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
     return units.filter((unit) => {
@@ -69,16 +70,29 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
           <p className={styles.eyebrow}>Curriculum path</p>
           <h2 id="foundation-path-title">{currentUnit?.title ?? "Curriculum self-checks complete"}</h2>
           <p>
-            The opening three units build a sustainable practice process before the instrument sequence begins.
+            The 51-unit path begins with sustainable practice, then moves through
+            playable guitar foundations, fretboard fluency, harmony, improvisation,
+            songwriting, and portfolio work.
             {mappedUnitCount > 0
               ? ` The remaining ${mappedUnitCount} units are source-mapped and will appear as they are fully authored and validated.`
               : " Every listed unit is fully authored and validated for learner-facing study."}
           </p>
         </div>
-        <div className={styles.progressSummary}>
-          <strong>{completedCount}/{units.length}</strong>
-          <span>curriculum units</span>
-          <div aria-label={`${progress}% of curriculum units complete`}><span style={{ width: `${progress}%` }} /></div>
+        <div className={styles.nextStepPanel}>
+          <div className={styles.progressSummary}>
+            <strong>{completedCount}/{units.length}</strong>
+            <span>units self-checked</span>
+            <div aria-label={`${progress}% of curriculum units complete`}><span style={{ width: `${progress}%` }} /></div>
+          </div>
+          {currentUnit ? (
+            <Link className={styles.nextUnitLink} href={`/lessons/${currentUnit.slug}`}>
+              {currentUnitStatus === "in-progress" ? "Continue current unit" : "Begin next unit"}
+            </Link>
+          ) : (
+            <Link className={styles.nextUnitLink} href="/progress">
+              Review progress
+            </Link>
+          )}
         </div>
       </section>
 

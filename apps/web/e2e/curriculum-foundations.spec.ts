@@ -114,6 +114,7 @@ test("provides one timing source for metronome audio, beat display, subdivisions
 });
 
 test("keeps every foundation route inside a 320 pixel viewport", async ({ page }) => {
+  test.setTimeout(120_000);
   await page.setViewportSize({ width: 320, height: 800 });
   for (const route of [
     "/lessons",

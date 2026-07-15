@@ -349,6 +349,61 @@ button {
   padding: 1rem;
 }
 
+.curriculum-gateway {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(228, 237, 220, 0.94), rgba(255, 250, 241, 0.94));
+  border: 1px solid #9bbab2;
+  border-radius: 8px;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 1rem;
+}
+
+.curriculum-gateway > div:first-child {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.curriculum-gateway h2 {
+  color: #173f43;
+  font-size: 1.45rem;
+  letter-spacing: 0;
+}
+
+.curriculum-gateway p {
+  color: #52615c;
+  line-height: 1.5;
+  max-width: 720px;
+}
+
+.curriculum-gateway-actions {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: stretch;
+  min-width: 180px;
+}
+
+.curriculum-gateway-primary {
+  align-items: center;
+  background: #173f43;
+  border: 1px solid #173f43;
+  border-radius: 7px;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 850;
+  justify-content: center;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.8rem;
+  text-decoration: none;
+}
+
+.curriculum-gateway-primary:hover {
+  background: #225b60;
+  border-color: #225b60;
+}
+
 .hub-heading {
   align-items: flex-end;
   display: flex;
@@ -527,6 +582,11 @@ button {
 .hub-section-heading {
   display: grid;
   gap: 0.25rem;
+}
+
+.hub-section-heading h2 {
+  font-size: 1.25rem;
+  letter-spacing: 0;
 }
 
 .hub-section-heading p {
@@ -2034,6 +2094,7 @@ strong {
 
 .status-panel,
 .practice-hub,
+.curriculum-gateway,
 .controls-panel,
 .fretboard-panel,
 .summary-panel,
@@ -2062,6 +2123,7 @@ strong {
 
 .course-recommendation-card,
 .demo-checklist-card,
+.curriculum-gateway,
 .next-session-card,
 .recommendation-card,
 .lesson-practice-card,
@@ -2151,6 +2213,7 @@ strong {
 }
 
 .lesson-cta,
+.curriculum-gateway-primary,
 .hub-card button,
 .next-session-card button,
 .completion-heading button,
@@ -2164,6 +2227,7 @@ strong {
 }
 
 .lesson-cta:hover,
+.curriculum-gateway-primary:hover,
 .hub-card button:hover,
 .next-session-card button:hover,
 .completion-heading button:hover,
@@ -2474,6 +2538,7 @@ strong {
 
   .app-header,
   .lesson-header,
+  .curriculum-gateway,
   .fretboard-heading,
   .prompt-panel-header,
   .completion-heading,
@@ -2491,6 +2556,14 @@ strong {
 
   .hub-heading-actions {
     justify-items: stretch;
+  }
+
+  .curriculum-gateway {
+    grid-template-columns: 1fr;
+  }
+
+  .curriculum-gateway-actions {
+    min-width: 0;
   }
 
   .hub-heading-actions p {
