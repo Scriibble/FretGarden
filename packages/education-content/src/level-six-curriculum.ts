@@ -61,14 +61,14 @@ const finalUnits: readonly FinalUnit[] = [
     why: "Identity grows through choices made repeatedly under constraints. A constraint gives taste something concrete to push against.",
     minutes: 150,
     prior: ["Level 5 jury", "Form development", "Harmony analysis", "Reflective practice"],
-    concept: "Choose one musical constraint, one lyrical or emotional premise, and one influence boundary before writing. The goal is not to imitate an influence, but to make a decision you can defend.",
+    concept: "Choose one musical constraint, one lyrical or emotional premise, and one influence boundary before writing. The goal is to make a choice you can explain.",
     application: "Write a short original piece from a constraint brief, then revise only the elements named in the brief.",
     chartTitle: "Constraint writing brief",
     songTitle: "One Rule Garden",
     key: "G",
     sections: ["Verse: two chords only", "Chorus: same motif higher", "Bridge: one borrowed color", "Return: original constraint restored"],
-    evidence: ["Constraint brief", "Influence boundary", "Revision log", "Identity reflection"],
-    mistake: "The song tries to contain every influence at once instead of testing one clear constraint.",
+    evidence: ["Constraint brief", "Influence boundary", "Revision notes", "Identity reflection"],
+    mistake: "The song tries to contain too many influences at once instead of testing one clear constraint.",
     review: {
       immediate: "State the constraint and the one thing it prevents.",
       next: "Revise the song without adding a new constraint.",
@@ -83,13 +83,13 @@ const finalUnits: readonly FinalUnit[] = [
     why: "Prosody makes a line feel inevitable. Even instrumental melodies benefit from speech-like stress, breath, and emphasis.",
     minutes: 145,
     prior: ["Motif development", "Large form", "Songwriting constraints", "Ear training"],
-    concept: "Speak the phrase before singing or playing it. Strong syllables, long notes, register peaks, and harmonic emphasis should agree unless a deliberate contradiction is being used.",
+    concept: "Speak the phrase before singing or playing it. Strong syllables, long notes, register peaks, and harmonic emphasis should agree unless a planned contrast is being used.",
     application: "Set four lyric lines or spoken prompts as melody, then revise stress conflicts and phrase endings.",
     chartTitle: "Prosody alignment chart",
     songTitle: "Syllable Light",
     key: "C",
     sections: ["Line 1: speech rhythm", "Line 2: melodic answer", "Line 3: register lift", "Line 4: cadence and breath"],
-    evidence: ["Spoken stress map", "Melody contour", "Lyric revision note", "Phrase-ending reflection"],
+    evidence: ["Spoken stress map", "Melody contour", "Lyric revision note", "Phrase-ending notes"],
     mistake: "The melody accents weak words and hides the natural point of the sentence.",
     review: {
       immediate: "Speak the line and mark stressed words.",
@@ -102,7 +102,7 @@ const finalUnits: readonly FinalUnit[] = [
     slug: "arrangement-rhythm-section-ensemble",
     title: "Arrangement for Rhythm Section and Ensemble",
     objective: "Write guitar parts that fit bass, drums, keyboard, melody, and ensemble texture while preserving role, register, rhythm, and cue clarity.",
-    why: "Ensemble arranging asks the guitarist to support a whole texture, not occupy every space alone.",
+    why: "Ensemble arranging asks the guitarist to support the whole texture and leave room for other parts.",
     minutes: 155,
     prior: ["Multiple guitar arrangement", "Genre role study", "Large form", "Professional chart basics"],
     concept: "Assign roles before notes: foundation, groove, harmonic pad, counterline, hook, cue, or silence. A good part leaves room for the other instruments.",
@@ -146,7 +146,7 @@ const finalUnits: readonly FinalUnit[] = [
     slug: "production-aware-guitar-demo-craft",
     title: "Production-Aware Guitar and Demo Craft",
     objective: "Create guitar demos that communicate arrangement intent through tone, part priority, timing, double tracking, space, and revision notes.",
-    why: "A demo is a decision-making tool. Production awareness helps the guitarist hear whether parts actually support the song.",
+    why: "A demo is a decision-making tool. Production awareness helps the guitarist hear whether parts support the song.",
     minutes: 150,
     prior: ["Arrangement", "Tone control", "Ensemble roles", "Portfolio reflection"],
     concept: "Production-aware practice does not require upload or automated audio judgment. It requires listening notes: what part leads, what part supports, and what should be removed.",
@@ -156,7 +156,7 @@ const finalUnits: readonly FinalUnit[] = [
     key: "A",
     sections: ["Scratch rhythm", "Hook layer", "Texture or counterline", "Revision pass"],
     evidence: ["Part priority list", "Tone note", "Timing note", "Revision decision"],
-    mistake: "The demo keeps every recorded idea instead of deciding which part serves the song.",
+    mistake: "The demo keeps too many recorded ideas instead of deciding which part serves the song.",
     review: {
       immediate: "Name the lead part and one supporting part.",
       next: "Remove or simplify one layer after listening.",
@@ -183,26 +183,26 @@ const finalUnits: readonly FinalUnit[] = [
       immediate: "Check header, form, and ending.",
       next: "Give the chart one revision for readability.",
       week: "Transpose the chart or adapt it for another player.",
-      long: "Treat chart clarity as part of every collaborative project."
+      long: "Treat chart clarity as part of collaborative work."
     }
   },
   {
     slug: "independent-study-teaching",
     title: "Independent Study and Teaching the Concept",
-    objective: "Design an independent study cycle and teach one concept with examples, misconceptions, remediation, and evidence of learner understanding.",
+    objective: "Design an independent study cycle and teach one concept with examples, misconceptions, repair steps, and signs of learner understanding.",
     why: "Teaching reveals whether a concept is understood deeply enough to adapt. Independent study keeps growth moving after the curriculum ends.",
     minutes: 150,
     prior: ["All prior levels", "Reflection", "Remediation", "Portfolio planning"],
-    concept: "Choose a question, define evidence, study examples, test understanding, teach it simply, and revise from confusion. Teaching can be written, spoken, or demonstrated.",
+    concept: "Choose a question, define success checks, study examples, test understanding, teach it plainly, and revise from confusion. Teaching can be written, spoken, or shown.",
     application: "Create a two-week independent-study plan and a short teach-back artifact for one musical concept.",
     chartTitle: "Independent study cycle",
     songTitle: "Teach The Seed",
     key: "G",
     sections: ["Question", "Examples", "Teach-back", "Revision"],
-    evidence: ["Study question", "Evidence criteria", "Teach-back artifact", "Misconception repair"],
-    mistake: "The study topic is broad, but no evidence or teaching test is defined.",
+    evidence: ["Study question", "Success criteria", "Teach-back artifact", "Misconception repair"],
+    mistake: "The study topic is broad, but no success check or teaching test is defined.",
     review: {
-      immediate: "Write one question and one evidence criterion.",
+      immediate: "Write one question and one success criterion.",
       next: "Teach the concept and record the confusion point.",
       week: "Revise the explanation from that confusion.",
       long: "Use independent study cycles to choose post-curriculum growth."
@@ -212,10 +212,10 @@ const finalUnits: readonly FinalUnit[] = [
     slug: "complete-artist-portfolio",
     title: "Capstone: Complete Artist Portfolio",
     objective: "Assemble a complete artist portfolio that integrates playing, writing, arranging, theory, listening, communication, reflection, and future study planning.",
-    why: "The capstone is not the end of learning. It is a clear picture of current artistic identity, evidence, and the next direction.",
+    why: "The capstone is not the end of learning. It is a clear picture of current artistic identity, current work, and the next direction.",
     minutes: 320,
     prior: ["All curriculum units", "Advanced jury", "Professional charts", "Independent study"],
-    concept: "A complete portfolio includes finished work, process evidence, communication artifacts, reflection, and a next-study plan. It should show both capability and honest direction.",
+    concept: "A complete portfolio includes finished work, process notes, communication artifacts, reflection, and a next-study plan. It should show current skills and honest direction.",
     application: "Prepare a final portfolio with at least one complete work, two supporting artifacts, one chart, one teaching or study artifact, and a future plan.",
     chartTitle: "Complete portfolio map",
     songTitle: "FretGarden Capstone",
@@ -224,7 +224,7 @@ const finalUnits: readonly FinalUnit[] = [
     evidence: ["Performance or arrangement", "Analysis and chart", "Process reflection", "Next-year study plan"],
     mistake: "The portfolio collects artifacts without explaining identity, growth, or next direction.",
     review: {
-      immediate: "List the portfolio artifacts and what each proves.",
+      immediate: "List the portfolio artifacts and what each shows.",
       next: "Revise the weakest artifact or explanation.",
       week: "Present the portfolio map and update the next-study plan.",
       long: "Use the capstone as the baseline for future artistic work."
@@ -251,32 +251,32 @@ function lessonFromUnit(unit: FinalUnit, index: number): CurriculumLesson {
           cue: section,
           beats: 4
         })) }
-      ], explanation: "This original chart is a planning frame. Replace the placeholder harmony with the learner's own material while preserving the evidence requirements.", accessibilityDescription: `${unit.title} planning chart with sections: ${unit.sections.join(", ")}.` },
-      { id: `${id}-evidence`, type: "instrument-setup", heading: "Evidence checklist", items: unit.evidence.map((item) => ({
+      ], explanation: "This original chart is a planning frame. Replace the placeholder harmony with the learner's own material while preserving the checklist requirements.", accessibilityDescription: `${unit.title} planning chart with sections: ${unit.sections.join(", ")}.` },
+      { id: `${id}-evidence`, type: "instrument-setup", heading: "Project checklist", items: unit.evidence.map((item) => ({
         label: item,
-        instruction: `Prepare ${item.toLowerCase()} as reviewable evidence.`,
+        instruction: `Prepare ${item.toLowerCase()} for review.`,
         selfCheck: `${item} is specific enough that another musician or future self can understand it.`
       })), safetyNote: "Keep the scope sustainable; reduce artifact count before increasing practice intensity.", accessibilityDescription: `${unit.title} checklist: ${unit.evidence.join(", ")}.` },
-      ...stages(id, unit.title.toLowerCase(), ["Study the model and name the decision points.", "Identify what evidence will prove the musical claim.", "Compare a broad version with a constrained version."], ["Draft the artifact from the checklist.", "Revise one variable only.", "Write a short explanation of the decision."], ["Hide the checklist until after the attempt.", "Remove anything that does not support the stated purpose.", "Check whether the evidence still matches the artifact."], ["Complete the artifact independently.", "Explain the musical choices and limitations.", "Write the next study action from the weakest evidence."], ["The artifact is complete and reviewable.", "The explanation matches the musical result.", "The next step follows evidence."]),
-      { id: `${id}-reflection`, type: "reflection", heading: "Evidence and next step", prompt: `Summarize the ${unit.title} artifact, the strongest evidence, the weakest evidence, and the next revision or study action.`, fieldLabel: `${unit.title} reflection`, placeholder: unit.review.next }
+      ...stages(id, unit.title.toLowerCase(), ["Study the model and name the decision points.", "Identify what will support the musical claim.", "Compare a broad version with a constrained version."], ["Draft the artifact from the checklist.", "Revise one variable only.", "Write a short explanation of the decision."], ["Hide the checklist until after the attempt.", "Remove anything that does not support the stated purpose.", "Check whether the checklist still matches the artifact."], ["Complete the artifact independently.", "Explain the musical choices and limitations.", "Write the next study action from the weakest area."], ["The artifact is complete and reviewable.", "The explanation matches the musical result.", "The next step follows the project."]),
+      { id: `${id}-reflection`, type: "reflection", heading: "Project notes and next step", prompt: `Summarize the ${unit.title} artifact, the strongest support, the weakest area, and the next revision or study action.`, fieldLabel: `${unit.title} reflection`, placeholder: unit.review.next }
     ],
     guidedExercises: [
-      { id: `exercise.${id}.artifact`, title: "Draft the artifact", purpose: "Create reviewable evidence instead of vague intention.", instructions: ["Choose the smallest complete version.", "Draft it with the evidence checklist visible.", "Revise one variable.", "Record what changed."], successCriteria: ["The artifact is complete.", "One revision is documented.", "The evidence is specific."], reduceDifficultyWhen: ["Use two sections or one artifact only."], increaseDifficultyWhen: ["Adapt the artifact for another collaborator or context."], relatedSkills: ["portfolio", "composition", "reflection"] },
-      { id: `exercise.${id}.defense`, title: "Defend the decision", purpose: "Connect artistic choice to musical evidence.", instructions: ["State the purpose.", "Point to the evidence.", "Name one limitation.", "Write the next action."], successCriteria: ["Purpose and evidence agree.", "A limitation is named honestly.", "The next action is concrete."], reduceDifficultyWhen: ["Use a written explanation only."], increaseDifficultyWhen: ["Present the artifact to another musician."], relatedSkills: ["analysis", "communication", "self-assessment"] }
+      { id: `exercise.${id}.artifact`, title: "Draft the artifact", purpose: "Create a reviewable artifact instead of a vague idea.", instructions: ["Choose the smallest complete version.", "Draft it with the project checklist visible.", "Revise one variable.", "Record what changed."], successCriteria: ["The artifact is complete.", "One revision is documented.", "The supporting note is specific."], reduceDifficultyWhen: ["Use two sections or one artifact."], increaseDifficultyWhen: ["Adapt the artifact for another collaborator or context."], relatedSkills: ["portfolio", "composition", "reflection"] },
+      { id: `exercise.${id}.defense`, title: "Defend the decision", purpose: "Connect artistic choice to musical details.", instructions: ["State the purpose.", "Point to the supporting detail.", "Name one limitation.", "Write the next action."], successCriteria: ["Purpose and artifact agree.", "A limitation is named honestly.", "The next action is concrete."], reduceDifficultyWhen: ["Use a written explanation only."], increaseDifficultyWhen: ["Present the artifact to another musician."], relatedSkills: ["analysis", "communication", "self-assessment"] }
     ],
     commonMistakes: [
-      { id: `mistake.${id}.scope`, symptom: unit.mistake, likelyCause: "Scope or evidence was not defined before drafting.", adjustment: "Return to the smallest artifact that can prove the current objective." },
-      { id: `mistake.${id}.evidence`, symptom: "The artifact exists, but the reflection does not explain what it proves.", likelyCause: "Evidence was collected after the fact.", adjustment: "Name the claim, then attach the artifact that supports it." }
+      { id: `mistake.${id}.scope`, symptom: unit.mistake, likelyCause: "Scope or success criteria were not defined before drafting.", adjustment: "Return to the smallest artifact that can support the current objective." },
+      { id: `mistake.${id}.evidence`, symptom: "The artifact exists, but the reflection does not explain what it shows.", likelyCause: "The support was added after the fact.", adjustment: "Name the claim, then attach the artifact that supports it." }
     ],
     knowledgeChecks: [
-      { id: `check.${id}.evidence`, prompt: "What makes this unit complete?", options: ["A reviewable artifact with matching explanation", "Only a vague intention", "Only more practice time"], correctAnswer: "A reviewable artifact with matching explanation", explanation: "Final-level work requires artifacts and evidence, not just activity." },
-      { id: `check.${id}.revision`, prompt: "What should revision respond to?", options: ["The weakest evidence", "Random novelty", "Avoiding the objective"], correctAnswer: "The weakest evidence", explanation: "Revision should follow observed evidence." },
+      { id: `check.${id}.evidence`, prompt: "What makes this unit complete?", options: ["A reviewable artifact with matching explanation", "Only a vague intention", "Only more practice time"], correctAnswer: "A reviewable artifact with matching explanation", explanation: "Final-level work requires artifacts and explanation, not activity alone." },
+      { id: `check.${id}.revision`, prompt: "What should revision respond to?", options: ["The weakest area", "Random novelty", "Avoiding the objective"], correctAnswer: "The weakest area", explanation: "Revision should follow the reviewed work." },
       { id: `check.${id}.scope`, prompt: "What keeps the project sustainable?", options: ["Small complete artifacts with clear criteria", "Unlimited simultaneous goals", "No review"], correctAnswer: "Small complete artifacts with clear criteria", explanation: "Advanced work still needs bounded scope." }
     ],
     masteryCriteria: [
       { id: `mastery.${id}.artifact`, description: "Complete the unit artifact or portfolio component.", verification: "recorded-value", required: true },
-      { id: `mastery.${id}.explain`, description: "Explain the musical choices and evidence.", verification: "reflection", required: true },
-      { id: `mastery.${id}.next`, description: "Define the next revision or study action from weakest evidence.", verification: "reflection", required: true }
+      { id: `mastery.${id}.explain`, description: "Explain the musical choices and support.", verification: "reflection", required: true },
+      { id: `mastery.${id}.next`, description: "Define the next revision or study action from the weakest area.", verification: "reflection", required: true }
     ],
     reviewRecommendation: `Immediate review: ${unit.review.immediate} Next session: ${unit.review.next} One week: ${unit.review.week}`,
     optionalExtension: unit.review.long
