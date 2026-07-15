@@ -255,7 +255,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         id: "setup-tuning",
         type: "callout",
         heading: "Use an external tuner as a measuring tool",
-        body: "Select chromatic or guitar mode on a clip-on, pedal, or trusted tuner. Pluck one open string, verify the string name, then turn the correct machine in a small amount. If the display moves away from the target, reverse direction. Approach the pitch gradually and never tighten a string whose identity is uncertain.",
+        body: "Select chromatic or guitar mode on a clip-on, pedal, or trusted tuner. Pluck one open string, verify the string name, then turn the correct machine in a small amount. If the display moves away from the target, reverse direction. Approach the pitch in small moves and stop if you are unsure which string you are tuning.",
         tone: "safety"
       },
       {
@@ -311,7 +311,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
       {
         id: "exercise.five-clear-notes",
         title: "Five clear notes with pressure release",
-        purpose: "Find the minimum effective fretting pressure instead of learning to squeeze.",
+        purpose: "Find the minimum fretting pressure that makes a clear note.",
         instructions: ["Tune one string.", "Fret just behind a low fret and pluck once.", "Reduce pressure until the note buzzes, then add only enough pressure to clear it.", "Release pressure without removing the fingertip and repeat five times."],
         successCriteria: ["Five notes begin cleanly.", "The fingertip remains near the fret.", "The hand releases between notes."],
         reduceDifficultyWhen: ["The thumb clamps or the wrist becomes painful."],
@@ -355,7 +355,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     unitId: "unit.pulse-subdivision-first-chords",
     order: 1,
     title: "Keep the beat while two chords change",
-    objective: "Distinguish beat from rhythm and sustain an original Em-Asus2 progression for one minute using whole notes, half notes, quarter notes, and intentional rests.",
+    objective: "Distinguish beat from rhythm and sustain an original Em-Asus2 progression for one minute using whole notes, half notes, quarter notes, and planned rests.",
     whyItMatters: "A chord change belongs inside musical time. Learning an easy two-finger move while the pulse continues establishes the recovery and preparation habits used in every later accompaniment pattern.",
     estimatedMinutes: 70,
     priorKnowledge: ["Stable guitar setup", "External tuning", "Quarter-note counting", "A relaxed down-strum"],
@@ -366,7 +366,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         heading: "The beat stays; the rhythm chooses events",
         paragraphs: [
           "In 4/4, four quarter-note beats organize each measure. A whole note lasts four beats, a half note lasts two, and a quarter note lasts one. The beat continues even when a chord rings or a rest creates silence.",
-          "A chord is a group of notes heard together. Em and Asus2 share an easy two-finger shape, letting the musical problem stay focused on timing, sound, and movement rather than hand strength."
+          "A chord is a group of notes heard together. Em and Asus2 share an easy two-finger shape, letting the musical problem stay focused on timing, sound, and movement instead of hand strength."
         ]
       },
       emDiagram,
@@ -436,7 +436,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
       }
     ],
     commonMistakes: [
-      { id: "mistake.pulse-restart", symptom: "Every late chord causes a restart.", likelyCause: "The chord result has replaced the continuing beat.", adjustment: "Keep counting, allow one silent beat if needed, and re-enter on the next beat 1." },
+      { id: "mistake.pulse-restart", symptom: "Late chords keep causing restarts.", likelyCause: "The chord result has replaced the continuing beat.", adjustment: "Keep counting, allow one silent beat if needed, and re-enter on the next beat 1." },
       { id: "mistake.pulse-sixth", symptom: "Asus2 sounds heavy or muddy.", likelyCause: "The strum begins on string 6 instead of string 5.", adjustment: "Rest the pick above string 5 before the count-in and use a smaller strum." },
       { id: "mistake.pulse-hold", symptom: "Whole notes receive four separate strums.", likelyCause: "Beat and attack are being treated as the same thing.", adjustment: "Strum on beat 1, count 2-3-4 while the chord rings, then change." }
     ],
@@ -449,7 +449,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
       { id: "mastery.pulse-values", description: "Explain and clap whole, half, and quarter-note values in 4/4 while counting.", verification: "performance-checklist", required: true },
       { id: "mastery.pulse-chords", description: "Form clear Em and Asus2 shapes and begin each strum on the intended string.", verification: "performance-checklist", required: true },
       { id: "mastery.pulse-minute", description: "Maintain an Em-Asus2 progression at 50 BPM for one minute without stopping.", verification: "performance-checklist", required: true },
-      { id: "mastery.pulse-create", description: "Write an eight-measure two-chord rhythm containing an intentional rest.", verification: "reflection", required: true }
+      { id: "mastery.pulse-create", description: "Write an eight-measure two-chord rhythm containing a planned rest.", verification: "reflection", required: true }
     ],
     reviewRecommendation: "Next session, retrieve the one-minute loop before viewing the diagrams. After one week, perform the same rhythm at 60 BPM or swap which chord begins the phrase.",
     optionalExtension: "Use the same eight-measure plan with quiet and strong sections while the tempo stays unchanged."
@@ -459,7 +459,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     unitId: "unit.open-chord-vocabulary-one",
     order: 1,
     title: "Build a chord family and recover inside a song form",
-    objective: "Form Em, Am, C, G, and D with intentional strum ranges, connect three chords in steady time, and perform an original verse-chorus study with recovery after mistakes.",
+    objective: "Form Em, Am, C, G, and D with planned strum ranges, connect three chords in steady time, and perform an original verse-chorus study with recovery after mistakes.",
     whyItMatters: "A useful chord vocabulary is not a list of shapes. It is the ability to prepare the next shape, select the right strings, hear major and minor color, and keep a phrase moving when one change is imperfect.",
     estimatedMinutes: 95,
     priorKnowledge: ["Clear fretted notes", "Em and Asus2", "Whole, half, and quarter-note pulse", "Recovery without restarting"],
@@ -523,7 +523,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         title: "Thirty-second transition loops",
         purpose: "Improve the smallest movement before returning it to the complete form.",
         instructions: ["Choose the least reliable chord pair.", "Set 45-55 BPM and change every four beats.", "Continue for 30 seconds, rest, then name the first finger that can prepare earlier.", "Repeat once and return to the verse or chorus."],
-        successCriteria: ["The pair continues without restarting.", "The second loop uses one deliberate preparation cue.", "The pair improves inside the complete section."],
+        successCriteria: ["The pair continues without restarting.", "The second loop uses one planned preparation cue.", "The pair improves inside the complete section."],
         reduceDifficultyWhen: ["Change every eight beats or mute the strum while rehearsing the hand path."],
         increaseDifficultyWhen: ["Change every two beats while preserving clear bass notes."],
         relatedSkills: ["chord transition", "preparation", "form"],
@@ -531,14 +531,14 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
       }
     ],
     commonMistakes: [
-      { id: "mistake.open-all-strings", symptom: "Every chord is strummed across all six strings.", likelyCause: "The diagram is being read only as fingertip locations.", adjustment: "Say the lowest intended string before the count-in and reduce the strum arc." },
+      { id: "mistake.open-all-strings", symptom: "Chords get strummed across all six strings.", likelyCause: "The diagram is being read as fingertip locations only.", adjustment: "Say the lowest intended string before the count-in and reduce the strum arc." },
       { id: "mistake.open-rebuild", symptom: "The entire hand lifts far from the fretboard at every change.", likelyCause: "Shared or nearby finger paths are not being noticed.", adjustment: "Rehearse the pair silently and keep fingertips close enough to trace the shortest path." },
       { id: "mistake.open-perfect-stop", symptom: "One muted string stops the complete section.", likelyCause: "Tone diagnosis and performance recovery are happening at the same time.", adjustment: "Finish the section, then isolate the exact string in a short correction loop." }
     ],
     knowledgeChecks: [
       { id: "check.chord-root", prompt: "What does a chord's root provide?", options: ["The pitch that names and centers the chord", "The finger that must move first", "A guarantee that every string is played"], correctAnswer: "The pitch that names and centers the chord", explanation: "The root is the reference pitch from which the chord is named and understood." },
       { id: "check.diagram-x", prompt: "What does a muted-string mark mean in a chord diagram?", options: ["Do not sound that string", "Play the string open", "Press the string at fret 10"], correctAnswer: "Do not sound that string", explanation: "A muted mark excludes that string from the intended voicing." },
-      { id: "check.major-minor", prompt: "Which statement about major and minor chord quality is most accurate?", options: ["Major is always happy and minor is always sad", "Major and minor have different interval structures whose effect depends on context", "Quality is determined only by strumming direction"], correctAnswer: "Major and minor have different interval structures whose effect depends on context", explanation: "Interval structure changes the sound, while musical meaning also depends on context." }
+      { id: "check.major-minor", prompt: "Which statement about major and minor chord quality is most accurate?", options: ["Major and minor have fixed moods", "Major and minor have different interval structures whose effect depends on context", "Quality is determined only by strumming direction"], correctAnswer: "Major and minor have different interval structures whose effect depends on context", explanation: "Interval structure changes the sound, while musical meaning also depends on context." }
     ],
     masteryCriteria: [
       { id: "mastery.open-diagrams", description: "Read and form Em, Am, C, G, and D from structured diagrams with correct starting strings.", verification: "performance-checklist", required: true },
@@ -555,7 +555,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     order: 1,
     title: "Decode a riff before imitation takes over",
     objective: "Read string and fret locations, bar lines, eighth-note counts, rests, ties, and dots to perform an unfamiliar eight-measure beginner tab at a slow steady tempo.",
-    whyItMatters: "Tab answers where to play; rhythm answers when and how long. Reading both lets you learn original material independently instead of relying on memory of a demonstration.",
+    whyItMatters: "Tab answers where to play; rhythm answers when and how long. Reading both helps you learn original material without copying a demonstration from memory.",
     estimatedMinutes: 90,
     priorKnowledge: ["String numbers and fret direction", "Quarter-note pulse", "Rests and recovery", "Basic pick control"],
     contentBlocks: [
@@ -565,7 +565,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         heading: "Read tab from the player's view of the strings",
         paragraphs: [
           "The top tab line is string 1, the thinnest and highest string; the bottom line is string 6. A number names a fret, zero means open, and aligned numbers sound together. Read from left to right.",
-          "Bar lines divide measures. A repeat sign sends you back to a marked beginning. Tempo tells how quickly the beat moves. Alternate picking means successive notes can use down and up strokes rather than forcing every note downward."
+          "Bar lines divide measures. A repeat sign sends you back to a marked beginning. Tempo tells how fast the beat moves. Alternate picking lets down and up strokes share the work."
         ]
       },
       {
@@ -613,7 +613,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         guided: ["Set 50 BPM and count one measure in.", "Read one measure at a time with spoken counts.", "Join two measures only after each can continue through its rest or tie."],
         fade: ["Remove the spoken string names but keep counting aloud.", "Read four measures without a demonstration.", "Mark only the location where the pulse was lost, then restart from the previous measure."],
         independent: ["Preview a new eight-measure combination for 30 seconds.", "Sight-read it once at 45-55 BPM without hearing a model.", "Continue to the final bar even after a wrong fret."],
-        success: ["String and fret locations are decoded from the tab rather than copied from memory.", "Rests and ties have correct duration.", "The beat continues through eight measures with recoverable errors."]
+        success: ["String and fret locations come from the tab, not memory.", "Rests and ties have correct duration.", "The beat continues through eight measures with recoverable errors."]
       }),
       {
         id: "reading-write-riff",
@@ -625,7 +625,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
       }
     ],
     guidedExercises: [
-      { id: "exercise.tab-scan", title: "Thirty-second score scan", purpose: "Build a repeatable reading preparation routine.", instructions: ["Find the highest and lowest strings used.", "Circle mentally or on paper every rest, tie, and eighth-note group.", "Speak the count through all measures.", "Choose a tempo that leaves time to look ahead."], successCriteria: ["The string range is known before playing.", "Every silence and sustain is anticipated.", "The tempo is selected before the count-in."], reduceDifficultyWhen: ["Scan only two measures and quarter notes."], increaseDifficultyWhen: ["Scan eight measures within 30 seconds."], relatedSkills: ["reading", "planning", "rhythm"] },
+      { id: "exercise.tab-scan", title: "Thirty-second score scan", purpose: "Build a repeatable reading preparation routine.", instructions: ["Find the highest and lowest strings used.", "Circle mentally or on paper each rest, tie, and eighth-note group.", "Speak the count through all measures.", "Choose a tempo that leaves time to look ahead."], successCriteria: ["The string range is known before playing.", "Silences and sustains are marked before playing.", "The tempo is selected before the count-in."], reduceDifficultyWhen: ["Scan two measures and quarter notes."], increaseDifficultyWhen: ["Scan eight measures within 30 seconds."], relatedSkills: ["reading", "planning", "rhythm"] },
       { id: "exercise.adjacent-alternate", title: "Adjacent-string alternate picking", purpose: "Coordinate reading with efficient pick direction.", instructions: ["Mute the strings and count 1-and-2-and.", "Alternate down-up across strings 3 and 2.", "Add the written frets while keeping the same motion."], successCriteria: ["Pick motion remains small.", "Down-up alternation survives the string change.", "The fretting hand does not rush ahead of the count."], reduceDifficultyWhen: ["Use one string or quarter notes."], increaseDifficultyWhen: ["Add a rest while the hand preserves the motion."], relatedSkills: ["alternate picking", "coordination", "eighth notes"], startingBpm: 50 }
     ],
     commonMistakes: [
@@ -653,7 +653,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     order: 1,
     title: "Turn an ordered scale into a shaped melody",
     objective: "Name the musical alphabet, explain whole and half steps, play one octave of C major from memory, sing scale degrees 1-5, and perform an original four-measure melody with phrasing.",
-    whyItMatters: "A scale is raw pitch organization; melody makes choices about direction, repetition, rests, dynamics, and arrival. Naming notes and hearing the tonic lets the fingers serve a phrase instead of merely running a shape.",
+    whyItMatters: "A scale organizes pitch. Melody chooses direction, repetition, rests, dynamics, and arrival. Naming notes and hearing the tonic helps your fingers serve a phrase instead of running a shape.",
     estimatedMinutes: 95,
     priorKnowledge: ["Tab and eighth-note reading", "Alternate picking", "String and fret direction", "Steady count-in"],
     contentBlocks: [
@@ -680,7 +680,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         guided: ["Play C major ascending and descending at 55 BPM with named notes.", "Sing scale degrees 1-2-3-4-5, then play them.", "Learn the melody two measures at a time with a planned breath."],
         fade: ["Play the scale from memory, checking the tab only afterward.", "Perform the melody with only measure numbers and dynamic plan visible.", "Change one repeated note but preserve the phrase ending."],
         independent: ["Play the scale ascending and descending from memory.", "Perform the four-measure melody without a model and with audible dynamic shape.", "Create and perform a new four-measure answer using five or more scale notes."],
-        success: ["The scale uses the correct note order and returns without stopping.", "The melody includes intentional rests or breaths and a clear arrival.", "A changed melody stays inside the chosen C major collection."]
+        success: ["The scale uses the correct note order and returns without stopping.", "The melody includes planned rests or breaths and a clear arrival.", "A changed melody stays inside the chosen C major collection."]
       }),
       { id: "melody-compose", type: "reflection", heading: "Plan a melody instead of filling every beat", prompt: "Write a four-measure contour using repeat, step, leap, rest, and arrival. Name the final tonic note.", fieldLabel: "Melody contour plan", placeholder: "Repeat C-E-G, answer A-G-E, climb F-G-A-B, arrive on C after a breath." }
     ],
@@ -690,13 +690,13 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     ],
     commonMistakes: [
       { id: "mistake.scale-shape-only", symptom: "The pattern can be played but no notes or tonic can be named.", likelyCause: "Location memory has not been connected to musical identity.", adjustment: "Say each note on the next slow repetition and pause on C." },
-      { id: "mistake.scale-race", symptom: "Every note has the same volume and no breath.", likelyCause: "The scale exercise is being mistaken for melody.", adjustment: "Add a written rest and one dynamic destination before replaying." },
-      { id: "mistake.scale-half-step", symptom: "An extra fret appears between E-F or B-C.", likelyCause: "Every letter pair is assumed to be a whole step.", adjustment: "Mark E-F and B-C as adjacent-fret pairs and trace them before playing." }
+      { id: "mistake.scale-race", symptom: "Notes have the same volume and no breath.", likelyCause: "The scale exercise is being mistaken for melody.", adjustment: "Add a written rest and one dynamic destination before replaying." },
+      { id: "mistake.scale-half-step", symptom: "An extra fret appears between E-F or B-C.", likelyCause: "The learner assumes each letter pair is a whole step.", adjustment: "Mark E-F and B-C as adjacent-fret pairs and trace them before playing." }
     ],
     knowledgeChecks: [
       { id: "check.alphabet", prompt: "Which natural-note pairs are one half step apart?", options: ["B-C and E-F", "A-B and C-D", "D-E and F-G"], correctAnswer: "B-C and E-F", explanation: "B-C and E-F are adjacent natural notes with no sharp or flat between them." },
       { id: "check.tonic", prompt: "What is the tonic in this C major lesson?", options: ["C, the organizing reference pitch", "The fastest note", "Any open string"], correctAnswer: "C, the organizing reference pitch", explanation: "The tonic is the pitch around which the collection and phrase are heard as organized." },
-      { id: "check.melody-scale", prompt: "How does melody differ from merely running a scale?", options: ["Melody uses choices such as rhythm, contour, repetition, rest, and dynamics", "Melody must use every scale note in order", "Melody has no tonic"], correctAnswer: "Melody uses choices such as rhythm, contour, repetition, rest, and dynamics", explanation: "A scale organizes pitch material; melody shapes selected pitches in time." }
+      { id: "check.melody-scale", prompt: "How does melody differ from running a scale?", options: ["Melody uses choices such as rhythm, contour, repetition, rest, and dynamics", "Melody must use every scale note in order", "Melody has no tonic"], correctAnswer: "Melody uses choices such as rhythm, contour, repetition, rest, and dynamics", explanation: "A scale organizes pitch material; melody shapes selected pitches in time." }
     ],
     masteryCriteria: [
       { id: "mastery.melody-theory", description: "Explain the musical alphabet, whole and half steps, tonic, and octave.", verification: "guided-self-check", required: true },
@@ -758,7 +758,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     knowledgeChecks: [
       { id: "check.power-fifth", prompt: "From a root on string 6, where is the basic power-chord fifth?", options: ["On string 5, two frets higher", "On string 1, the same fret", "On string 5, one fret lower"], correctAnswer: "On string 5, two frets higher", explanation: "The common root-fifth shape places the fifth on the adjacent thinner string two frets higher." },
       { id: "check.power-quality", prompt: "Why is a root-fifth power chord not major or minor by itself?", options: ["It omits the third that distinguishes those qualities", "It contains no root", "It can only be played quietly"], correctAnswer: "It omits the third that distinguishes those qualities", explanation: "Major and minor quality depends on the third; the basic power chord contains root and fifth." },
-      { id: "check.palm-mute", prompt: "What should light palm muting change first?", options: ["The note's sustain and articulation", "The underlying tempo", "The fret number"], correctAnswer: "The note's sustain and articulation", explanation: "Muting controls duration and tone while pulse and pitch location remain intentional." }
+      { id: "check.palm-mute", prompt: "What should light palm muting change first?", options: ["The note's sustain and articulation", "The underlying tempo", "The fret number"], correctAnswer: "The note's sustain and articulation", explanation: "Muting controls duration and tone while pulse and pitch location stay steady." }
     ],
     masteryCriteria: [
       { id: "mastery.power-theory", description: "Explain and build the root-fifth shape from roots on strings 6 and 5.", verification: "guided-self-check", required: true },
@@ -767,7 +767,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
       { id: "mastery.power-create", description: "Plan a verse and chorus riff using two rhythmic motives and named roots.", verification: "reflection", required: true }
     ],
     reviewRecommendation: "Next session, retrieve the root-fifth shape on both string sets before viewing the tab. After one week, transpose every root two frets higher while preserving rhythm and muting.",
-    optionalExtension: "Perform the riff once with downstrokes and once with alternate picking, comparing sound and tension rather than choosing a universal winner."
+    optionalExtension: "Perform the riff once with downstrokes and once with alternate picking, then compare sound and tension."
   },
   {
     id: "lesson.open-chords-two-form",
@@ -794,13 +794,13 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         guided: ["Loop only the last measure of each section and the first measure of the next.", "Perform intro and verse, stop, then chorus and bridge.", "Join all sections with spoken names during the final measure of each section."],
         fade: ["Use a one-line map containing only section names and first chords.", "Perform without spoken cues and recover at the next section boundary.", "Remove the map after one successful complete run."],
         independent: ["Tune and state the form from memory.", "Perform the complete form without a model, including the 6/8 bridge and extended final chord.", "Explain how one chord, rhythm, or duration marks each section."],
-        success: ["Section order remains intact after an imperfect chord.", "The 4/4 and 6/8 feels are distinguishable without a tempo surge.", "The ending communicates a deliberate arrival."]
+        success: ["Section order remains intact after an imperfect chord.", "The 4/4 and 6/8 feels are distinguishable without a tempo surge.", "The ending sounds planned."]
       }),
       { id: "form-write", type: "reflection", heading: "Map a short original song", prompt: "Write an intro, verse, chorus, and outro map. Give each section one contrast in chord order, rhythm, dynamics, or duration.", fieldLabel: "Original song-form map", placeholder: "Intro Em-B7 quiet; verse Em-C-G-D half notes; chorus C-G-D-Em quarter notes; outro Em held eight beats." }
     ],
     guidedExercises: [
       { id: "exercise.boundary-loop", title: "Practice across the boundary", purpose: "Prevent sections from failing at the exact place practice loops usually stop.", instructions: ["Choose one section boundary.", "Begin in the final measure before it.", "Continue through the first two measures after it.", "Repeat three times, then restore the full section."], successCriteria: ["The next section begins on time.", "The first chord and rhythm are prepared before the boundary.", "The transition works inside the full form."], reduceDifficultyWhen: ["Use one strum per measure."], increaseDifficultyWhen: ["Add the intended dynamics and strum feel."], relatedSkills: ["form", "transition", "recovery"], repetitions: 3 },
-      { id: "exercise.hear-form", title: "Hear and count section length", purpose: "Connect structural listening to performance planning.", instructions: ["Play or listen to the original form without looking at the map.", "Raise one finger at each new phrase and name each section change.", "Compare the remembered lengths with the map."], successCriteria: ["Section changes are identified by audible evidence.", "Phrase lengths are counted rather than guessed.", "One boundary receives a specific performance cue."], reduceDifficultyWhen: ["Use intro and verse only."], increaseDifficultyWhen: ["Identify the bridge meter without being told when it begins."], relatedSkills: ["ear training", "phrase length", "form"] }
+      { id: "exercise.hear-form", title: "Hear and count section length", purpose: "Connect structural listening to performance planning.", instructions: ["Play or listen to the original form without looking at the map.", "Raise one finger at each new phrase and name each section change.", "Compare the remembered lengths with the map."], successCriteria: ["Section changes are identified by musical details.", "Phrase lengths are counted instead of guessed.", "One boundary receives a specific performance cue."], reduceDifficultyWhen: ["Use intro and verse only."], increaseDifficultyWhen: ["Identify the bridge meter without being told when it begins."], relatedSkills: ["ear training", "phrase length", "form"] }
     ],
     commonMistakes: [
       { id: "mistake.form-loops", symptom: "Individual sections work but the complete form breaks at boundaries.", likelyCause: "Practice has ended at section endings instead of crossing them.", adjustment: "Loop the last measure before and first two measures after each boundary." },
@@ -828,7 +828,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
     order: 1,
     title: "Plan, perform, and assess a complete Level 1 piece",
     objective: "Tune independently, prepare three contrasting short pieces, and complete a 60–120 second original performance that integrates chord accompaniment, a riff or melody, two rhythmic feels, recovery, and reflection.",
-    whyItMatters: "Integration reveals whether separate skills can cooperate inside music. A complete performance asks tone, time, reading, memory, listening, form, creativity, and recovery to serve one intentional result.",
+    whyItMatters: "Integration shows whether separate skills can cooperate inside music. A complete performance asks tone, time, reading, memory, listening, form, creativity, and recovery to serve one clear result.",
     estimatedMinutes: 180,
     priorKnowledge: ["Independent setup and tuning", "Open and power chords", "Tab and rhythm reading", "C major melody", "Section form and recovery"],
     contentBlocks: [
@@ -845,7 +845,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         id: "project-scope",
         type: "callout",
         heading: "Completeness matters more than density",
-        body: "A clear two-chord verse, short melody, and deliberate ending can demonstrate more musicianship than an overloaded piece that cannot keep time. Remove material until every section has a musical job and can recover after an error.",
+        body: "A clear two-chord verse, short melody, and planned ending can show more musicianship than an overloaded piece that cannot keep time. Remove material until each section has a musical job and can recover after an error.",
         tone: "practice"
       },
       {
@@ -881,11 +881,11 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
       },
       ...learningStages("integration-performance", {
         skill: "a complete original Level 1 performance",
-        model: ["Read the sample form and identify how rhythm, register, and duration distinguish its sections.", "Observe a practice plan that isolates one boundary instead of replaying the whole piece.", "Review a complete-take checklist: tune, count in, continue after errors, shape sections, and finish deliberately."],
+        model: ["Read the sample form and identify how rhythm, register, and duration distinguish its sections.", "Observe a practice plan that isolates one boundary instead of replaying the whole piece.", "Review a complete-take checklist: tune, count in, continue after errors, shape sections, and finish with a plan."],
         guided: ["Write a form map with chord names, riff or melody, rhythmic feel, and approximate duration.", "Rehearse each section separately, then loop the two weakest boundaries.", "Perform a guided take with the form map, metronome or count-in, and recovery cues visible."],
         fade: ["Reduce the map to section names and first events.", "Perform a complete take without stopping and note only one repair priority afterward.", "Remove the map and retrieve the opening, boundaries, and ending from memory."],
         independent: ["Tune independently and state the intended form and starting tempo.", "Perform one complete 60–120 second take without prompts, restarting, or a model.", "After the final sound, explain one successful musical choice and one observable next action."],
-        success: ["The performance contains an audible intro, contrasting sections, and deliberate ending.", "Open chords and a riff or melody remain inside a recoverable pulse.", "The learner continues after errors and names evidence rather than giving a global self-rating."]
+        success: ["The performance contains an audible intro, contrasting sections, and planned ending.", "Open chords and a riff or melody remain inside a recoverable pulse.", "The learner continues after errors and names what happened instead of giving a global self-rating."]
       }),
       {
         id: "project-aural-check",
@@ -893,13 +893,13 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         heading: "Echo and locate an unfamiliar starting note",
         instructions: ["Ask another person or a simple tone source to provide a two- or three-note rhythm and one starting pitch within your known C major notes.", "Clap or sing the rhythm back before touching the guitar.", "Find the starting pitch by comparing one candidate at a time, then play the complete echo.", "If no partner or tone source is available, write three cards with known note-and-rhythm prompts, shuffle them, and perform one without advance rehearsal."],
         listenFor: "The echoed spacing matches the prompt and the chosen guitar note matches the starting pitch closely enough to continue.",
-        successCriteria: ["The rhythm is echoed before searching the guitar.", "Pitch candidates are compared rather than guessed repeatedly.", "The final echo keeps a steady pulse."],
+        successCriteria: ["The rhythm is echoed before searching the guitar.", "Pitch candidates are compared instead of guessed.", "The final echo keeps a steady pulse."],
         accessibilityDescription: "An aural echo task with an equivalent shuffled written-prompt path when an external sound source is unavailable."
       },
       {
         id: "project-reflection",
         type: "reflection",
-        heading: "Write the next practice plan from evidence",
+        heading: "Write the next practice plan from what you heard",
         prompt: "Name the take length, starting tempo, strongest musical choice, weakest transition, exact symptom, and smallest next exercise.",
         fieldLabel: "Level 1 performance reflection",
         placeholder: "82 seconds at 60 BPM. The chorus dynamic lift worked. D to Em entered late after the melody; loop the final melody measure into Em at 50 BPM."
@@ -922,7 +922,7 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
         title: "Prepare three contrasting snapshots",
         purpose: "Show that Level 1 skills transfer across accompaniment, riff, and melody contexts.",
         instructions: ["Choose one 30–60 second chord accompaniment, riff, and melody.", "Write a starting tempo and one quality target for each.", "Perform each once without stopping, then choose only one for immediate repair."],
-        successCriteria: ["All three snapshots have different musical roles.", "Each begins with tuning or a count-in and ends deliberately.", "The repair priority is selected from observed evidence."],
+        successCriteria: ["All three snapshots have different musical roles.", "Each begins with tuning or a count-in and ends with a planned stop.", "The repair priority comes from what the learner observed."],
         reduceDifficultyWhen: ["Use earlier original lesson studies and shorten each to 20 seconds."],
         increaseDifficultyWhen: ["Perform the three snapshots in one continuous recital order."],
         relatedSkills: ["repertoire", "transfer", "reflection"]
@@ -934,12 +934,12 @@ export const levelOneLessons: readonly CurriculumLesson[] = [
       { id: "mistake.project-vague", symptom: "The reflection says only 'good' or 'bad.'", likelyCause: "No musical variable was selected for observation.", adjustment: "Name section, beat, chord or note, sound or timing symptom, and one next action." }
     ],
     knowledgeChecks: [
-      { id: "check.project-complete", prompt: "Which project plan best demonstrates integration?", options: ["A 60–120 second form with clear sections, recoverable skills, contrast, and an ending", "The largest possible number of chords with frequent restarts", "One scale repeated as fast as possible"], correctAnswer: "A 60–120 second form with clear sections, recoverable skills, contrast, and an ending", explanation: "Integration means skills cooperate in a complete musical result." },
+      { id: "check.project-complete", prompt: "Which project plan best shows integration?", options: ["A 60–120 second form with clear sections, recoverable skills, contrast, and an ending", "The largest possible number of chords with frequent restarts", "One scale repeated as fast as possible"], correctAnswer: "A 60–120 second form with clear sections, recoverable skills, contrast, and an ending", explanation: "Integration means skills cooperate in a complete musical result." },
       { id: "check.project-repair", prompt: "After a late transition in one take, what is the most useful next exercise?", options: ["Loop one measure before through two measures after it at a manageable tempo", "Replay only the easy intro", "Increase every section by 20 BPM"], correctAnswer: "Loop one measure before through two measures after it at a manageable tempo", explanation: "The loop includes preparation, the transition, and its musical continuation." },
       { id: "check.project-theory", prompt: "Which set contains only Level 1 concepts used in the project?", options: ["Root, tonic, whole and half steps, rhythm values, major/minor quality, and form", "Secondary dominants, modal interchange, and counterpoint", "Only fret numbers with no rhythm or note identity"], correctAnswer: "Root, tonic, whole and half steps, rhythm values, major/minor quality, and form", explanation: "These concepts explain the pitch, chord, rhythm, and structural choices made in Level 1." }
     ],
     masteryCriteria: [
-      { id: "mastery.project-tune", description: "Tune independently and begin each performance with a deliberate count-in or cue.", verification: "performance-checklist", required: true },
+      { id: "mastery.project-tune", description: "Tune independently and begin each performance with a planned count-in or cue.", verification: "performance-checklist", required: true },
       { id: "mastery.project-three", description: "Prepare contrasting chord, riff, and melody snapshots with starting tempos and quality targets.", verification: "performance-checklist", required: true },
       { id: "mastery.project-original", description: "Perform one complete 60–120 second original piece with sections, contrast, recovery, and an ending.", verification: "performance-checklist", required: true },
       { id: "mastery.project-aural", description: "Echo a short unfamiliar rhythm and locate or verify its starting note using the available equivalent path.", verification: "guided-self-check", required: true },
@@ -1014,6 +1014,6 @@ export const levelOneReviewPlans: readonly CurriculumReviewPlan[] = [
     immediateReview: ["Name the strongest musical choice, weakest boundary, and smallest next exercise from the complete take."],
     nextSessionReview: ["Retrieve the form and repair the weakest boundary before performing a complete take."],
     oneWeekReview: ["Perform the piece with one changed tempo, dynamic plan, or transposed power-chord context."],
-    longTermReview: ["Keep the piece in a rotating repertoire and update its practice plan from complete-performance evidence."]
+    longTermReview: ["Keep the piece in a rotating repertoire and update its practice plan from complete-performance notes."]
   }
 ];

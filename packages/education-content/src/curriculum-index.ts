@@ -84,10 +84,10 @@ const mappedSourceUnits: MappedSourceUnit[] = [
   { sourceUnit: 5, slug: "melody-scales-musical-alphabet", title: "Melody, Scales, and Musical Alphabet", summary: "First scale patterns and melodic phrasing." },
   { sourceUnit: 6, slug: "power-chords-rock-rhythm", title: "Power Chords and Rock Rhythm", summary: "Movable roots, palm muting, and eighth-note drive." },
   { sourceUnit: 7, slug: "open-chord-vocabulary-two-song-form", title: "Open-Chord Vocabulary II and Song Form", summary: "Fluent accompaniment and structural listening." },
-  { sourceUnit: 8, slug: "level-one-integration-project", title: "Level 1 Integration Project", summary: "Combine foundational skills into a confident performance." },
+  { sourceUnit: 8, slug: "level-one-integration-project", title: "Level 1 Integration Project", summary: "Combine foundation skills in one complete performance." },
   { sourceUnit: 9, slug: "barre-chords-movable-harmony", title: "Barre Chords and Movable Harmony", summary: "Full movable major and minor forms with sustainable hand use." },
   { sourceUnit: 10, slug: "minor-pentatonic-blues-language", title: "Minor Pentatonic and Blues Language", summary: "A first improvisation framework built around phrasing." },
-  { sourceUnit: 11, slug: "fretboard-notes-octave-shapes", title: "Fretboard Notes and Octave Shapes", summary: "Systematic note-location fluency across the neck." },
+  { sourceUnit: 11, slug: "fretboard-notes-octave-shapes", title: "Fretboard Notes and Octave Shapes", summary: "Find notes across the neck with octave shapes." },
   { sourceUnit: 12, slug: "major-scale-diatonic-melody", title: "Major Scale and Diatonic Melody", summary: "Connect scale structure to melody and key." },
   { sourceUnit: 13, slug: "rhythm-guitar-vocabulary", title: "Rhythm Guitar Vocabulary", summary: "Groove, syncopation, muting, and stylistic feel." },
   { sourceUnit: 14, slug: "triads-open-movable-contexts", title: "Triads in Open and Movable Contexts", summary: "See chords as three-note structures." },
@@ -98,18 +98,18 @@ const mappedSourceUnits: MappedSourceUnit[] = [
   { sourceUnit: 19, slug: "relative-minor-minor-key-harmony", title: "Relative Minor and Minor-Key Harmony", summary: "Use natural, harmonic, and melodic minor in practical contexts." },
   { sourceUnit: 20, slug: "seventh-chords-arpeggio-soloing", title: "Seventh Chords and Arpeggio Soloing", summary: "Expand harmonic color and target chord tones." },
   { sourceUnit: 21, slug: "melodic-development-motif", title: "Melodic Development and Motif", summary: "Make solos and melodies coherent." },
-  { sourceUnit: 22, slug: "chord-tone-improvisation", title: "Chord-Tone Improvisation", summary: "Follow harmony rather than one static box." },
+  { sourceUnit: 22, slug: "chord-tone-improvisation", title: "Chord-Tone Improvisation", summary: "Build lines that follow the chords." },
   { sourceUnit: 23, slug: "arrangement-multiple-guitar-parts", title: "Arrangement and Multiple Guitar Parts", summary: "Create complementary guitar layers." },
   { sourceUnit: 24, slug: "level-three-musicianship-project", title: "Level 3 Musicianship Project", summary: "Demonstrate integrated intermediate musicianship." },
-  { sourceUnit: 25, slug: "modes-as-sounds", title: "Modes as Sounds, Not Shapes", summary: "Use modal color intentionally." },
+  { sourceUnit: 25, slug: "modes-as-sounds", title: "Modes as Centered Sounds", summary: "Use modal color with a clear home note." },
   { sourceUnit: 26, slug: "secondary-dominants-tonicization", title: "Secondary Dominants and Tonicization", summary: "Create directed harmonic momentum." },
   { sourceUnit: 27, slug: "borrowed-chords-modal-mixture", title: "Borrowed Chords and Modal Mixture", summary: "Blend parallel major and minor colors." },
-  { sourceUnit: 28, slug: "voice-leading-chord-melody", title: "Voice Leading and Chord Melody", summary: "Make every note in a progression move intentionally." },
+  { sourceUnit: 28, slug: "voice-leading-chord-melody", title: "Voice Leading and Chord Melody", summary: "Move chord notes with clear direction." },
   { sourceUnit: 29, slug: "advanced-rhythm-meter", title: "Advanced Rhythm and Meter", summary: "Control odd groupings and layered subdivisions." },
   { sourceUnit: 30, slug: "genre-language-stylistic-authenticity", title: "Genre Language and Stylistic Authenticity", summary: "Learn vocabulary without reducing style to cliches." },
   { sourceUnit: 31, slug: "counterpoint-independent-lines", title: "Counterpoint and Independent Lines", summary: "Compose interacting melodies." },
   { sourceUnit: 32, slug: "level-four-creative-portfolio", title: "Level 4 Creative Portfolio", summary: "Show upper-intermediate control of color, rhythm, and arrangement." },
-  { sourceUnit: 33, slug: "extended-chords-color-tones", title: "Extended Chords and Color Tones", summary: "Use ninths, elevenths, thirteenths, and alterations musically." },
+  { sourceUnit: 33, slug: "extended-chords-color-tones", title: "Extended Chords and Color Tones", summary: "Use ninths, elevenths, thirteenths, and alterations for clear color." },
   { sourceUnit: 34, slug: "chord-scale-relationships", title: "Chord-Scale Relationships", summary: "Select note collections over changing harmony." },
   { sourceUnit: 35, slug: "modulation-key-relationships", title: "Modulation and Key Relationships", summary: "Move convincingly between tonal centers." },
   { sourceUnit: 36, slug: "advanced-melodic-harmonic-minor", title: "Advanced Melodic and Harmonic Minor", summary: "Use minor systems beyond basic dominant function." },
@@ -121,7 +121,7 @@ const mappedSourceUnits: MappedSourceUnit[] = [
   { sourceUnit: 42, slug: "melody-prosody-lyrics", title: "Melody, Prosody, and Lyrics", summary: "Integrate words, melody, harmony, and speech rhythm." },
   { sourceUnit: 43, slug: "arrangement-rhythm-section-ensemble", title: "Arrangement for Rhythm Section and Ensemble", summary: "Write parts that function beyond solo guitar." },
   { sourceUnit: 44, slug: "alternate-tunings-capo-composition", title: "Alternate Tunings, Capo, and Guitar-Specific Composition", summary: "Use the instrument's physical design as a compositional tool." },
-  { sourceUnit: 45, slug: "production-aware-guitar-demo-craft", title: "Production-Aware Guitar and Demo Craft", summary: "Capture ideas clearly and make arrangement decisions from recordings." },
+  { sourceUnit: 45, slug: "production-aware-guitar-demo-craft", title: "Production-Aware Guitar and Demo Craft", summary: "Record ideas, then use the playback to improve the arrangement." },
   { sourceUnit: 46, slug: "professional-charts-scores-communication", title: "Professional Charts, Scores, and Communication", summary: "Make music transferable to other musicians." },
   { sourceUnit: 47, slug: "independent-study-teaching", title: "Independent Study and Teaching the Concept", summary: "Prove deep understanding by explaining and adapting." },
   { sourceUnit: 48, slug: "complete-artist-portfolio", title: "Capstone: Complete Artist Portfolio", summary: "Integrate playing, theory, listening, writing, arranging, and reflection." }
@@ -153,7 +153,7 @@ const implementedSourceMetadata: Record<number, {
     estimatedMinutes: 70,
     outcomes: [
       "Distinguish beat from whole, half, and quarter-note rhythm values.",
-      "Form Em and Asus2 with intentional strum ranges.",
+      "Form Em and Asus2 with planned strum ranges.",
       "Maintain a two-chord progression for one minute without stopping."
     ],
     tags: ["rhythm", "open-chords", "recovery"]
@@ -208,7 +208,7 @@ const implementedSourceMetadata: Record<number, {
     outcomes: [
       "Prepare contrasting chord, riff, and melody performances.",
       "Complete a 60-120 second original piece with form, contrast, recovery, and an ending.",
-      "Use musical evidence to identify one successful choice and one next practice exercise."
+      "Use what you hear to name one successful choice and one next practice exercise."
     ],
     tags: ["integration", "performance", "composition", "reflection"]
   },
@@ -253,7 +253,7 @@ const implementedSourceMetadata: Record<number, {
     outcomes: [
       "Maintain continuous sixteenth-note motion through sounded and silent events.",
       "Distinguish and perform straight, syncopated, and shuffle feels.",
-      "Sustain an intentional rhythm-guitar groove for two minutes with recovery."
+      "Sustain a planned rhythm-guitar groove for two minutes with recovery."
     ],
     tags: ["rhythm-guitar", "sixteenth-notes", "syncopation", "groove"]
   },
@@ -262,7 +262,7 @@ const implementedSourceMetadata: Record<number, {
     outcomes: [
       "Construct major, minor, diminished, and augmented triads from formulas.",
       "Play and name root-position and inverted triads on a top-string set.",
-      "Arrange a voice-led second guitar part with intentional register choices."
+      "Arrange a voice-led second guitar part with planned register choices."
     ],
     tags: ["triads", "inversions", "voice-leading", "arrangement"]
   },
@@ -280,7 +280,7 @@ const implementedSourceMetadata: Record<number, {
     outcomes: [
       "Create and perform a two-to-four-minute original piece with contrasting sections and recovery.",
       "Communicate rhythm, lead, improvisation, form, and arrangement decisions in a readable chart.",
-      "Produce short ear-transcription, functional-analysis, and evidence-based reflection artifacts."
+      "Produce short ear-transcription, functional-analysis, and reflection notes."
     ],
     tags: ["integration", "songwriting", "performance", "arrangement", "transcription"]
   },
@@ -333,7 +333,7 @@ const implementedSourceMetadata: Record<number, {
     estimatedMinutes: 145,
     outcomes: [
       "Choose chord-tone targets through a progression.",
-      "Use approach, passing, neighbor, anticipation, or suspension tones deliberately.",
+      "Use approach, passing, neighbor, anticipation, or suspension tones for a clear reason.",
       "Perform and audit an eight-bar solo that follows the harmony."
     ],
     tags: ["chord-tone-improvisation", "soloing", "voice-leading", "analysis"]
@@ -351,7 +351,7 @@ const implementedSourceMetadata: Record<number, {
     estimatedMinutes: 240,
     outcomes: [
       "Perform or document a complete Level 3 musicianship project.",
-      "Produce matching analysis, transcription, arrangement, reflection, and practice-plan evidence.",
+      "Produce matching analysis, transcription, arrangement, reflection, and practice-plan notes.",
       "Create a four-week plan for the weakest domain."
     ],
     tags: ["integration", "portfolio", "performance", "analysis", "transcription"]
@@ -359,7 +359,7 @@ const implementedSourceMetadata: Record<number, {
   25: {
     estimatedMinutes: 145,
     outcomes: [
-      "Hear modes as centered sounds rather than parent-scale fingerings.",
+      "Hear modes as centered sounds with their own home notes.",
       "Emphasize characteristic degrees over drones or vamps.",
       "Compose and explain short Dorian and Mixolydian studies."
     ],
@@ -369,7 +369,7 @@ const implementedSourceMetadata: Record<number, {
     estimatedMinutes: 145,
     outcomes: [
       "Build secondary dominants from target chords.",
-      "Resolve altered guide tones intentionally.",
+      "Resolve altered guide tones by choice.",
       "Write a progression with temporary tonicization inside one key."
     ],
     tags: ["secondary-dominants", "tonicization", "functional-harmony", "voice-leading"]
@@ -414,7 +414,7 @@ const implementedSourceMetadata: Record<number, {
     estimatedMinutes: 150,
     outcomes: [
       "Compose two independent lines with singable contour.",
-      "Use contrary, oblique, and parallel motion intentionally.",
+      "Use contrary, oblique, and parallel motion for clear line movement.",
       "Prepare and resolve dissonance inside a clear harmonic frame."
     ],
     tags: ["counterpoint", "independent-lines", "voice-leading", "composition"]
@@ -431,9 +431,9 @@ const implementedSourceMetadata: Record<number, {
   33: {
     estimatedMinutes: 155,
     outcomes: [
-      "Voice extended chords with clear guide tones and intentional omissions.",
+      "Voice extended chords with clear guide tones and chosen omissions.",
       "Use ninths, elevenths, thirteenths, and altered colors by function.",
-      "Resolve or sustain color tones deliberately."
+      "Resolve or sustain color tones by choice."
     ],
     tags: ["extended-chords", "color-tones", "voicing", "guide-tones"]
   },
@@ -495,8 +495,8 @@ const implementedSourceMetadata: Record<number, {
     estimatedMinutes: 280,
     outcomes: [
       "Present a complete advanced musicianship jury performance or arrangement.",
-      "Provide matching harmonic, form, technique, and substitution evidence.",
-      "Write a four-week next-study plan from the weakest evidence."
+      "Provide matching notes on harmony, form, technique, and substitution.",
+      "Write a four-week study plan from the weakest area."
     ],
     tags: ["jury", "portfolio", "advanced-musicianship", "performance", "analysis"]
   },
@@ -504,7 +504,7 @@ const implementedSourceMetadata: Record<number, {
     estimatedMinutes: 150,
     outcomes: [
       "Use constraints and influence boundaries to define a songwriting process.",
-      "Create an original constrained sketch with revision evidence.",
+      "Create an original constrained sketch with revision notes.",
       "Explain identity choices and future study direction."
     ],
     tags: ["songwriting", "identity", "constraint", "reflection"]
@@ -514,7 +514,7 @@ const implementedSourceMetadata: Record<number, {
     outcomes: [
       "Align speech stress, melody, contour, lyric rhythm, and phrase endings.",
       "Revise prosody conflicts in an original melody.",
-      "Document lyric or instrumental phrase evidence."
+      "Document lyric or instrumental phrase choices."
     ],
     tags: ["melody", "prosody", "lyrics", "phrasing"]
   },
@@ -557,7 +557,7 @@ const implementedSourceMetadata: Record<number, {
   47: {
     estimatedMinutes: 150,
     outcomes: [
-      "Design an independent study question with evidence criteria.",
+      "Design an independent study question with clear success criteria.",
       "Teach one concept with examples, misconceptions, and remediation.",
       "Revise the explanation from observed confusion."
     ],
@@ -566,9 +566,9 @@ const implementedSourceMetadata: Record<number, {
   48: {
     estimatedMinutes: 320,
     outcomes: [
-      "Assemble a complete artist portfolio with performance, analysis, chart, process, and reflection evidence.",
+      "Assemble a complete artist portfolio with performance, analysis, chart, process, and reflection notes.",
       "Connect artistic identity to finished and supporting artifacts.",
-      "Write a future study plan from portfolio evidence."
+      "Write a future study plan from the portfolio."
     ],
     tags: ["capstone", "artist-portfolio", "identity", "reflection", "future-study"]
   }

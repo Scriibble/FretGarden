@@ -50,7 +50,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         type: "callout",
         heading: "Difficulty is information",
         body:
-          "A buzzing note or missed change identifies a task that needs to be smaller, slower, or better understood. It is evidence about the task, not evidence about your worth or talent.",
+          "A buzzing note or missed change points to a task that needs to be smaller, slower, or easier to understand. It tells you about the task, not your worth or talent.",
         tone: "practice"
       },
       {
@@ -67,7 +67,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         heading: "Compare the task, not the person",
         paragraphs: [
           "An advanced player is showing the result of thousands of earlier repetitions that you cannot see. Use performances for musical direction, not as a fair comparison with today's first attempt.",
-          "Ask whether your current repetition was more relaxed, accurate, or intentional than the previous one. That comparison can guide the next action."
+          "Ask whether your current repetition felt more relaxed or accurate than the previous one. Use that comparison to choose the next action."
         ]
       },
       {
@@ -75,9 +75,9 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         type: "reflection",
         heading: "Name the musician you are practicing to become",
         prompt:
-          "Describe a practice identity based on repeatable actions rather than talent or speed.",
+          "Describe a practice identity based on repeatable actions, not talent or speed.",
         fieldLabel: "My practice identity",
-        placeholder: "I am a guitarist who returns regularly and works on one clear target at a time."
+        placeholder: "I am a guitarist who returns often and works on one clear target at a time."
       }
     ],
     guidedExercises: [
@@ -93,7 +93,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         ],
         successCriteria: [
           "The frustration is described as an observable task result.",
-          "The response changes the task instead of criticizing the learner.",
+          "The response changes the task and avoids self-criticism.",
           "The next attempt has one clear target."
         ],
         reduceDifficultyWhen: ["The plan contains several problems or several fixes at once."],
@@ -115,7 +115,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
           "The plan permits rest or reduced difficulty."
         ],
         reduceDifficultyWhen: ["The commitment feels intimidating before practice begins."],
-        increaseDifficultyWhen: ["The minimum commitment has been repeated comfortably for two weeks."],
+        increaseDifficultyWhen: ["The minimum commitment has felt comfortable for two weeks."],
         relatedSkills: ["reflection", "consistency", "planning"]
       }
     ],
@@ -192,7 +192,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
       }
     ],
     reviewRecommendation:
-      "At the next session, reread your minimum commitment and response plan before touching the guitar. After one week, revise only what proved unrealistic.",
+      "At the next session, reread your minimum commitment and response plan before touching the guitar. After one week, revise the part that did not fit real life.",
     optionalExtension:
       "Keep a seven-day log of starts, not minutes. Note what made beginning easier or harder.",
     interactive: "practice-identity"
@@ -205,7 +205,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
     objective:
       "Plan and complete one sustainable work-and-rest cycle with a measurable musical goal and a brief reflection.",
     whyItMatters:
-      "Playing can be exploratory and enjoyable. Practice is different: it deliberately changes one musical behavior and uses feedback to choose the next attempt.",
+      "Playing can explore. Practice changes one musical behavior and uses feedback to choose the next attempt.",
     estimatedMinutes: 35,
     priorKnowledge: ["A minimum sustainable practice commitment", "A constructive response to frustration"],
     contentBlocks: [
@@ -215,7 +215,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         heading: "Playing explores; practice changes something",
         paragraphs: [
           "Casual playing follows whatever feels interesting. Focused practice names a target, isolates the smallest useful task, listens to the result, and adjusts the next repetition.",
-          "Both belong in a musical life. Problems arise only when enjoyable playing is counted as deliberate work on a skill that never actually receives attention."
+          "Both belong in a musical life. Problems begin when enjoyable playing gets counted as skill work without giving the skill attention."
         ]
       },
       {
@@ -223,8 +223,8 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         type: "text",
         heading: "Choose a cycle you can complete attentively",
         paragraphs: [
-          "A standard Pomodoro uses 25 minutes of focused work followed by 5 minutes of rest. A 10-minute work period followed by 5 minutes of rest is equally valid for beginners, busy days, or physically demanding tasks.",
-          "Longer sessions can contain several cycles. Begin each work period with one goal, and use the break before attention collapses rather than after careless repetitions accumulate."
+          "A standard Pomodoro uses 25 minutes of focused work followed by 5 minutes of rest. Beginners, busy days, and hard physical tasks may fit a 10-minute work period followed by 5 minutes of rest.",
+          "Longer sessions can contain several cycles. Begin each work period with one goal, and rest before attention drops enough to create sloppy repetitions."
         ]
       },
       {
@@ -267,11 +267,11 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         ],
         successCriteria: [
           "The goal is measurable before the timer starts.",
-          "The learner completes or intentionally stops one work period.",
+          "The learner completes one work period or stops it for a clear reason.",
           "The reflection names an observed result and a next action."
         ],
         reduceDifficultyWhen: [
-          "Attention repeatedly leaves the task.",
+          "Attention keeps leaving the task.",
           "The physical task cannot remain relaxed for the selected interval."
         ],
         increaseDifficultyWhen: [
@@ -284,7 +284,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
       {
         id: "mistake.focus-too-broad",
         symptom: "Several techniques, songs, and goals compete inside one cycle.",
-        likelyCause: "The session goal names a category rather than one result.",
+        likelyCause: "The session goal names a category instead of one result.",
         adjustment: "Choose one transition, measure, rhythm, or sound quality for this cycle."
       },
       {
@@ -348,7 +348,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
       },
       {
         id: "mastery.focus-cycle",
-        description: "Complete or intentionally stop one cycle and record a reflection.",
+        description: "Complete one cycle, or stop it for a clear reason, and record a reflection.",
         verification: "performance-checklist",
         required: true
       }
@@ -395,7 +395,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         type: "text",
         heading: "Start at the clean tempo, not the maximum tempo",
         paragraphs: [
-          "Your clean tempo is the fastest tempo where the task remains accurate, relaxed, and musically intentional. Your maximum tempo is only the fastest attempt you survived; it may include tension, noise, or unstable rhythm.",
+          "Your clean tempo is the fastest tempo where the task stays accurate, relaxed, and musical. Your maximum tempo may include tension, noise, or unstable rhythm.",
           "Begin slower than you expect. After three clean repetitions, increase by 1 to 5 BPM. If the result becomes tense or inaccurate, return to the last clean tempo. This creates a tempo ladder you can repeat later."
         ]
       },
@@ -404,7 +404,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         type: "callout",
         heading: "Listen to your relationship with the click",
         body:
-          "If your notes repeatedly arrive before the click, you are rushing. If they arrive after it, you are dragging. Do not lunge toward the next click. Subdivide aloud, reduce the tempo, and let each movement begin from the pulse you already heard.",
+          "If your notes keep arriving before the click, you are rushing. If they arrive after it, you are dragging. Do not lunge toward the next click. Subdivide aloud, reduce the tempo, and let each movement begin from the pulse you already heard.",
         tone: "listen"
       },
       {
@@ -412,7 +412,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         type: "callout",
         heading: "Recovery is part of timekeeping",
         body:
-          "When a mistake occurs, keep counting and re-enter at the next clear beat or measure. Restart only when the exercise specifically tests a clean complete repetition. In music, recovering without moving the whole pulse is a real skill.",
+          "When you make a mistake, keep counting and re-enter at the next clear beat or measure. Restart when the exercise asks for one clean complete repetition. In music, recovery without moving the pulse is a real skill.",
         tone: "practice"
       },
       {
@@ -426,7 +426,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
           "Riffs: isolate one difficult beat, count it aloud, then reconnect it to the measure."
         ],
         listenFor:
-          "The click should feel embedded in the performance rather than like a target you repeatedly chase.",
+          "The click should feel inside the performance, not like a target you chase.",
         successCriteria: [
           "The learner counts through the complete measure.",
           "The chosen subdivision stays even.",
@@ -440,8 +440,8 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
         type: "text",
         heading: "Use fewer clicks only after the pulse is stable",
         paragraphs: [
-          "Internal time is your ability to continue the pulse between external references. Once a task is steady, let the click mark fewer events, such as beats 2 and 4 or only beat 1, while you maintain the subdivisions between them.",
-          "Mechanical accuracy places events correctly. Groove also shapes accents, articulation, dynamics, and feel. First make the timing dependable; then make the pattern sound intentional."
+          "Internal time is your ability to continue the pulse between outside references. Once a task is steady, let the click mark fewer events, such as beats 2 and 4 or beat 1, while you keep the subdivisions between them.",
+          "Mechanical accuracy places events on the grid. Groove also shapes accents, articulation, dynamics, and feel. First make the timing dependable; then give the pattern a clear musical shape."
         ]
       },
       {
@@ -470,7 +470,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
           "The movement remains relaxed.",
           "Three consecutive repetitions do not noticeably rush or drag."
         ],
-        reduceDifficultyWhen: ["Counting stops", "The learner repeatedly chases the click", "Tension increases"],
+        reduceDifficultyWhen: ["Counting stops", "The learner keeps chasing the click", "Tension increases"],
         increaseDifficultyWhen: ["Three consecutive repetitions are steady and relaxed"],
         relatedSkills: ["pulse", "counting", "recovery"],
         startingBpm: 50,
@@ -484,7 +484,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
           "Set 50 BPM and play or tap quarter notes for two measures.",
           "Without changing BPM, switch to eighth notes for two measures.",
           "Return to quarter notes and notice whether the pulse moved.",
-          "Add triplets or sixteenth notes only when the count remains clear."
+          "Add triplets or sixteenth notes when the count remains clear."
         ],
         successCriteria: [
           "The quarter-note pulse remains the same speed.",
@@ -508,8 +508,8 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
           "At the first unstable attempt, return to the previous clean tempo and record it."
         ],
         successCriteria: [
-          "Tempo increases only after three clean repetitions.",
-          "The final recorded value is a clean BPM, not merely the fastest attempt.",
+          "Tempo increases after three clean repetitions.",
+          "The final recorded value is a clean BPM, not the fastest attempt.",
           "The log names one timing or comfort observation."
         ],
         reduceDifficultyWhen: ["Tone, rhythm, or comfort changes before three clean repetitions"],
@@ -528,20 +528,20 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
       },
       {
         id: "mistake.metronome-too-fast",
-        symptom: "The task is technically possible but noisy, tense, or rhythmically unstable.",
+        symptom: "The task is possible but noisy, tense, or rhythmically unstable.",
         likelyCause: "Maximum tempo has been mistaken for clean tempo.",
         adjustment: "Lower BPM until accuracy, ease, and musical intent return together."
       },
       {
         id: "mistake.metronome-restart",
-        symptom: "Every mistake causes an immediate restart and the learner never practices recovery.",
+        symptom: "Mistakes cause immediate restarts, so the learner does not practice recovery.",
         likelyCause: "Only perfect uninterrupted attempts are being valued.",
         adjustment: "Keep counting and re-enter on the next clear beat, then run a separate clean-repetition check."
       },
       {
         id: "mistake.metronome-mechanical",
         symptom: "Notes align with the grid but accents and phrasing disappear.",
-        likelyCause: "Timing accuracy has replaced musical intent rather than supporting it.",
+        likelyCause: "Timing accuracy has replaced musical shape.",
         adjustment: "Keep the pulse and add a planned accent, dynamic shape, or articulation."
       }
     ],
@@ -573,7 +573,7 @@ const openingFoundationLessons: readonly CurriculumLesson[] = [
           "Whenever the current tempo feels boring"
         ],
         correctAnswer: "After three accurate, relaxed, consistent repetitions",
-        explanation: "Three clean repetitions provide better evidence that the current tempo is stable."
+        explanation: "Three clean repetitions show that the current tempo is stable."
       }
     ],
     masteryCriteria: [
