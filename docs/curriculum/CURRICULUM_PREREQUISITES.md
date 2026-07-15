@@ -2,7 +2,7 @@
 
 Date: 2026-07-14
 
-Status: Units 1-43 implemented; Units 44-51 source-mapped for later authoring review
+Status: Units 1-51 implemented; no source-mapped curriculum placeholders remain
 
 ## Graph Rules
 
@@ -86,11 +86,18 @@ Every instrument lesson may be previewed. The learner-facing completion control 
 | 42. Reharmonization and Substitution | Unit 41 | Functional substitution, melody analysis, bass motion, extensions | Circle strong melody notes before changing any chord | Yes |
 | 43. Level 5 Advanced Musicianship Jury | Unit 42 | Level 5 harmony, form, technique, reharmonization, reflection | Shorten scope to one complete work plus evidence, then repair the weakest domain | Yes |
 
-## Remaining Source-Mapped Sequence
+## Level 6 Artist Portfolio Sequence
 
-| Units | Required sequence | Core capability progression | Primary remediation direction |
-| --- | --- | --- | --- |
-| 44-51 | Each requires the previous unit | Artistic identity -> prosody -> ensemble arranging -> tunings -> production -> communication -> teaching -> capstone | Return to a smaller constraint, clearer chart, or single demonstrable artistic choice |
+| Unit | Required prior unit | Skills assumed | Primary remediation | Preview before completion |
+| --- | --- | --- | --- | --- |
+| 44. Songwriting Identity and Constraint | Unit 43 | Advanced jury evidence, form development, harmony analysis, reflective practice | Reduce the brief to one constraint, one influence boundary, and one revision variable | Yes |
+| 45. Melody, Prosody, and Lyrics | Unit 44 | Motif development, large form, songwriting constraints, ear training | Speak the phrase, mark stress, and revise one melody note or phrase ending | Yes |
+| 46. Arrangement for Rhythm Section and Ensemble | Unit 45 | Multiple-guitar arrangement, genre roles, form, chart reading | Assign instrument roles before adding notes; remove one masking guitar event | Yes |
+| 47. Alternate Tunings, Capo, and Guitar-Specific Composition | Unit 46 | Fretboard notes, transposition, ensemble arranging, songwriting constraints | Name setup, sounding key, drone notes, and physical purpose before expanding the study | Yes |
+| 48. Production-Aware Guitar and Demo Craft | Unit 47 | Arrangement roles, tone control, ensemble space, portfolio reflection | Identify the lead part and supporting part, then remove or simplify one layer | Yes |
+| 49. Professional Charts, Scores, and Communication | Unit 48 | Lead-sheet literacy, ensemble arrangement, transposition, revision notes | Repair the header, roadmap, ending, or cue list before adding detail | Yes |
+| 50. Independent Study and Teaching the Concept | Unit 49 | Full-curriculum reflection, remediation, portfolio planning, communication | Narrow to one question, one evidence criterion, and one teach-back confusion point | Yes |
+| 51. Capstone: Complete Artist Portfolio | Unit 50 | All curriculum units, advanced jury, professional charts, independent study | Reduce to one complete work, two supporting artifacts, one communication artifact, and one future plan | Yes |
 
 ## Key Conceptual Dependencies
 
@@ -108,4 +115,4 @@ These dependencies remain required even when a teacher varies repertoire:
 - Motive and phrase construction before large-scale development.
 - Basic aural matching before harmonic dictation and production-layer analysis.
 
-The structured index stores stable required-unit references. Objective-level prerequisites will be added as each mapped unit moves to `implemented`.
+The structured index stores stable required-unit references. Future authoring may add objective-level prerequisites without changing the preserved unit sequence.

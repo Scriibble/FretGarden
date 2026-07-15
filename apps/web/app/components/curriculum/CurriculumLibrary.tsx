@@ -45,21 +45,23 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
     <>
       <section className={styles.libraryOverview} aria-labelledby="foundation-path-title">
         <div>
-          <p className={styles.eyebrow}>Foundation path</p>
-          <h2 id="foundation-path-title">{currentUnit?.title ?? "Foundation self-checks complete"}</h2>
+          <p className={styles.eyebrow}>Curriculum path</p>
+          <h2 id="foundation-path-title">{currentUnit?.title ?? "Curriculum self-checks complete"}</h2>
           <p>
             The opening three units build a sustainable practice process before the instrument sequence begins.
-            The remaining {mappedUnitCount} units are source-mapped and will appear as they are fully authored and validated.
+            {mappedUnitCount > 0
+              ? ` The remaining ${mappedUnitCount} units are source-mapped and will appear as they are fully authored and validated.`
+              : " Every listed unit is fully authored and validated for learner-facing study."}
           </p>
         </div>
         <div className={styles.progressSummary}>
           <strong>{completedCount}/{units.length}</strong>
-          <span>foundation units</span>
-          <div aria-label={`${progress}% of foundation units complete`}><span style={{ width: `${progress}%` }} /></div>
+          <span>curriculum units</span>
+          <div aria-label={`${progress}% of curriculum units complete`}><span style={{ width: `${progress}%` }} /></div>
         </div>
       </section>
 
-      <ol className={styles.unitList} aria-label="Implemented foundation units">
+      <ol className={styles.unitList} aria-label="Implemented curriculum units">
         {units.map((unit) => {
           const record = statuses.get(unit.id);
           const prerequisitesComplete = unit.requiredPriorUnitIds.every(

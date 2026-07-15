@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => window.localStorage.clear());
 });
 
-test("presents the implemented curriculum without claiming the mapped roadmap is complete", async ({ page }) => {
+test("presents the complete implemented curriculum without mapped-roadmap claims", async ({ page }) => {
   await page.goto("/lessons");
 
   await expect(page.getByRole("heading", { name: "Learn to practice before you rush to collect facts" })).toBeVisible();
@@ -26,8 +26,10 @@ test("presents the implemented curriculum without claiming the mapped roadmap is
   await expect(page.getByRole("link", { name: "Level 4 Creative Portfolio" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Extended Chords and Color Tones" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Level 5 Advanced Musicianship Jury" })).toBeVisible();
-  await expect(page.getByText("The remaining 8 units are source-mapped", { exact: false })).toBeVisible();
-  await expect(page.getByText("Songwriting Identity and Constraint")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Songwriting Identity and Constraint" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Capstone: Complete Artist Portfolio" })).toBeVisible();
+  await expect(page.getByText("Every listed unit is fully authored", { exact: false })).toBeVisible();
+  await expect(page.getByText("source-mapped", { exact: false })).toHaveCount(0);
 });
 
 test("requires correct knowledge and explicit performance checks before Unit 1 completion", async ({ page }) => {

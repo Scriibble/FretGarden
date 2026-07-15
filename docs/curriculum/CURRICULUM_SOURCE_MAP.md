@@ -49,14 +49,14 @@ The three Markdown-mandated foundation units occupy Units 1-3. The PDF's origina
 | 41 | PDF 38 | Form, Development, and Large-Scale Direction | Implemented |
 | 42 | PDF 39 | Reharmonization and Substitution | Implemented |
 | 43 | PDF 40 | Level 5 Advanced Musicianship Jury | Implemented |
-| 44 | PDF 41 | Songwriting Identity and Constraint | Mapped |
-| 45 | PDF 42 | Melody, Prosody, and Lyrics | Mapped |
-| 46 | PDF 43 | Arrangement for Rhythm Section and Ensemble | Mapped |
-| 47 | PDF 44 | Alternate Tunings, Capo, and Guitar-Specific Composition | Mapped |
-| 48 | PDF 45 | Production-Aware Guitar and Demo Craft | Mapped |
-| 49 | PDF 46 | Professional Charts, Scores, and Communication | Mapped |
-| 50 | PDF 47 | Independent Study and Teaching the Concept | Mapped |
-| 51 | PDF 48 | Capstone: Complete Artist Portfolio | Mapped |
+| 44 | PDF 41 | Songwriting Identity and Constraint | Implemented |
+| 45 | PDF 42 | Melody, Prosody, and Lyrics | Implemented |
+| 46 | PDF 43 | Arrangement for Rhythm Section and Ensemble | Implemented |
+| 47 | PDF 44 | Alternate Tunings, Capo, and Guitar-Specific Composition | Implemented |
+| 48 | PDF 45 | Production-Aware Guitar and Demo Craft | Implemented |
+| 49 | PDF 46 | Professional Charts, Scores, and Communication | Implemented |
+| 50 | PDF 47 | Independent Study and Teaching the Concept | Implemented |
+| 51 | PDF 48 | Capstone: Complete Artist Portfolio | Implemented |
 
 ## Existing-Lesson Disposition
 
