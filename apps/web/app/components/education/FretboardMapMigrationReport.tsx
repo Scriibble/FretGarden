@@ -76,8 +76,8 @@ export function FretboardMapMigrationReport() {
           <p className={styles.eyebrow}>Local migration review</p>
           <h1>Fretboard map parallel report</h1>
           <p className={styles.lead}>
-            This read-only rehearsal compares preserved legacy history with
-            current evidence without merging the two systems.
+            This read-only check compares older history with the new guided
+            practice results without mixing them together.
           </p>
         </div>
         <div className={styles.headerActions}>
@@ -111,8 +111,8 @@ export function FretboardMapMigrationReport() {
           <p className={styles.eyebrow}>Historical context</p>
           <h2 id="legacy-history-heading">Legacy lesson and practice history</h2>
           <p>
-            These records preserve what the legacy interface stored. Unknown
-            support, timing, validity, and transfer conditions remain unknown.
+            These records show what the older screen saved. They do not prove
+            how much help, timing, or review was involved.
           </p>
         </div>
         <dl className={styles.summaryGrid}>
@@ -148,8 +148,8 @@ export function FretboardMapMigrationReport() {
 
       <section className={styles.reportBand} aria-labelledby="current-evidence-heading">
         <div className={styles.sectionHeading}>
-          <p className={styles.eyebrow}>Current evidence policy</p>
-          <h2 id="current-evidence-heading">Capability claims and review state</h2>
+          <p className={styles.eyebrow}>New guided practice checks</p>
+          <h2 id="current-evidence-heading">Skills shown and review state</h2>
           <p>{report.currentEducation.nextAction}</p>
         </div>
         <div className={styles.claimList}>
@@ -159,9 +159,9 @@ export function FretboardMapMigrationReport() {
         </div>
         <div className={styles.detailColumns}>
           <div>
-            <h3>Observed evidence kinds</h3>
+            <h3>Counted result types</h3>
             {report.currentEducation.evidenceCounts.length === 0 ? (
-              <p className={styles.emptyState}>No current evidence was observed.</p>
+              <p className={styles.emptyState}>No new guided practice results yet.</p>
             ) : (
               <ul className={styles.plainList}>
                 {report.currentEducation.evidenceCounts.map(({ kind, count }) => (
@@ -253,8 +253,8 @@ function ClaimView({ claim }: { claim: CapabilityClaim }) {
       </div>
       <dl>
         <div>
-          <dt>Strongest evidence</dt>
-          <dd>{claim.strongestKind ? formatToken(claim.strongestKind) : "Not observed"}</dd>
+          <dt>Best counted result</dt>
+          <dd>{claim.strongestKind ? formatToken(claim.strongestKind) : "No result yet"}</dd>
         </div>
         <div>
           <dt>Confidence</dt>

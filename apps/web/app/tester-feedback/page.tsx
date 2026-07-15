@@ -43,8 +43,8 @@ export default function TesterFeedbackPage() {
             <span className={styles.eyebrow}>Tester feedback</span>
             <h1 id="tester-feedback-title">Help decide what is ready.</h1>
             <p>
-              FretGarden needs real usability and accessibility evidence before
-              a broader release. Your feedback helps identify blockers, unclear
+              FretGarden needs real usability and accessibility testing before
+              a broader release. Your feedback helps find blockers, unclear
               lessons, misleading progress wording, and rough edges in the
               learning flow.
             </p>
@@ -82,8 +82,7 @@ export default function TesterFeedbackPage() {
             <div className={styles.signupCardHeader}>
               <h2>How to test</h2>
               <p>
-                The goal is product evidence, not judging anyone's musical
-                ability.
+                We are testing the app, not judging anyone's musical ability.
               </p>
             </div>
             <div className={styles.noticeList}>

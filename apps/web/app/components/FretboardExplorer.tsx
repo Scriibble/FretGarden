@@ -4162,7 +4162,7 @@ function buildPracticeHubRecommendation(
     return {
       drill: weakestSpot.drill,
       title: `Review ${weakestSpot.stat.label}`,
-      description: `${weakestSpot.stat.label} are at ${weakestSpot.stat.accuracy}% across tracked ${weakestSpot.sessionLabel} sessions. Start ${weakestSpot.preset.label.toLowerCase()} to reinforce it.`,
+      description: `${weakestSpot.stat.label} are at ${weakestSpot.stat.accuracy}% across tracked ${weakestSpot.sessionLabel} sessions. Start ${weakestSpot.preset.label.toLowerCase()} for extra practice.`,
       preset: weakestSpot.preset
     };
   }
@@ -4175,7 +4175,7 @@ function buildPracticeHubRecommendation(
     return {
       drill: weakestSpot.drill,
       title: `Review ${weakestSpot.stat.label}`,
-      description: `${weakestSpot.stat.label} are the next visible weak spot in tracked ${weakestSpot.sessionLabel} sessions. Start ${weakestSpot.preset.label.toLowerCase()} to reinforce it.`,
+      description: `${weakestSpot.stat.label} are the next visible weak spot in tracked ${weakestSpot.sessionLabel} sessions. Start ${weakestSpot.preset.label.toLowerCase()} for extra practice.`,
       preset: weakestSpot.preset
     };
   }
@@ -4221,8 +4221,8 @@ function getCoursePracticeRecommendation(
 
   return {
     drill: currentLesson.practice.drill,
-    title: `Reinforce ${currentLesson.title}`,
-    description: `After the guided lesson, start ${preset.label.toLowerCase()} to reinforce it with ${formatLessonCriteria(
+    title: `Practice ${currentLesson.title}`,
+    description: `After the guided lesson, start ${preset.label.toLowerCase()} and aim for ${formatLessonCriteria(
       currentLesson.practice.criteria.promptCount,
       currentLesson.practice.criteria.minAccuracy
     )}.`,

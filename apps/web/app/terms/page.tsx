@@ -28,7 +28,7 @@ const sections = [
   {
     title: "Educational scope",
     body:
-      "FretGarden provides educational practice guidance and self-check structures. It does not guarantee musical mastery, professional certification, audition readiness, therapeutic outcomes, or injury prevention."
+      "FretGarden gives educational practice guidance and checklists. It does not guarantee expert playing, professional certification, audition readiness, therapeutic outcomes, or injury prevention."
   },
   {
     title: "Acceptable use",

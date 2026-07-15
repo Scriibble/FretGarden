@@ -37,8 +37,7 @@ export default function AccessibilityPage() {
             <p>
               FretGarden aims to make focused guitar practice usable by learners
               with different access needs. Automated checks are passing, but
-              full human Gate 4 evidence still needs to be completed before
-              final public release acceptance.
+              people still need to test the app before final public release.
             </p>
             <p className={styles.policyDate}>Effective date: July 15, 2026</p>
             <div className={styles.heroActions}>
@@ -55,8 +54,8 @@ export default function AccessibilityPage() {
             <div className={styles.signupCardHeader}>
               <h2>Current accessibility status</h2>
               <p>
-                The project has strong technical coverage, with human protocol
-                evidence still pending.
+                The project has strong technical checks. Human testing is still
+                in progress.
               </p>
             </div>
             <div className={styles.policyColumns}>

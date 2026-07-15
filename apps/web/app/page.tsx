@@ -88,21 +88,25 @@ export default function HomePage() {
               <span>Grow your musicianship.</span>
             </h1>
             <p className={styles.heroLead}>
-              FretGarden turns music theory into focused, practical guitar
-              exercises. Build your knowledge of notes, chord tones, scale
-              degrees, intervals, and musical structure through consistent
-              practice that grows with you.
+              FretGarden gives you 51 guitar lessons, short practice tasks, and
+              extra drills when you need them. Start with your first clear note,
+              then grow toward songs, fretboard knowledge, harmony,
+              improvisation, and a finished artist portfolio.
             </p>
             <div className={styles.heroActions}>
-              <Link className={styles.primaryCta} href="/practice">
-                Open the practice app
+              <Link className={styles.primaryCta} href="/lessons">
+                Start the lessons
+              </Link>
+              <Link className={styles.secondaryCta} href="/practice">
+                Open practice tools
               </Link>
               <Link className={styles.secondaryCta} href="/signup">
                 Create an account
               </Link>
             </div>
             <div className={styles.heroStatus} aria-label="Current product status">
-              <span>Notes, chord tones, and scale degrees available now</span>
+              <span>51 authored units available now</span>
+              <span>Practice drills are ready when you need extra reps</span>
               <span>Accounts are live; cloud progress sync is planned</span>
             </div>
           </div>
@@ -117,8 +121,8 @@ export default function HomePage() {
           <div className={styles.trustItem}>
             <i className={styles.trustDot} aria-hidden="true" />
             <div>
-              <strong>Focused drills</strong>
-              <small>Clear goals and feedback</small>
+              <strong>Guided curriculum</strong>
+              <small>51 progressive units</small>
             </div>
           </div>
           <div className={styles.trustItem}>
@@ -131,12 +135,34 @@ export default function HomePage() {
           <div className={styles.trustItem}>
             <i className={styles.trustDot} aria-hidden="true" />
             <div>
-              <strong>Sustainable practice</strong>
-              <small>Small sessions, stronger roots</small>
+              <strong>Extra practice tools</strong>
+              <small>Focused drills when a lesson asks for them</small>
             </div>
           </div>
         </div>
       </div>
+
+      <section className={styles.curriculumFlowSection} aria-labelledby="curriculum-flow-title">
+        <div className={styles.curriculumFlowPanel}>
+          <div className={styles.curriculumFlowCopy}>
+            <span className={styles.sectionEyebrow}>The main learning path</span>
+            <h2 id="curriculum-flow-title">Start with the lessons. Use drills when a lesson asks for extra practice.</h2>
+            <p>
+              The lessons guide you through the guitar, steady time, chords,
+              reading, fretboard maps, songwriting, improvisation, harmony, and
+              portfolio work one step at a time.
+            </p>
+          </div>
+          <div className={styles.curriculumFlowActions}>
+            <Link className={styles.primaryCta} href="/lessons">
+              Browse all units
+            </Link>
+            <Link className={styles.secondaryCta} href="/practice">
+              Use practice tools
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <section className={styles.section} aria-labelledby="problem-title">
         <div className={styles.problemGrid}>
@@ -183,8 +209,8 @@ export default function HomePage() {
             A stronger map of the guitar neck
           </h2>
           <p className={styles.sectionLead}>
-            Each practice area reinforces the others so your knowledge becomes
-            easier to recall, apply, and hear in real music.
+            Each practice area helps the others, so you can remember ideas,
+            use them on the guitar, and hear them in real music.
           </p>
         </div>
 
@@ -205,7 +231,7 @@ export default function HomePage() {
         <div className={styles.sectionHeader}>
           <span className={styles.sectionEyebrow}>How FretGarden works</span>
           <h2 className={styles.sectionTitle} id="how-title">
-            Grow one deliberate layer at a time
+            Work through one deliberate layer at a time
           </h2>
           <p className={styles.sectionLead}>
             The learning path moves from concrete fretboard knowledge toward
@@ -260,14 +286,14 @@ export default function HomePage() {
       <div className={styles.productPreviewSection}>
         <section className={styles.section} aria-labelledby="preview-title">
           <div className={styles.sectionHeaderCentered}>
-            <span className={styles.sectionEyebrow}>Current product preview</span>
+            <span className={styles.sectionEyebrow}>Extra practice tools</span>
             <h2 className={styles.sectionTitle} id="preview-title">
-              Open a drill and work directly on the fretboard
+              Open a drill when a lesson asks for extra reps
             </h2>
             <p className={styles.sectionLead}>
-              The present practice loop is local-first. Practice notes, chord
-              tones, and scale degrees now; accounts are live while cloud
-              progress sync is still being built.
+              Drills save on this device and do not mark lessons complete. Use
+              notes, chord tones, scale degrees, intervals, octaves, and
+              inversions for focused extra practice.
             </p>
           </div>
 
@@ -323,7 +349,10 @@ export default function HomePage() {
           </div>
           <div className={styles.ctaActions}>
             <Link className={styles.primaryCta} href="/practice">
-              Start practicing
+              Open practice tools
+            </Link>
+            <Link className={styles.secondaryCta} href="/lessons">
+              View curriculum
             </Link>
             <Link className={styles.secondaryCta} href="/signup">
               Create an account

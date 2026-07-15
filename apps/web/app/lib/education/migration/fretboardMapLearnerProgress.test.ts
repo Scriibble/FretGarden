@@ -10,14 +10,14 @@ import {
 } from "./fretboardMapLearnerProgress";
 
 const labels: Record<CapabilityState, string> = {
-  not_observed: "Not yet observed",
-  developing: "Practiced with support",
-  insufficient_evidence: "More evidence needed",
-  independent_once: "Shown independently",
-  review_due: "Review due",
-  retained: "Retrieved after a delay",
-  applied: "Applied in a changed context",
-  needs_refresh: "Refresh recommended"
+  not_observed: "No counted try yet",
+  developing: "Practiced with help",
+  insufficient_evidence: "Keep practicing this",
+  independent_once: "Done without help",
+  review_due: "Ready to review",
+  retained: "Remembered after a break",
+  applied: "Used it in a new pattern",
+  needs_refresh: "Needs a quick refresh"
 };
 
 describe("fretboard-map learner progress", () => {
@@ -40,18 +40,18 @@ describe("fretboard-map learner progress", () => {
     );
     expect(progress.capabilities[0]).toMatchObject({
       label: "Fretboard coordinates",
-      statusLabel: "Not yet observed"
+      statusLabel: "No counted try yet"
     });
-    expect(progress.explanation).toContain("does not become independent");
+    expect(progress.explanation).toContain("tap, click, or choose");
   });
 
   it.each([
-    [["review_due", "applied"], "Complete current review"],
-    [["needs_refresh", "retained"], "Complete current review"],
+    [["review_due", "applied"], "Do the current review"],
+    [["needs_refresh", "retained"], "Do the current review"],
     [["not_observed", "retained"], "Start guided practice"],
     [["developing", "retained"], "Continue guided practice"],
     [["insufficient_evidence", "applied"], "Continue guided practice"],
-    [["independent_once", "retained"], "Continue toward delayed review"],
+    [["independent_once", "retained"], "Come back for review"],
     [["retained", "applied"], "Practice this segment again"]
   ] as Array<[CapabilityState[], string]>)
   ("chooses a deterministic action for %j", (states, expectedLabel) => {

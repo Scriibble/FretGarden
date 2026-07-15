@@ -19,11 +19,11 @@ export default function LessonsPage() {
         <header className={styles.pageHeader}>
           <div>
             <span>FretGarden curriculum</span>
-            <h1>Learn to practice before you rush to collect facts</h1>
+            <h1>Learn guitar one clear step at a time</h1>
             <p>
-              Begin with a sustainable practice process, focused attention, and
-              dependable time. Each unit asks you to understand, try, adjust,
-              apply, and plan a return.
+              Start with a simple practice plan, steady focus, and clear timing.
+              Each lesson asks you to understand, try, adjust, use the idea, and
+              come back for review.
             </p>
           </div>
           <Link href="/practice#practice">Open practice tools</Link>

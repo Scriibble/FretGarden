@@ -85,10 +85,31 @@ export function PracticeHub({
 
   return (
     <section className="practice-hub" aria-label="Practice hub">
+      <article className="curriculum-gateway" aria-labelledby="curriculum-gateway-title">
+        <div>
+          <span className="control-label">Guided path</span>
+          <h2 id="curriculum-gateway-title">Start with the 51-unit curriculum</h2>
+          <p>
+            Lessons are the main path. Use these drills after a lesson gives you
+            something specific to practice.
+          </p>
+        </div>
+        <div className="curriculum-gateway-actions">
+          <Link className="curriculum-gateway-primary" href="/lessons">
+            Open curriculum
+          </Link>
+        </div>
+      </article>
+
       <section className="hub-section" aria-labelledby="core-path-heading">
-        <h2 className="visually-hidden" id="core-path-heading">
-          Garden Patch
-        </h2>
+        <div className="hub-section-heading">
+          <span className="control-label">Extra practice tools</span>
+          <h2 id="core-path-heading">Core fretboard drills</h2>
+          <p>
+            Use these when a lesson asks you to work on one fretboard skill.
+            Drill results do not mark lessons complete.
+          </p>
+        </div>
 
         <div className="hub-grid hub-grid-core">
           <article className="hub-card hub-card-core">
@@ -111,7 +132,7 @@ export function PracticeHub({
             <div>
               <span className="control-label">Chord Tones</span>
               <h3>Spell roots, 3rds, and 5ths</h3>
-              <p>Build triad fluency with concept-first chord-tone questions.</p>
+              <p>Learn roots, 3rds, and 5ths with short chord-tone questions.</p>
             </div>
             <HubMetrics metrics={chordMetrics} />
             <button
@@ -148,9 +169,10 @@ export function PracticeHub({
         className="hub-section"
         aria-labelledby="advanced-practice-heading"
       >
-        <h2 className="visually-hidden" id="advanced-practice-heading">
-          Advanced practice
-        </h2>
+        <div className="hub-section-heading">
+          <span className="control-label">More practice</span>
+          <h2 id="advanced-practice-heading">Extra practice tools</h2>
+        </div>
 
         <div className="hub-grid">
           <article className="hub-card">
@@ -203,7 +225,7 @@ export function PracticeHub({
 
           <article className="hub-card recommendation-card">
             <div>
-              <span className="control-label">Smart recommendation</span>
+              <span className="control-label">Suggested next drill</span>
               <h3>{recommendationTitle}</h3>
               <p>{recommendationDescription}</p>
             </div>
@@ -219,7 +241,7 @@ export function PracticeHub({
       </section>
 
       <Link className="lesson-library-link hub-library-link" href="/lessons">
-        Open lesson library
+        Return to curriculum
       </Link>
     </section>
   );

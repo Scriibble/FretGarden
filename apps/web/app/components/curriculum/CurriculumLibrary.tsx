@@ -36,13 +36,14 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
   const completedCount = records.filter(({ completedAt, unitId }) =>
     completedAt && units.some(({ id }) => id === unitId)
   ).length;
-  const currentUnit =
-    units.find((unit) => !records.find((record) => record.unitId === unit.id)?.completedAt) ?? null;
-  const progress = Math.round((completedCount / units.length) * 100);
   const statuses = useMemo(
     () => new Map(records.map((record) => [record.unitId, record])),
     [records]
   );
+  const currentUnit =
+    units.find((unit) => !records.find((record) => record.unitId === unit.id)?.completedAt) ?? null;
+  const currentUnitStatus = currentUnit ? getUnitStatus(currentUnit, statuses) : null;
+  const progress = Math.round((completedCount / units.length) * 100);
   const visibleUnits = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
     return units.filter((unit) => {
@@ -67,18 +68,31 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
       <section className={styles.libraryOverview} aria-labelledby="foundation-path-title">
         <div>
           <p className={styles.eyebrow}>Curriculum path</p>
-          <h2 id="foundation-path-title">{currentUnit?.title ?? "Curriculum self-checks complete"}</h2>
+          <h2 id="foundation-path-title">{currentUnit?.title ?? "All lesson checks complete"}</h2>
           <p>
-            The opening three units build a sustainable practice process before the instrument sequence begins.
+            The 51-lesson path starts with healthy practice habits. Then it moves
+            through guitar basics, fretboard knowledge, harmony, improvisation,
+            songwriting, and portfolio work.
             {mappedUnitCount > 0
-              ? ` The remaining ${mappedUnitCount} units are source-mapped and will appear as they are fully authored and validated.`
-              : " Every listed unit is fully authored and validated for learner-facing study."}
+              ? ` The remaining ${mappedUnitCount} lessons will appear when they are ready.`
+              : " Every lesson listed here is ready to use."}
           </p>
         </div>
-        <div className={styles.progressSummary}>
-          <strong>{completedCount}/{units.length}</strong>
-          <span>curriculum units</span>
-          <div aria-label={`${progress}% of curriculum units complete`}><span style={{ width: `${progress}%` }} /></div>
+        <div className={styles.nextStepPanel}>
+          <div className={styles.progressSummary}>
+            <strong>{completedCount}/{units.length}</strong>
+            <span>lesson checks complete</span>
+            <div aria-label={`${progress}% of curriculum units complete`}><span style={{ width: `${progress}%` }} /></div>
+          </div>
+          {currentUnit ? (
+            <Link className={styles.nextUnitLink} href={`/lessons/${currentUnit.slug}`}>
+              {currentUnitStatus === "in-progress" ? "Continue current unit" : "Begin next unit"}
+            </Link>
+          ) : (
+            <Link className={styles.nextUnitLink} href="/progress">
+              Review progress
+            </Link>
+          )}
         </div>
       </section>
 

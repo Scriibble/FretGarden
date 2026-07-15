@@ -57,11 +57,18 @@ test("shows a focused branded landing page", async ({ page }) => {
     })
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Open the practice app" })
+    page.getByRole("link", { name: "Start the 51-unit curriculum" })
+  ).toHaveAttribute("href", "/lessons");
+  await expect(
+    page.getByRole("link", { name: "Open practice tools" }).first()
   ).toHaveAttribute("href", "/practice");
   await expect(
     page.getByRole("link", { name: "Create an account" }).first()
   ).toHaveAttribute("href", "/signup");
+  await expect(primaryNavigation.getByRole("link", { name: "Curriculum" })).toHaveAttribute(
+    "href",
+    "/lessons"
+  );
   await expect(primaryNavigation.getByRole("link", { name: "About Me" })).toHaveAttribute(
     "href",
     "/about"
@@ -74,6 +81,7 @@ test("shows a focused branded landing page", async ({ page }) => {
     "href",
     "/login"
   );
+  await expect(page.getByText("51 authored units available now")).toBeVisible();
   await expect(page.getByText("Accounts are live; cloud progress sync is planned")).toBeVisible();
   await expect(page.getByRole("contentinfo").getByRole("link", { name: "Privacy" })).toHaveAttribute(
     "href",
@@ -170,6 +178,9 @@ test("surfaces the core MVP path while keeping advanced drills available", async
 }) => {
   await page.goto("/practice");
 
+  await expect(page.getByRole("heading", { name: "Start with the 51-unit curriculum" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open curriculum" })).toHaveAttribute("href", "/lessons");
+  await expect(page.getByText("Drill results stay separate from curriculum self-checks.")).toBeVisible();
   await expect(page.getByTestId("hub-start-note")).toBeVisible();
   await expect(page.getByTestId("hub-start-chord")).toBeVisible();
   await expect(page.getByTestId("hub-start-scale-degree")).toBeVisible();
@@ -181,6 +192,32 @@ test("surfaces the core MVP path while keeping advanced drills available", async
   );
   await expect(page.getByText("No weak spots", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Explore mode")).toHaveCount(0);
+});
+
+test("keeps curriculum entry points reachable without mobile overflow", async ({ page }) => {
+  for (const route of ["/", "/practice", "/lessons"]) {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto(route);
+
+    if (route === "/") {
+      await expect(page.getByRole("link", { name: "Start the 51-unit curriculum" })).toBeVisible();
+    }
+
+    if (route === "/practice") {
+      await expect(page.getByRole("link", { name: "Open curriculum" })).toBeVisible();
+    }
+
+    if (route === "/lessons") {
+      await expect(page.getByRole("link", { name: /Begin next unit|Continue current unit/ })).toBeVisible();
+      await expect(page.getByText("51 units shown", { exact: true })).toBeVisible();
+    }
+
+    const dimensions = await page.evaluate(() => ({
+      documentWidth: document.documentElement.scrollWidth,
+      viewportWidth: document.documentElement.clientWidth
+    }));
+    expect(dimensions.documentWidth, route).toBeLessThanOrEqual(dimensions.viewportWidth);
+  }
 });
 
 test("redirects replaced lesson content while preserving its practice drill", async ({ page }) => {
@@ -293,7 +330,7 @@ test("keeps the tester demo path usable on mobile", async ({ page }) => {
     page.getByRole("heading", { name: "Find notes by string" })
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { exact: true, name: "Open lesson library" })
+    page.getByRole("link", { exact: true, name: "Return to curriculum" })
   ).toBeVisible();
   await expect(page.getByTestId("hub-start-note")).toBeVisible();
 });

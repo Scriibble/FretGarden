@@ -11,7 +11,7 @@ interface PracticePlanStepProps {
 export function PracticePlanStep({ onComplete }: PracticePlanStepProps) {
   const [target, setTarget] = useState("Natural notes on strings 6 and 5");
   const [durationMinutes, setDurationMinutes] = useState<5 | 10 | 15>(10);
-  const [nextAction, setNextAction] = useState("Return for the delayed review");
+  const [nextAction, setNextAction] = useState("Come back later to check this again");
   const [reducedLoad, setReducedLoad] = useState(false);
 
   function submit(event: FormEvent<HTMLFormElement>): void {
@@ -22,9 +22,9 @@ export function PracticePlanStep({ onComplete }: PracticePlanStepProps) {
   return (
     <section className={styles.lessonBand} aria-labelledby="practice-plan-title">
       <div className={styles.bandHeading}>
-        <p className={styles.eyebrow}>Position</p>
+        <p className={styles.eyebrow}>Get ready</p>
         <h2 id="practice-plan-title">Choose a session you can finish with care.</h2>
-        <p>One target is enough. Shortening the session is a useful practice decision, not a failure.</p>
+        <p>One goal is enough. A shorter session can be a smart choice.</p>
       </div>
       <form className={styles.form} onSubmit={submit}>
         <label>

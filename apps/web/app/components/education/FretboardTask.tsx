@@ -122,7 +122,7 @@ export function FretboardTask({
       <div className={styles.bandHeading}>
         <p className={styles.eyebrow}>
           {reviewSourceAt
-            ? "Delayed retrieval"
+            ? "Review after a break"
             : instructionState === "model"
               ? "Model"
               : instructionState === "fade"
@@ -130,12 +130,12 @@ export function FretboardTask({
                 : "Independent attempt"}
         </p>
         <h2 id="fretboard-task-title">
-          {kind === "coordinate" ? "Show the coordinate before moving on." : reviewSourceAt ? "Retrieve the same region after a delay." : "Find each note without an answer cue."}
+          {kind === "coordinate" ? "Show the string and fret before moving on." : reviewSourceAt ? "Find the same notes after a break." : "Find each note without seeing the answer first."}
         </h2>
         <p>
           {kind === "coordinate"
-            ? "Valid prior knowledge can satisfy this prerequisite directly."
-            : "The last prompt uses the equivalent coordinate controls so the context changes without changing the capability."}
+            ? "If you already know this, this quick check can count."
+            : "The last prompt asks the same skill in a new way."}
         </p>
       </div>
 
@@ -150,29 +150,29 @@ export function FretboardTask({
             {kind === "coordinate"
               ? "For example, string 6 open is the leftmost location on the lower row."
               : "For example, F on string 6 is fret 1, beside the open E."}
-            {" "}This model records no evidence.
+            {" "}This example does not count as a try.
           </p>
           <button
             className={styles.primaryButton}
             onClick={() => setInstructionState("independent")}
             type="button"
           >
-            {kind === "coordinate" ? "Begin placement" : "Begin retrieval"}
+            {kind === "coordinate" ? "Begin placement" : "Begin note practice"}
           </button>
         </div>
       ) : instructionState === "fade" ? (
         <div className={styles.modelPanel}>
-          <strong>The answer support is now removed.</strong>
+          <strong>The answer help is now gone.</strong>
           <p>
-            The corrected set stays capped as supported practice. The next set uses
-            fresh prompt order and can produce independent evidence.
+            The corrected set counted as practice with help. The next set uses
+            a fresh order and can count without help.
           </p>
           <button
             className={styles.primaryButton}
             onClick={() => setInstructionState("independent")}
             type="button"
           >
-            Begin fresh independent set
+            Begin a fresh set
           </button>
         </div>
       ) : !outcome ? (
@@ -247,12 +247,12 @@ export function FretboardTask({
         </div>
       ) : (
         <div className={passed ? styles.feedbackSuccess : styles.feedbackNeedsWork} role="status">
-          <strong>{passed ? (outcome.evidence.kind === "retained_performance" ? "Retrieved after a delay" : "Shown independently") : outcome.evidence.kind === "correction" ? "Corrected with support" : "Not yet demonstrated"}</strong>
-          <p>{passed ? "The set met its support, coverage, validity, and variation requirements." : outcome.remediation.nextAction}</p>
+          <strong>{passed ? (outcome.evidence.kind === "retained_performance" ? "Remembered after a break" : "Done without help") : outcome.evidence.kind === "correction" ? "Corrected with help" : "Keep practicing this"}</strong>
+          <p>{passed ? "You answered the full set without hints, and the task counted it." : outcome.remediation.nextAction}</p>
           {passed ? (
             <button className={styles.primaryButton} onClick={onContinue} type="button">Continue</button>
           ) : (
-            <button className={styles.secondaryButton} onClick={retry} type="button">Fade support and retry</button>
+            <button className={styles.secondaryButton} onClick={retry} type="button">Remove help and try again</button>
           )}
         </div>
       )}

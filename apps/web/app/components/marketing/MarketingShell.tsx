@@ -5,6 +5,7 @@ import styles from "./marketing.module.css";
 type MarketingPage =
   | "home"
   | "about"
+  | "lessons"
   | "signup"
   | "login"
   | "account"
@@ -21,6 +22,7 @@ type MarketingShellProps = {
 
 const navigation = [
   { key: "home" as const, href: "/", label: "Home" },
+  { key: "lessons" as const, href: "/lessons", label: "Curriculum" },
   { key: "about" as const, href: "/about", label: "About Me" },
   { key: "testerFeedback" as const, href: "/tester-feedback", label: "Test Feedback" },
   { key: "signup" as const, href: "/signup", label: "Sign Up" },
@@ -66,8 +68,8 @@ export function MarketingShell({ activePage, children }: MarketingShellProps) {
                 {item.label}
               </Link>
             ))}
-            <Link className={styles.appButton} href="/practice">
-              Open App
+            <Link className={styles.appButton} href="/lessons">
+              Start Learning
             </Link>
           </nav>
 
@@ -84,8 +86,8 @@ export function MarketingShell({ activePage, children }: MarketingShellProps) {
                   {item.label}
                 </Link>
               ))}
-              <Link className={styles.mobileAppButton} href="/practice">
-                Open App
+              <Link className={styles.mobileAppButton} href="/lessons">
+                Start Learning
               </Link>
             </nav>
           </details>
@@ -120,7 +122,8 @@ export function MarketingShell({ activePage, children }: MarketingShellProps) {
                 {item.label}
               </Link>
             ))}
-            <Link href="/practice">Open App</Link>
+            <Link href="/lessons">Start Learning</Link>
+            <Link href="/practice">Practice Tools</Link>
             {legalNavigation.map((item) => (
               <Link href={item.href} key={item.key}>
                 {item.label}

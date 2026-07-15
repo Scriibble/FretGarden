@@ -18,12 +18,12 @@ const sections = [
   {
     title: "Local practice information",
     body:
-      "Lesson progress, drill history, weak spots, practice presets, curriculum progress, and pilot evidence are currently stored in this browser's localStorage. This data is not synced across devices."
+      "Lesson progress, drill history, weak spots, practice presets, curriculum progress, and guided practice results are stored in this browser for now. This data is not synced across devices."
   },
   {
     title: "Tester feedback",
     body:
-      "Survey responses may be used to improve FretGarden and support release-readiness evidence. Testers should avoid sharing sensitive personal information."
+      "Survey responses may be used to improve FretGarden and help decide when it is ready for release. Testers should avoid sharing sensitive personal information."
   },
   {
     title: "What is not collected",

@@ -46,7 +46,7 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
             </h2>
             <p>
               {courseProgress.isComplete
-                ? "Every guided lesson in this first FretGarden path is complete. Revisit a lesson or reinforce with drills."
+                ? "Every guided lesson in this first FretGarden path is complete. Revisit a lesson or practice with drills."
                 : courseProgress.currentLesson
                   ? `Your current lesson is step ${currentStepNumber} of ${courseProgress.totalCount}.`
                   : "Begin with the fretboard map, then read, play, and write through the path one lesson at a time."}
@@ -80,7 +80,7 @@ export function LessonLibrary({ lessons }: LessonLibraryProps) {
                 className="lesson-secondary-link"
                 href={courseProgress.currentLesson.practice.href}
               >
-                Reinforce with drill
+                Practice with drill
               </Link>
             </>
           ) : (

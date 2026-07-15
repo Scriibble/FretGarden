@@ -45,14 +45,14 @@ const objectiveLabels: Record<string, string> = {
 };
 
 const capabilityLabels: Record<CapabilityState, string> = {
-  not_observed: "Not yet observed",
-  developing: "Practiced with support",
-  insufficient_evidence: "More evidence needed",
-  independent_once: "Shown independently",
-  review_due: "Review due",
-  retained: "Retrieved after a delay",
-  applied: "Applied in a changed context",
-  needs_refresh: "Refresh recommended"
+  not_observed: "No counted try yet",
+  developing: "Practiced with help",
+  insufficient_evidence: "Keep practicing this",
+  independent_once: "Done without help",
+  review_due: "Ready to review",
+  retained: "Remembered after a break",
+  applied: "Used it in a new pattern",
+  needs_refresh: "Needs a quick refresh"
 };
 
 export function buildFretboardMapLearnerProgress(
@@ -68,7 +68,7 @@ export function buildFretboardMapLearnerProgress(
       report.currentEducation.storeState === "unknown_schema" ||
       report.legacy.diagnostics.some(({ code }) => code === "malformed_envelope"),
     explanation:
-      "Your earlier lesson and drill history is preserved. Current evidence records only what the guided practice path has observed, so history does not become independent, retained, or applied evidence.",
+      "Your earlier lesson and drill history is still here. Guided practice only counts tasks where you tap, click, or choose an answer on screen.",
     primaryAction: choosePrimaryAction(report.currentEducation.claims)
   };
 }
@@ -122,15 +122,15 @@ function choosePrimaryAction(claims: CapabilityClaim[]): LearnerProgressAction {
   if (claims.some(({ state }) => state === "review_due" || state === "needs_refresh")) {
     return {
       href: "/education-pilot",
-      label: "Complete current review",
-      detail: "Return to the guided path for the review or refresh that is due."
+      label: "Do the current review",
+      detail: "Return to guided practice for the review or refresh that is ready."
     };
   }
   if (claims.some(({ state }) => state === "not_observed")) {
     return {
       href: "/education-pilot",
       label: "Start guided practice",
-      detail: "Begin the guided path so current evidence can be observed."
+      detail: "Begin the guided path so FretGarden can check your answers on screen."
     };
   }
   if (
@@ -141,20 +141,20 @@ function choosePrimaryAction(claims: CapabilityClaim[]): LearnerProgressAction {
     return {
       href: "/education-pilot",
       label: "Continue guided practice",
-      detail: "Keep working with the current supports and fresh attempts."
+      detail: "Keep working with help and fresh tries."
     };
   }
   if (claims.some(({ state }) => state === "independent_once")) {
     return {
       href: "/education-pilot",
-      label: "Continue toward delayed review",
-      detail: "Preserve the independent result and return for delayed retrieval."
+      label: "Come back for review",
+      detail: "Keep the try you did without help, then return later to check it again."
     };
   }
   return {
     href: "/education-pilot",
     label: "Practice this segment again",
-    detail: "Revisit the guided path without replacing earlier evidence."
+    detail: "Revisit the guided path without replacing earlier work."
   };
 }
 
