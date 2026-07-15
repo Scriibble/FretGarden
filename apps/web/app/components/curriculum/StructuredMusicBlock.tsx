@@ -117,7 +117,7 @@ export function StructuredMusicBlock({ block }: StructuredMusicBlockProps) {
         </div>
         <p className={styles.visuallyHidden}>{block.accessibilityDescription}</p>
         <ol>{block.instructions.map((instruction) => <li key={instruction}>{instruction}</li>)}</ol>
-        {block.supports.length > 0 ? <p><strong>Support available:</strong> {block.supports.join(" · ")}</p> : <p><strong>Support:</strong> Complete without prompts or a model.</p>}
+        {block.supports.length > 0 ? <p><strong>Help you can use:</strong> {block.supports.join(" · ")}</p> : <p><strong>Help:</strong> Complete without prompts or a model.</p>}
         <ul>{block.successCriteria.map((criterion) => <li key={criterion}>{criterion}</li>)}</ul>
       </section>
     );

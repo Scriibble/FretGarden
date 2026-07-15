@@ -34,7 +34,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <div className={styles.signupGrid}>
           <div className={styles.signupCopy}>
             <span className={styles.eyebrow}>Welcome back</span>
-            <h1 id="login-title">Return to your practice garden.</h1>
+            <h1 id="login-title">Sign in to FretGarden.</h1>
             <p>
               Sign in to confirm your FretGarden account and reach your account
               space. Practice history still lives in this browser while cloud
@@ -45,8 +45,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <div>
                 <strong>Account access is early.</strong>
                 Your account can be created and confirmed now. Saved
-                cross-device practice progress will arrive in a later sync
-                pass.
+                cross-device practice progress will arrive in a later update.
               </div>
             </div>
 

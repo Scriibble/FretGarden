@@ -37,9 +37,9 @@ export default async function AccountPage() {
         <div className={styles.signupGrid}>
           <div className={styles.signupCopy}>
             <span className={styles.eyebrow}>Your account</span>
-            <h1 id="account-title">A steady place to grow from.</h1>
+            <h1 id="account-title">Your FretGarden account.</h1>
             <p>
-              Your FretGarden account is active. The next development pass will
+              Your FretGarden account is active. A future update will
               connect this account to saved practice progress, lesson state, and
               cross-device history.
             </p>
@@ -63,7 +63,7 @@ export default async function AccountPage() {
           <aside className={styles.signupCard}>
             <div className={styles.signupCardHeader}>
               <h2>Account details</h2>
-              <p>This confirms that Supabase authentication is connected.</p>
+              <p>Your account sign-in is working.</p>
             </div>
 
             <dl className={styles.accountDetails}>

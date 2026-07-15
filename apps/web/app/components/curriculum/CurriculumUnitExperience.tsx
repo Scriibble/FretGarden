@@ -274,7 +274,7 @@ export function CurriculumUnitExperience({
       <section className={styles.band} aria-labelledby="mistakes-title">
         <div className={styles.sectionHeading}>
           <p className={styles.eyebrow}>Common mistakes</p>
-          <h2 id="mistakes-title">Use the symptom to choose an adjustment</h2>
+          <h2 id="mistakes-title">Match the problem to a better next try</h2>
         </div>
         <div className={styles.mistakeList}>
           {lesson.commonMistakes.map((mistake) => (
@@ -313,7 +313,7 @@ export function CurriculumUnitExperience({
                 ))}
                 {answer ? (
                   <p className={isCorrect ? styles.correct : styles.incorrect} role="status">
-                    <strong>{isCorrect ? "Correct." : "Not yet."}</strong> {isCorrect ? check.explanation : check.incorrectFeedback?.[answer] ?? "Review the explanation above and choose the response that changes the musical task constructively."}
+                    <strong>{isCorrect ? "Correct." : "Not yet."}</strong> {isCorrect ? check.explanation : check.incorrectFeedback?.[answer] ?? "Read the explanation, then choose the answer that helps the music."}
                   </p>
                 ) : null}
               </fieldset>

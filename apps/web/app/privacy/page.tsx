@@ -38,7 +38,7 @@ const sections = [
   {
     title: "Changes",
     body:
-      "This policy may change as FretGarden adds cloud sync, production persistence, analytics, subscriptions, or other features. Material changes should be reviewed before broader release."
+      "This policy may change as FretGarden adds cloud sync, saved cloud progress, analytics, subscriptions, or other features. Material changes should be reviewed before broader release."
   }
 ];
 

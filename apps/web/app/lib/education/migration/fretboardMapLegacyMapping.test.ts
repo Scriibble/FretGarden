@@ -65,7 +65,7 @@ describe("fretboard-map legacy migration fixtures", () => {
         "policy_version_unknown"
       ])
     );
-    expect(practice.educationalLimit).toContain("not independent");
+    expect(practice.educationalLimit).toContain("does not prove the skill");
   });
 
   it("keeps malformed and unattributed sources explicit", () => {

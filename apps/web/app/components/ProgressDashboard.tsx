@@ -90,7 +90,7 @@ export function ProgressDashboard({
           </div>
         ) : (
           <p className="empty-progress-copy">
-            Finish a drill to start building your recent practice history.
+            Finish a drill to start your practice history.
           </p>
         )}
       </article>

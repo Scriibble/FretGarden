@@ -30,7 +30,7 @@ describe("fretboard-map parallel report", () => {
         expect.objectContaining({ code: "combined_sources", count: 1 })
       ])
     );
-    expect(report.explanation).toContain("does not strengthen");
+    expect(report.explanation).toContain("does not use it to decide");
   });
 
   it("does not let legacy completion override newer contradictory evidence", () => {
@@ -41,7 +41,7 @@ describe("fretboard-map parallel report", () => {
 
     expect(noteClaim(report).state).toBe("needs_refresh");
     expect(report.legacy.records).toHaveLength(2);
-    expect(report.currentEducation.nextAction).toContain("due current-system review");
+    expect(report.currentEducation.nextAction).toContain("guided practice review");
   });
 
   it("shows transfer only in current evidence when legacy history is absent", () => {

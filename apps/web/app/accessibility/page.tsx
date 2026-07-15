@@ -6,12 +6,12 @@ import styles from "../components/marketing/marketing.module.css";
 export const metadata: Metadata = {
   title: "Accessibility Statement",
   description:
-    "Read the FretGarden accessibility statement and current Gate 4 review boundary."
+    "Read the FretGarden accessibility statement and current human testing boundary."
 };
 
 const supportItems = [
   "Semantic page structure and labeled controls.",
-  "Keyboard-operable practice and pilot flows.",
+  "Keyboard-operable practice and guided flows.",
   "Reduced-motion handling for pulse animation.",
   "Text equivalents for structured music blocks.",
   "Persistent feedback and local-storage error messages.",
@@ -33,7 +33,7 @@ export default function AccessibilityPage() {
         <div className={styles.signupGrid}>
           <div className={styles.signupCopy}>
             <span className={styles.eyebrow}>Accessibility statement</span>
-            <h1 id="accessibility-title">Accessibility is part of release readiness.</h1>
+            <h1 id="accessibility-title">Accessibility is part of public release.</h1>
             <p>
               FretGarden aims to make focused guitar practice usable by learners
               with different access needs. Automated checks are passing, but
@@ -54,8 +54,7 @@ export default function AccessibilityPage() {
             <div className={styles.signupCardHeader}>
               <h2>Current accessibility status</h2>
               <p>
-                The project has strong technical checks. Human testing is still
-                in progress.
+                Automated checks pass. Human testing is still in progress.
               </p>
             </div>
             <div className={styles.policyColumns}>

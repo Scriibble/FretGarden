@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
         <div className={styles.signupGrid}>
           <div className={styles.signupCopy}>
             <span className={styles.eyebrow}>Password reset</span>
-            <h1 id="reset-title">Get a fresh path back in.</h1>
+            <h1 id="reset-title">Reset your password.</h1>
             <p>
               Enter your account email and FretGarden will send a reset link if
               the address belongs to an account.
@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
           <div className={styles.signupCard}>
             <div className={styles.signupCardHeader}>
               <h2>Reset your password</h2>
-              <p>Use the newest reset email if you request more than one link.</p>
+              <p>Use the latest reset email if you request more than one link.</p>
             </div>
             <ForgotPasswordForm />
           </div>

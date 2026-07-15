@@ -20,7 +20,7 @@ const testerSteps = [
   {
     title: "Try one real task",
     body:
-      "Complete a short lesson or practice task without coaching. Notice where the app helps, where it over-explains, and where it leaves you guessing."
+      "Complete a short lesson or practice task without coaching. Notice what helped and what felt confusing."
   },
   {
     title: "Submit the survey",
@@ -50,7 +50,7 @@ export default function TesterFeedbackPage() {
             </p>
             <div className={styles.previewNotice}>
               <div>
-                <strong>Current boundary.</strong> Practice progress is stored
+                <strong>Current limits.</strong> Practice progress is stored
                 locally in this browser. Accounts are real, but cloud progress
                 sync is not live yet.
               </div>

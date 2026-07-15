@@ -115,7 +115,7 @@ export function mapFretboardMapLegacyHistory(
         "valid_non_mappable",
         "learning_progress",
         1,
-        "A valid learning record had no attributable activity checkpoint."
+        "A saved lesson record did not say which activity it came from."
       );
       return [];
     }
@@ -132,7 +132,7 @@ export function mapFretboardMapLegacyHistory(
         "valid_non_mappable",
         "practice_progress",
         1,
-        "A valid practice record had no attributable attempt summary."
+        "A saved practice record did not include a score or attempt summary."
       );
       return [];
     }
@@ -152,7 +152,7 @@ export function mapFretboardMapLegacyHistory(
           ? "learning_progress"
           : "practice_progress",
         1,
-        "A mapped historical record has no attributable occurrence timestamp."
+        "A saved history item did not include a practice time."
       );
     }
   }
@@ -287,7 +287,7 @@ function toParticipation(
       "transfer_unknown"
     ],
     educationalLimit:
-      "This preserves recorded participation only; it is not capability evidence."
+      "FretGarden saved this lesson activity as history, but it does not prove the skill yet."
   };
 }
 
@@ -322,7 +322,7 @@ function toPracticeSummary(
       ...(occurredAt === null ? ["timestamp_unknown"] : [])
     ],
     educationalLimit:
-      "This preserves a legacy practice summary; it is not independent, retained, or transfer evidence."
+      "FretGarden saved this older drill result as history, but it does not prove the skill yet."
   };
 }
 
@@ -343,7 +343,7 @@ function deduplicate(
       "duplicate_record",
       source,
       1,
-      "A duplicate attributable record was reduced to one historical record."
+      "FretGarden found a duplicate saved item and kept one copy."
     );
     if (compareAttributableRecency(record, existing) > 0) {
       byId.set(record.id, record);
