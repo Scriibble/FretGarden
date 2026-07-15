@@ -47,7 +47,7 @@ export function ProgressDashboard({
     <section className="progress-dashboard" aria-label="Practice progress">
       <article className="next-session-card">
         <div>
-          <p className="eyebrow">Daily Quest</p>
+          <p className="eyebrow">Today's practice</p>
           <h2>{recommendationTitle}</h2>
           <p>{recommendationDescription}</p>
         </div>

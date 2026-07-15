@@ -4,7 +4,7 @@ import { FretboardMapMigrationReport } from "../../components/education/Fretboar
 export const metadata: Metadata = {
   title: "Fretboard Map Migration Review",
   description:
-    "A local read-only comparison of legacy fretboard-map history and current education evidence."
+    "A local read-only comparison of older fretboard-map history and new guided practice results."
 };
 
 export default function FretboardMapMigrationPage() {

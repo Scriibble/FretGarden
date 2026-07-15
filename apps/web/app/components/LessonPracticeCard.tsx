@@ -26,7 +26,7 @@ export function LessonPracticeCard({ lesson }: LessonPracticeCardProps) {
   return (
     <aside className={`lesson-practice-card lesson-practice-${status}`}>
       <div>
-        <span className="control-label">Optional reinforcement</span>
+        <span className="control-label">Extra practice</span>
         <div className="lesson-practice-heading">
           <h2>{lesson.practice.label}</h2>
           <span className={`lesson-status-pill status-${status}`}>
@@ -34,10 +34,10 @@ export function LessonPracticeCard({ lesson }: LessonPracticeCardProps) {
           </span>
         </div>
         <p>
-          Use this drill after the lesson to test recall. It no longer defines
-          lesson completion, but {lesson.practice.criteria.promptCount}{" "}
-          questions at {lesson.practice.criteria.minAccuracy}%+ is still a good
-          reinforcement target.
+          Use this drill after the lesson to check what you remember. It does
+          not mark the lesson complete, but {lesson.practice.criteria.promptCount}{" "}
+          questions at {lesson.practice.criteria.minAccuracy}%+ is a good
+          practice goal.
         </p>
         {lessonProgress?.lastAccuracy !== undefined &&
         lessonProgress.lastPromptCount !== undefined ? (
@@ -62,10 +62,10 @@ function getPracticeCtaLabel(
   }
 
   if (status === "in-progress") {
-    return "Continue reinforcement drill";
+    return "Continue practice drill";
   }
 
-  return "Start reinforcement drill";
+  return "Start practice drill";
 }
 
 function formatLessonStatus(status: "not-started" | "in-progress" | "complete") {

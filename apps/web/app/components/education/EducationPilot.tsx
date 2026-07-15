@@ -305,10 +305,11 @@ export function EducationPilot() {
       <AppNavigation activePage="progress" />
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>Education pilot</p>
+          <p className={styles.eyebrow}>Guided practice</p>
           <h1>Build the first reliable landmarks</h1>
           <p className={styles.lead}>
-            Set a workable session, meet a steady pulse, and retrieve six natural notes in a small fretboard region.
+            Choose a short session, keep a steady beat, and find six natural
+            notes in a small fretboard area.
           </p>
         </div>
         <div className={styles.headerActions}>
@@ -471,21 +472,21 @@ export function EducationPilot() {
       {stage === "summary" ? (
         <section className={styles.lessonBand} aria-labelledby="pilot-summary-title">
           <div className={styles.bandHeading}>
-            <p className={styles.eyebrow}>Current evidence</p>
+            <p className={styles.eyebrow}>What you showed</p>
             <h2 id="pilot-summary-title">{statusLabel(noteClaim.strongestKind, noteClaim.state)}</h2>
-            <p>{noteClaim.rationale}</p>
+            <p>{friendlyClaimRationale(noteClaim.rationale)}</p>
           </div>
           <div className={styles.summaryGrid}>
             <div>
-              <span>Independent attempts</span>
+              <span>Tries without help</span>
               <strong>{noteEvidence.filter(({ kind }) => kind === "independent_performance").length}</strong>
             </div>
             <div>
-              <span>Delayed retrievals</span>
+              <span>Remembered later</span>
               <strong>{noteEvidence.filter(({ kind }) => kind === "retained_performance").length}</strong>
             </div>
             <div>
-              <span>Application evidence</span>
+              <span>New patterns</span>
               <strong>{noteEvidence.filter(({ kind }) => kind === "transfer").length}</strong>
             </div>
             <div>
@@ -502,7 +503,7 @@ export function EducationPilot() {
                     ? "Meet the pulse again without added support."
                     : "Retrieve the same notes without cues."
                   : store.reviews.some(({ state }) => state === "scheduled")
-                    ? "Return when the delayed review becomes due."
+                    ? "Come back when the review is ready."
                     : store.sessions[0]?.nextAction ?? "Choose one useful next action."}
               </strong>
             </div>
@@ -568,21 +569,43 @@ function inferStage(store: EducationPilotStore): Stage {
 
 function statusLabel(kind: EvidenceKind | null, state: string): string {
   if (state === "needs_refresh") {
-    return "Needs a refresh";
+    return "Needs a quick refresh";
   }
   if (kind === "retained_performance") {
-    return "Retrieved after a delay";
+    return "Remembered after a break";
   }
   if (kind === "transfer" || state === "applied") {
-    return "Applied in a changed context";
+    return "Used it in a new pattern";
   }
   if (kind === "independent_performance") {
-    return "Shown independently";
+    return "Done without help";
   }
   if (kind === "supported_performance" || kind === "correction") {
-    return "Practiced with support";
+    return "Practiced with help";
   }
-  return "Evidence not yet shown";
+  return "No counted try yet";
+}
+
+function friendlyClaimRationale(rationale: string): string {
+  const replacements: Record<string, string> = {
+    "No evidence has been observed.": "No counted try has been recorded yet.",
+    "Current evidence does not yet meet the requirement.":
+      "Your latest tries do not count for this skill yet.",
+    "Earlier achievement is preserved, and newer independent evidence calls for a refresh.":
+      "Your earlier success still counts. A newer try shows this skill needs a quick refresh.",
+    "Independent performance was observed and delayed retrieval is now due.":
+      "You did it without help. Now it is time to check whether you still remember it.",
+    "The capability was observed independently in a changed musical context.":
+      "You used the skill without help in a new pattern.",
+    "Independent retrieval was observed after a meaningful delay.":
+      "You remembered it after a break.",
+    "Independent performance was observed once; delayed review is still required.":
+      "You did it once without help. Come back later to check it again.",
+    "Performance has been observed with support.":
+      "You practiced it with help."
+  };
+
+  return replacements[rationale] ?? rationale;
 }
 
 function formatReview(reviews: ReviewObligation[]): string {

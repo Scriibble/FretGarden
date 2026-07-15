@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 export const metadata: Metadata = {
   title: "Learning Progress",
   description:
-    "Preserved fretboard-map history beside evidence from the guided practice path."
+    "Preserved fretboard-map history beside what guided practice has checked."
 };
 
 export default function ProgressPage() {

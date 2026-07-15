@@ -98,7 +98,7 @@ export function LessonCompletionCard({ lesson }: LessonCompletionCardProps) {
         </div>
         <p>
           Mark these checkpoints as you read, play, and write. Drills are
-          optional reinforcement after the lesson makes sense.
+          optional extra practice after the lesson makes sense.
         </p>
       </div>
 

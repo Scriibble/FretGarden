@@ -137,7 +137,7 @@ export function CurriculumUnitExperience({
         <dl className={styles.unitFacts}>
           <div><dt>Lesson</dt><dd>{lesson.title}</dd></div>
           <div><dt>Estimated time</dt><dd>{lesson.estimatedMinutes} minutes</dd></div>
-          <div><dt>Status</dt><dd>{completed ? "Completed self-check" : prerequisitesComplete ? "In progress" : "Previewing"}</dd></div>
+          <div><dt>Status</dt><dd>{completed ? "Lesson check complete" : prerequisitesComplete ? "In progress" : "Previewing"}</dd></div>
         </dl>
       </header>
 
@@ -324,7 +324,7 @@ export function CurriculumUnitExperience({
 
       <section className={styles.mastery} aria-labelledby="mastery-title">
         <div className={styles.sectionHeading}>
-          <p className={styles.eyebrow}>Mastery check</p>
+          <p className={styles.eyebrow}>Check your work</p>
           <h2 id="mastery-title">{assessment.title}</h2>
           <p>{assessment.passingRule}</p>
         </div>
@@ -349,10 +349,11 @@ export function CurriculumUnitExperience({
           onClick={() => persist(finalizeCurriculumProgress(records, lesson, new Date().toISOString()))}
           type="button"
         >
-          {completed ? "Unit self-check complete" : !prerequisitesComplete ? "Complete the prior unit first" : readyToComplete ? "Complete unit self-check" : "Finish checks to complete"}
+          {completed ? "Lesson check complete" : !prerequisitesComplete ? "Complete the prior lesson first" : readyToComplete ? "Complete lesson check" : "Finish checks to complete"}
         </button>
         <p className={styles.evidenceNote}>
-          Physical performance items are learner-confirmed checklists. FretGarden does not claim it heard or measured your guitar unless an activity explicitly evaluates a response.
+          You check off guitar-playing tasks yourself. FretGarden only grades
+          tasks where you tap, click, or choose an answer on screen.
         </p>
       </section>
 
@@ -392,10 +393,10 @@ function formatLevel(level: CurriculumIndexEntry["level"]): string {
 function formatVerification(value: CurriculumLesson["masteryCriteria"][number]["verification"]): string {
   const labels = {
     automatic: "Automatically evaluated",
-    "guided-self-check": "Guided self-check",
+    "guided-self-check": "Guided check",
     "recorded-value": "Record a value",
     reflection: "Written reflection",
-    "performance-checklist": "Performance self-check"
+    "performance-checklist": "Playing checklist"
   } as const;
   return labels[value];
 }

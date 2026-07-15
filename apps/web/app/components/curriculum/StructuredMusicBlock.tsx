@@ -99,7 +99,7 @@ export function StructuredMusicBlock({ block }: StructuredMusicBlockProps) {
             <li key={item.label}>
               <strong>{item.label}</strong>
               <p>{item.instruction}</p>
-              <small>Self-check: {item.selfCheck}</small>
+              <small>Check: {item.selfCheck}</small>
             </li>
           ))}
         </ol>

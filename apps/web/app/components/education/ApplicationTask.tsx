@@ -102,11 +102,11 @@ export function ApplicationTask({
   return (
     <section className={styles.lessonBand} aria-labelledby="application-task-title">
       <div className={styles.bandHeading}>
-        <p className={styles.eyebrow}>Apply in a musical pattern</p>
+        <p className={styles.eyebrow}>Use it in a pattern</p>
         <h2 id="application-task-title">Turn two landmarks into one playable move.</h2>
         <p>
-          Locate the notes in order. Play the short move on your instrument when
-          practical; the evidence here measures the two locations, not how you played.
+          Find the notes in order. Play the short move on your guitar if you can.
+          FretGarden checks the two frets you choose, not how the guitar sounds.
         </p>
       </div>
 
@@ -166,7 +166,7 @@ export function ApplicationTask({
               ) : (
                 <button className={styles.primaryButton} onClick={next} type="button">
                   {index + 1 === orderedPrompts.length
-                    ? "Evaluate application"
+                    ? "Check this set"
                     : "Next pattern"}
                 </button>
               )}
@@ -175,10 +175,10 @@ export function ApplicationTask({
         </div>
       ) : (
         <div className={passed ? styles.feedbackSuccess : styles.feedbackNeedsWork} role="status">
-          <strong>{passed ? "Applied in a changed context" : "Not yet transferred"}</strong>
+          <strong>{passed ? "Used it in a new pattern" : "Try a new pattern next"}</strong>
           <p>
             {passed
-              ? "Both ordered patterns were located independently across strings 6 and 5."
+              ? "You found both patterns without hints on strings 6 and 5."
               : outcome.remediation.nextAction}
           </p>
           {passed ? (

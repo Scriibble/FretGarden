@@ -88,15 +88,14 @@ export default function HomePage() {
               <span>Grow your musicianship.</span>
             </h1>
             <p className={styles.heroLead}>
-              FretGarden now centers a 51-unit guided curriculum for learning
-              guitar with durable practice habits, clear musical tasks, and
-              focused reinforcement tools. Move from first sound to songwriting,
-              fretboard fluency, harmony, improvisation, and a finished artist
-              portfolio without treating completion as mastery.
+              FretGarden gives you 51 guitar lessons, short practice tasks, and
+              extra drills when you need them. Start with your first clear note,
+              then grow toward songs, fretboard knowledge, harmony,
+              improvisation, and a finished artist portfolio.
             </p>
             <div className={styles.heroActions}>
               <Link className={styles.primaryCta} href="/lessons">
-                Start the 51-unit curriculum
+                Start the lessons
               </Link>
               <Link className={styles.secondaryCta} href="/practice">
                 Open practice tools
@@ -107,7 +106,7 @@ export default function HomePage() {
             </div>
             <div className={styles.heroStatus} aria-label="Current product status">
               <span>51 authored units available now</span>
-              <span>Practice drills remain available as reinforcement</span>
+              <span>Practice drills are ready when you need extra reps</span>
               <span>Accounts are live; cloud progress sync is planned</span>
             </div>
           </div>
@@ -136,8 +135,8 @@ export default function HomePage() {
           <div className={styles.trustItem}>
             <i className={styles.trustDot} aria-hidden="true" />
             <div>
-              <strong>Reinforcement tools</strong>
-              <small>Focused drills when useful</small>
+              <strong>Extra practice tools</strong>
+              <small>Focused drills when a lesson asks for them</small>
             </div>
           </div>
         </div>
@@ -147,11 +146,11 @@ export default function HomePage() {
         <div className={styles.curriculumFlowPanel}>
           <div className={styles.curriculumFlowCopy}>
             <span className={styles.sectionEyebrow}>The main learning path</span>
-            <h2 id="curriculum-flow-title">Follow the curriculum first, then use drills to reinforce what the unit asks you to practice.</h2>
+            <h2 id="curriculum-flow-title">Start with the lessons. Use drills when a lesson asks for extra practice.</h2>
             <p>
-              The lesson path is the primary experience. It introduces the instrument,
-              pulse, chord vocabulary, reading, fretboard mapping, songwriting,
-              improvisation, harmony, and portfolio work in a deliberate sequence.
+              The lessons guide you through the guitar, steady time, chords,
+              reading, fretboard maps, songwriting, improvisation, harmony, and
+              portfolio work one step at a time.
             </p>
           </div>
           <div className={styles.curriculumFlowActions}>
@@ -210,8 +209,8 @@ export default function HomePage() {
             A stronger map of the guitar neck
           </h2>
           <p className={styles.sectionLead}>
-            Each practice area reinforces the others so your knowledge becomes
-            easier to recall, apply, and hear in real music.
+            Each practice area helps the others, so you can remember ideas,
+            use them on the guitar, and hear them in real music.
           </p>
         </div>
 
@@ -287,14 +286,14 @@ export default function HomePage() {
       <div className={styles.productPreviewSection}>
         <section className={styles.section} aria-labelledby="preview-title">
           <div className={styles.sectionHeaderCentered}>
-            <span className={styles.sectionEyebrow}>Reinforcement tools</span>
+            <span className={styles.sectionEyebrow}>Extra practice tools</span>
             <h2 className={styles.sectionTitle} id="preview-title">
-              Open a drill when a unit calls for extra reps
+              Open a drill when a lesson asks for extra reps
             </h2>
             <p className={styles.sectionLead}>
-              The practice loop is local-first and separate from curriculum
-              completion. Use notes, chord tones, scale degrees, intervals,
-              octaves, and inversions as focused reinforcement.
+              Drills save on this device and do not mark lessons complete. Use
+              notes, chord tones, scale degrees, intervals, octaves, and
+              inversions for focused extra practice.
             </p>
           </div>
 

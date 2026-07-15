@@ -147,7 +147,7 @@ export function PulseTask({
       <div className={styles.bandHeading}>
         <p className={styles.eyebrow}>
           {reviewSourceAt
-            ? "Delayed pulse retrieval"
+            ? "Pulse review"
             : phase === "model"
               ? "Model"
               : phase === "guided"
@@ -158,12 +158,12 @@ export function PulseTask({
         </p>
         <h2 id="pulse-title">
           {reviewSourceAt
-            ? "Meet the pulse again after a delay."
+            ? "Meet the pulse again after a break."
             : "Meet a steady quarter-note pulse."}
         </h2>
         <p>
-          Listen or watch, then make eight taps. The task records timing only while
-          this page stays active.
+          Listen or watch, then make eight taps. This task only counts timing
+          while this page stays open.
         </p>
       </div>
 
@@ -283,15 +283,15 @@ export function PulseTask({
               ? "Practiced with support"
               : passed
                 ? outcome.evidence.kind === "retained_performance"
-                  ? "Retrieved after a delay"
-                  : "Shown independently"
+                  ? "Remembered after a break"
+                  : "Done without the guide"
                 : "Try a changed pulse task"}
           </strong>
           <p>
             {guidedPassed
-              ? "Eight valid taps met the timing conditions with the beat rail visible."
+              ? "Eight taps stayed with the beat while the guide was visible."
               : passed
-                ? `Eight valid taps met the timing conditions at ${tempo} BPM.`
+                ? `Eight taps stayed with the beat at ${tempo} BPM.`
                 : outcome.remediation.nextAction}
           </p>
           {guidedPassed ? (

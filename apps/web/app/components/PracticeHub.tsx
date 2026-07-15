@@ -90,8 +90,8 @@ export function PracticeHub({
           <span className="control-label">Guided path</span>
           <h2 id="curriculum-gateway-title">Start with the 51-unit curriculum</h2>
           <p>
-            Lessons are the main learning flow. Use these drills as focused
-            reinforcement after a unit gives you something specific to practice.
+            Lessons are the main path. Use these drills after a lesson gives you
+            something specific to practice.
           </p>
         </div>
         <div className="curriculum-gateway-actions">
@@ -103,12 +103,11 @@ export function PracticeHub({
 
       <section className="hub-section" aria-labelledby="core-path-heading">
         <div className="hub-section-heading">
-          <span className="control-label">Reinforcement tools</span>
+          <span className="control-label">Extra practice tools</span>
           <h2 id="core-path-heading">Core fretboard drills</h2>
           <p>
-            Use these when a curriculum unit asks you to strengthen a concrete
-            fretboard skill. Drill results stay separate from curriculum
-            self-checks.
+            Use these when a lesson asks you to work on one fretboard skill.
+            Drill results do not mark lessons complete.
           </p>
         </div>
 
@@ -133,7 +132,7 @@ export function PracticeHub({
             <div>
               <span className="control-label">Chord Tones</span>
               <h3>Spell roots, 3rds, and 5ths</h3>
-              <p>Build triad fluency with concept-first chord-tone questions.</p>
+              <p>Learn roots, 3rds, and 5ths with short chord-tone questions.</p>
             </div>
             <HubMetrics metrics={chordMetrics} />
             <button
@@ -171,8 +170,8 @@ export function PracticeHub({
         aria-labelledby="advanced-practice-heading"
       >
         <div className="hub-section-heading">
-          <span className="control-label">Optional reinforcement</span>
-          <h2 id="advanced-practice-heading">Advanced practice tools</h2>
+          <span className="control-label">More practice</span>
+          <h2 id="advanced-practice-heading">Extra practice tools</h2>
         </div>
 
         <div className="hub-grid">
@@ -226,7 +225,7 @@ export function PracticeHub({
 
           <article className="hub-card recommendation-card">
             <div>
-              <span className="control-label">Smart recommendation</span>
+              <span className="control-label">Suggested next drill</span>
               <h3>{recommendationTitle}</h3>
               <p>{recommendationDescription}</p>
             </div>

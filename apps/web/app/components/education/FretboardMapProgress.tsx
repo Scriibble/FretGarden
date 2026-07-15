@@ -68,8 +68,8 @@ export function FretboardMapProgress() {
         <p className={styles.eyebrow}>Learning progress</p>
         <h1>What your fretboard practice has shown</h1>
         <p>
-          See earlier lesson activity beside evidence from the guided practice
-          path without merging the two.
+          See earlier lesson activity beside what the guided practice path has
+          checked on screen.
         </p>
       </header>
 
@@ -96,17 +96,17 @@ export function FretboardMapProgress() {
       />
       <HistoryBand
         eyebrow="Preserved drill history"
-        heading="Note-recognition reinforcement"
+        heading="Note-recognition drill"
         summary={progress.practiceHistory}
       />
 
       <section className={styles.band} aria-labelledby="current-evidence-title">
         <div className={styles.bandHeading}>
-          <p className={styles.eyebrow}>Current evidence</p>
-          <h2 id="current-evidence-title">Capabilities observed in guided practice</h2>
+          <p className={styles.eyebrow}>What guided practice checked</p>
+          <h2 id="current-evidence-title">Skills shown in guided practice</h2>
           <p>
-            These states come only from evaluated attempts in the current education
-            path.
+            These results come only from tasks where you tapped, clicked, or
+            chose an answer on screen.
           </p>
         </div>
         <div className={styles.capabilityGrid}>
@@ -169,7 +169,7 @@ function ProgressLinks({ primaryLabel }: { primaryLabel: string }) {
         className={styles.secondaryLink}
         href="/practice?drill=note&lesson=fretboard-map#practice"
       >
-        Reinforce with note drill
+        Practice note drill
       </Link>
     </div>
   );

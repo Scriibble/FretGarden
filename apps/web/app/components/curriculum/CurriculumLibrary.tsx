@@ -68,20 +68,20 @@ export function CurriculumLibrary({ units, mappedUnitCount }: CurriculumLibraryP
       <section className={styles.libraryOverview} aria-labelledby="foundation-path-title">
         <div>
           <p className={styles.eyebrow}>Curriculum path</p>
-          <h2 id="foundation-path-title">{currentUnit?.title ?? "Curriculum self-checks complete"}</h2>
+          <h2 id="foundation-path-title">{currentUnit?.title ?? "All lesson checks complete"}</h2>
           <p>
-            The 51-unit path begins with sustainable practice, then moves through
-            playable guitar foundations, fretboard fluency, harmony, improvisation,
+            The 51-lesson path starts with healthy practice habits. Then it moves
+            through guitar basics, fretboard knowledge, harmony, improvisation,
             songwriting, and portfolio work.
             {mappedUnitCount > 0
-              ? ` The remaining ${mappedUnitCount} units are source-mapped and will appear as they are fully authored and validated.`
-              : " Every listed unit is fully authored and validated for learner-facing study."}
+              ? ` The remaining ${mappedUnitCount} lessons will appear when they are ready.`
+              : " Every lesson listed here is ready to use."}
           </p>
         </div>
         <div className={styles.nextStepPanel}>
           <div className={styles.progressSummary}>
             <strong>{completedCount}/{units.length}</strong>
-            <span>units self-checked</span>
+            <span>lesson checks complete</span>
             <div aria-label={`${progress}% of curriculum units complete`}><span style={{ width: `${progress}%` }} /></div>
           </div>
           {currentUnit ? (
