@@ -1,5 +1,7 @@
 # FretGarden Repository Instructions
 
+For curriculum, lessons, exercises, assessment, feedback, progression, review, remediation, practice sessions, learner-facing educational claims, and educational data, also follow `docs/education-overhaul/Constitution Implementation/FretGarden_Codex_Education_Overhaul_Starter_Kit/codex/01_AGENTS_EDUCATION_ADDENDUM.md`.
+
 FretGarden is a working application. Preserve current behavior unless a behavior change is explicitly approved.
 
 ## Default operating mode

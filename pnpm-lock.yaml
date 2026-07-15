@@ -23,6 +23,12 @@ importers:
 
   apps/web:
     dependencies:
+      '@pocket-practice/education-content':
+        specifier: workspace:*
+        version: link:../../packages/education-content
+      '@pocket-practice/education-engine':
+        specifier: workspace:*
+        version: link:../../packages/education-engine
       '@pocket-practice/fretboard-engine':
         specifier: workspace:*
         version: link:../../packages/fretboard-engine
@@ -63,6 +69,25 @@ importers:
       tailwindcss:
         specifier: ^4.1.0
         version: 4.3.2
+
+  packages/education-content:
+    dependencies:
+      '@pocket-practice/education-engine':
+        specifier: workspace:*
+        version: link:../education-engine
+      zod:
+        specifier: ^3.25.0
+        version: 3.25.76
+    devDependencies:
+      vitest:
+        specifier: ^3.2.0
+        version: 3.2.6(@types/node@24.13.2)
+
+  packages/education-engine:
+    devDependencies:
+      vitest:
+        specifier: ^3.2.0
+        version: 3.2.6(@types/node@24.13.2)
 
   packages/fretboard-engine:
     dependencies:

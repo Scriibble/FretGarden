@@ -1,0 +1,365 @@
+.shell {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0 auto;
+  max-width: 1120px;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.header {
+  align-items: flex-end;
+  border-bottom: 1px solid var(--color-line);
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+}
+
+.header h1 {
+  font-size: 2.35rem;
+  letter-spacing: 0;
+  line-height: 1.1;
+  margin: 0.35rem 0 0;
+}
+
+.eyebrow,
+.objectiveId {
+  color: #2f6b73;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.lead,
+.sectionHeading p:last-child,
+.record > p,
+.claim > p,
+.explanation,
+.notice p {
+  color: var(--color-muted);
+  line-height: 1.55;
+}
+
+.lead {
+  margin: 0.65rem 0 0;
+  max-width: 720px;
+}
+
+.headerActions {
+  align-items: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.5rem;
+}
+
+.primaryButton,
+.secondaryLink {
+  align-items: center;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 850;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.9rem;
+}
+
+.primaryButton {
+  background: var(--color-olive-strong);
+  border: 1px solid var(--color-olive-strong);
+  color: var(--color-surface);
+}
+
+.secondaryLink {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-olive-strong);
+  text-decoration: none;
+}
+
+.statusBand {
+  background: #e7f0ef;
+  border-block: 1px solid #88aaa8;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.statusBand > div {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.8rem 1rem;
+}
+
+.statusBand > div + div {
+  border-left: 1px solid #88aaa8;
+}
+
+.statusBand span,
+.summaryGrid dt,
+.factList dt,
+.claim dt {
+  color: var(--color-soft-text);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.statusBand strong {
+  overflow-wrap: anywhere;
+}
+
+.statusBand .warningStatus {
+  background: #fff1e7;
+  color: var(--color-brick);
+}
+
+.explanation {
+  border-left: 4px solid var(--color-clay);
+  margin: 0;
+  padding: 0.8rem 1rem;
+}
+
+.reportBand {
+  background: rgba(255, 253, 247, 0.72);
+  border-block: 1px solid var(--color-line);
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.5rem 0;
+}
+
+.sectionHeading h2 {
+  font-size: 1.55rem;
+  letter-spacing: 0;
+  margin: 0.3rem 0 0;
+}
+
+.sectionHeading p:last-child {
+  margin: 0.45rem 0 0;
+  max-width: 760px;
+}
+
+.summaryGrid {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.summaryGrid > div {
+  border-left: 3px solid var(--color-sage);
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+}
+
+.summaryGrid dd,
+.factList dd,
+.claim dd {
+  font-weight: 750;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.recordList,
+.claimList {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.record,
+.claim {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  display: grid;
+  gap: 0.85rem;
+  min-width: 0;
+  padding: 1rem;
+}
+
+.record h3,
+.claim h3,
+.detailColumns h3 {
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.recordHeading {
+  align-items: baseline;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.recordHeading span {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.factList,
+.claim dl {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.factList > div,
+.claim dl > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.record > p,
+.claim > p {
+  margin: 0;
+}
+
+.record details {
+  border-top: 1px solid var(--color-line);
+  padding-top: 0.7rem;
+}
+
+.record summary {
+  color: var(--color-olive-strong);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.record ul {
+  color: var(--color-muted);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.objectiveId {
+  overflow-wrap: anywhere;
+  text-transform: none;
+}
+
+.detailColumns {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.plainList,
+.diagnosticList {
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+}
+
+.plainList li {
+  align-items: baseline;
+  border-top: 1px solid var(--color-line);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+}
+
+.diagnosticList {
+  display: grid;
+}
+
+.diagnosticList li {
+  align-items: center;
+  border-top: 1px solid var(--color-line);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(180px, 0.65fr) minmax(0, 1.35fr) 3rem;
+  padding: 0.75rem 0;
+}
+
+.diagnosticList li > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.diagnosticList span,
+.diagnosticList p,
+.emptyState {
+  color: var(--color-muted);
+}
+
+.diagnosticList p,
+.emptyState {
+  line-height: 1.5;
+  margin: 0;
+}
+
+.diagnosticList b {
+  background: var(--color-surface-muted);
+  border-radius: 6px;
+  padding: 0.4rem;
+  text-align: center;
+}
+
+.loading {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 1rem;
+}
+
+.notice {
+  background: #fff1e7;
+  border-block: 1px solid var(--color-brick);
+  padding: 1rem;
+}
+
+.notice h2,
+.notice p {
+  margin: 0;
+}
+
+.notice p {
+  margin-top: 0.45rem;
+}
+
+@media (max-width: 720px) {
+  .header,
+  .recordHeading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .headerActions,
+  .statusBand {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .statusBand > div + div {
+    border-left: 0;
+    border-top: 1px solid #88aaa8;
+  }
+
+  .summaryGrid,
+  .recordList,
+  .claimList,
+  .detailColumns,
+  .factList,
+  .claim dl {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnosticList li {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr) 3rem;
+  }
+
+  .diagnosticList p {
+    grid-column: 1 / -1;
+  }
+}

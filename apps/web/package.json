@@ -7,11 +7,14 @@
     "build": "pnpm -w build:packages && next build",
     "dev": "next dev",
     "lint": "tsc --noEmit",
+    "test:education": "vitest run app/lib/education --passWithNoTests",
     "test:e2e": "playwright test",
     "test": "vitest run --exclude \"e2e/**\" --passWithNoTests",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@pocket-practice/education-content": "workspace:*",
+    "@pocket-practice/education-engine": "workspace:*",
     "@pocket-practice/fretboard-engine": "workspace:*",
     "@pocket-practice/music-theory-engine": "workspace:*",
     "@supabase/ssr": "^0.12.0",
